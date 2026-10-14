@@ -16,7 +16,7 @@ Colombian pet owners (dogs mostly, also cats) arriving from Meta ads on their ph
 
 ## Product Purpose
 
-Sell one product, Snacks de Codorniz Deshidratada 50 g (≈ 30 quail pieces), at $14.900 COP. Success = the visitor fills the order form and taps "Pagar al recibir". The order lands in Google Sheets, the owner confirms on WhatsApp, and the Purchase event reaches Meta (Pixel + Conversions API, deduplicated).
+Sell one product, Codornices deshidratadas, 50 g jar (≈ 30 pieces): 1 jar $20.900 COP, promo 2 jars $29.900 (highlighted; saves $11.900). No 3-jar option (price change 2026-10-13). Success = the visitor fills the order form and taps "Pagar al recibir". The order lands in Google Sheets, the owner confirms on WhatsApp, and the Purchase event reaches Meta (Pixel + Conversions API, deduplicated).
 
 ## Positioning
 
@@ -25,7 +25,7 @@ Single-ingredient whole quail, slowly dehydrated, with nothing added (no preserv
 ## Capabilities and Constraints
 
 - Prices in COP, formatted `$14.900`. Free shipping always. Optional priority shipping +$5.000.
-- Bundles of 1 / 2 / 3 jars; the 2- and 3-jar discount prices are **undecided** (keep configurable in `PRODUCT`).
+- Bundles: 1 jar $20.900, 2 jars $29.900 (promo). Keep configurable in `PRODUCT`. The product render image has the old price 14.900 printed on it; it needs a new render or crop.
 - Phone: 10 digits starting with 3, stored as `573XXXXXXXXX`.
 - No navigation menu and no links out of the page, except Instagram/WhatsApp/legal links in the footer.
 - Data-processing consent under Colombian Ley 1581 de 2012.

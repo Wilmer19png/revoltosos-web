@@ -23,7 +23,7 @@ a{color:#C2185B}a:hover{color:#A3124B}
       </span>
       <div style="flex: 1 1 auto; min-width: 0">
         <h1 style="margin: 0; font-family: 'Young Serif', Georgia, serif; font-weight: 400; font-size: 24px; line-height: 1.1">Pedidos</h1>
-        <div style="font-size: 13px; color: #9C9384; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">[correo del dueño]</div>
+        <div style="font-size: 13px; color: #9C9384; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">mariajosecastano81@gmail.com</div>
       </div>
       <button type="button" style="min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid #4A443C; background: transparent; color: #F5F1E8; font: inherit; font-weight: 600; cursor: pointer">Salir</button>
     </div>
@@ -124,10 +124,10 @@ class Component extends DCLogic {
     };
     const fmt = (n) => '$' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     const SAMPLE = [
-      { id: 'REV-20261013-4821', fecha: '13 oct · 9:42 p. m.', nombre: 'Laura Gómez', cel: '3001234567', dir: 'Calle 2 #5-20', barrio: 'La Sultana', ciudad: 'Manizales', depto: 'Caldas', ind: 'Casa esquinera, reja negra', qty: 2, prio: true, total: 34800, para: 'Perro mediano', estado: 'Nuevo' },
-      { id: 'REV-20261013-4790', fecha: '13 oct · 6:15 p. m.', nombre: 'Andrés Rojas', cel: '3157654321', dir: 'Cra 45 #10-32 apto 502', barrio: 'Laureles', ciudad: 'Medellín', depto: 'Antioquia', ind: 'Torre 2', qty: 1, prio: false, total: 14900, para: 'Gato', estado: 'Nuevo' },
-      { id: 'REV-20261012-4655', fecha: '12 oct · 11:03 a. m.', nombre: 'Camila Torres', cel: '3209876543', dir: 'Av. 6N #23-15', barrio: 'Granada', ciudad: 'Cali', depto: 'Valle del Cauca', ind: '', qty: 3, prio: false, total: 44700, para: 'Perro grande', estado: 'Confirmado' },
-      { id: 'REV-20261011-4502', fecha: '11 oct · 4:27 p. m.', nombre: 'Juan Pablo Díaz', cel: '3112223344', dir: 'Calle 80 #20-11', barrio: 'Chapinero', ciudad: 'Bogotá', depto: 'Bogotá D.C.', ind: 'Dejar en portería', qty: 1, prio: true, total: 19900, para: 'Perro pequeño', estado: 'Despachado' }
+      { id: 'REV-20261013-4821', fecha: '13 oct · 9:42 p. m.', nombre: 'Laura Gómez', cel: '3001234567', dir: 'Calle 2 #5-20', barrio: 'La Sultana', ciudad: 'Manizales', depto: 'Caldas', ind: 'Casa esquinera, reja negra', qty: 2, prio: true, total: 34900, para: 'Perro mediano', estado: 'Nuevo' },
+      { id: 'REV-20261013-4790', fecha: '13 oct · 6:15 p. m.', nombre: 'Andrés Rojas', cel: '3157654321', dir: 'Cra 45 #10-32 apto 502', barrio: 'Laureles', ciudad: 'Medellín', depto: 'Antioquia', ind: 'Torre 2', qty: 1, prio: false, total: 20900, para: 'Gato', estado: 'Nuevo' },
+      { id: 'REV-20261012-4655', fecha: '12 oct · 11:03 a. m.', nombre: 'Camila Torres', cel: '3209876543', dir: 'Av. 6N #23-15', barrio: 'Granada', ciudad: 'Cali', depto: 'Valle del Cauca', ind: '', qty: 2, prio: false, total: 29900, para: 'Perro grande', estado: 'Confirmado' },
+      { id: 'REV-20261011-4502', fecha: '11 oct · 4:27 p. m.', nombre: 'Juan Pablo Díaz', cel: '3112223344', dir: 'Calle 80 #20-11', barrio: 'Chapinero', ciudad: 'Bogotá', depto: 'Bogotá D.C.', ind: 'Dejar en portería', qty: 1, prio: true, total: 25900, para: 'Perro pequeño', estado: 'Despachado' }
     ];
     const all = SAMPLE.map((o) => ({ ...o, estado: this.state.estados[o.id] || o.estado }));
     const q = this.state.q.trim().toLowerCase();
