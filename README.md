@@ -1,6 +1,6 @@
 # Revoltosos · Landing de Codornices Deshidratadas
 
-Landing de venta de un solo producto (frasco de 50 g: 1 por $20.900, promo 2 por $29.900; envío gratis y pago contraentrega) y un panel privado para gestionar los pedidos.
+Landing de venta de un solo producto (frasco de 50 g: 1 por $14.900, promo 2 por $26.900; envío gratis y pago contraentrega) y un panel privado para gestionar los pedidos.
 
 - **Diseño (lienzo):** https://claude.ai/artifact/CBFnSSrgfk6AztqJxZAy6y (copia de los archivos en `diseno/lienzo/`)
 - **Contexto del negocio:** [PRODUCT.md](PRODUCT.md)
@@ -71,7 +71,7 @@ Es un sitio estático (sin build). Sirve en Netlify, Vercel, Cloudflare Pages o 
 
 | Link | Oferta (`ofertas.slug`) | Qué vende | Visible |
 |---|---|---|---|
-| `/` | `codornices-promo` | 1 frasco $20.900 · 2 por $29.900 | Pública |
+| `/` | `codornices-promo` | 1 frasco $14.900 · 2 por $26.900 | Pública |
 | `/codornices/unidad/` | `codornices-unidad` | Solo 1 frasco a $14.900 (prueba A/B) | Oculta |
 | `/cajita/` | `cajita-perros` | Cajita para perros $72.900 | Pública |
 
