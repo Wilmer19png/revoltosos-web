@@ -355,7 +355,7 @@
             </div>
             <div class="campo">
               <label for="f-ciudad">Ciudad o municipio</label>
-              <input id="f-ciudad" name="ciudad" type="text" autocomplete="address-level2" placeholder="Ej. Manizales" required maxlength="80" aria-describedby="e-ciudad">
+              <select id="f-ciudad" name="ciudad" autocomplete="address-level2" required disabled aria-describedby="e-ciudad"><option value="">Primero elige el departamento</option></select>
               <span class="error" id="e-ciudad"></span>
             </div>
           </div>
@@ -481,6 +481,6 @@
   <button type="button" id="cookies-ok">Entendido</button>
 </div>
 
-<script src="/assets/js/landing.js?v=6"></script>
+<script src="/assets/js/landing.js?v=7"></script>
 </body>
 </html>

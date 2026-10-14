@@ -138,8 +138,45 @@ const reglas = {
   direccion: (v) => v.trim().length >= 4 ? '' : 'Escribe la dirección de entrega.',
   barrio: (v) => v.trim().length >= 2 ? '' : 'Escribe el barrio.',
   departamento: (v) => v ? '' : 'Elige el departamento.',
-  ciudad: (v) => v.trim().length >= 2 ? '' : 'Escribe la ciudad o municipio.'
+  ciudad: (v) => v.trim().length >= 2 ? '' : 'Elige la ciudad o municipio.'
 };
+
+/* Ciudad: lista de municipios según el departamento (DANE · DIVIPOLA) */
+(function () {
+  const dep = $('#f-departamento');
+  const ciu = $('#f-ciudad');
+  if (!dep || !ciu || ciu.tagName !== 'SELECT') return;
+  let datos = null;
+  let cargando = null;
+  const cargar = () => cargando || (cargando = fetch('/assets/data/municipios.json?v=1')
+    .then((r) => (r.ok ? r.json() : null))
+    .then((d) => { datos = d; return d; })
+    .catch(() => null));
+  dep.addEventListener('focus', cargar, { once: true });
+  dep.addEventListener('pointerdown', cargar, { once: true });
+  dep.addEventListener('change', async () => {
+    await cargar();
+    const campo = $('[name="ciudad"]');
+    if (!datos) {
+      // Si la lista no carga (sin internet momentáneo), se deja escribir la ciudad.
+      if (campo.tagName === 'SELECT') {
+        const inp = document.createElement('input');
+        Object.assign(inp, { type: 'text', id: 'f-ciudad', name: 'ciudad', maxLength: 80, placeholder: 'Escribe tu ciudad o municipio', autocomplete: 'address-level2' });
+        inp.setAttribute('aria-describedby', 'e-ciudad');
+        campo.replaceWith(inp);
+      }
+      return;
+    }
+    const lista = datos[dep.value] || [];
+    campo.innerHTML = '';
+    campo.add(new Option(lista.length ? 'Elige tu ciudad o municipio' : 'Primero elige el departamento', ''));
+    lista.forEach((m) => campo.add(new Option(m, m)));
+    campo.disabled = !lista.length;
+    campo.value = lista.length === 1 ? lista[0] : '';
+    campo.setAttribute('aria-invalid', 'false');
+    $('#e-ciudad').textContent = '';
+  });
+})();
 function validarCampo(nombre) {
   const input = $('[name="' + nombre + '"]');
   const msg = reglas[nombre](input.value);

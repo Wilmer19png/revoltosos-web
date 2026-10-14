@@ -72,3 +72,9 @@
   for = "/opina/*"
   [headers.values]
     X-Robots-Tag = "noindex"
+
+# Lista de municipios: cambia muy poco.
+[[headers]]
+  for = "/assets/data/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
