@@ -25,7 +25,7 @@ Single-ingredient whole quail, slowly dehydrated, with nothing added (no preserv
 ## Capabilities and Constraints
 
 - Prices in COP, formatted `$20.900`. Free shipping always. Optional priority shipping +$5.000.
-- Bundles: 1 jar $14.900, 2 jars $26.900 (promo). Catalog also lists a 100 g jar at $23.100. Keep configurable in `PRODUCT`. The product render image has the old price 14.900 printed on it; it needs a new render or crop.
+- Bundles: 1 jar $14.900, 2 jars $26.900 (promo). Catalog lists only 50 g ($14.900) and 100 g ($26.900, same as 2×50 g). Keep configurable in `PRODUCT`. The product render image has the old price 14.900 printed on it; it needs a new render or crop.
 - Phone: 10 digits starting with 3, stored as `573XXXXXXXXX`.
 - No navigation menu and no links out of the page, except Instagram/WhatsApp/legal links in the footer.
 - Data-processing consent under Colombian Ley 1581 de 2012.
