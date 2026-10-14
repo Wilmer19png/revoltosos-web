@@ -97,3 +97,31 @@ Ponlas en `Recursos página/` con el código en el nombre (por ejemplo `B4-dient
 | C4 | 03 · Cajita para perros (y también el hero de la landing `/cajita/`) |
 
 Ponlas en `Recursos página/fotos/` con el código en el nombre, por ejemplo `C3-femur.jpg`.
+
+---
+
+# Fotos del empaque, "Así te llega" (E1 a E5)
+
+Cada página de producto del catálogo muestra dos fotos: **"El producto"** (C1–C5, grande) y **"Así te llega"** (E1–E5, más angosta, al lado).
+
+**Estas tienen que ser fotos reales.** Muestran tu empaque y tu etiqueta, y la IA no puede reproducirlos fielmente. El prompt de abajo es solo la guía de cómo tomarlas.
+
+**Formato:** **vertical 3:4** (por ejemplo 1200×1600), porque el espacio es angosto y alto.
+
+**Cómo tomarlas:**
+- Mismo fondo que las fotos del producto: papel artesanal hueso sobre madera oscura, luz de ventana lateral.
+- El empaque **cerrado y de frente**, con la **etiqueta Revoltosos bien legible** y centrada.
+- Un poco del producto suelto al lado (2 o 3 piezas) ayuda a relacionar las dos fotos.
+- Sin flash, sin reflejos fuertes en el plástico: inclina un poco el empaque si brilla.
+
+Guía de composición (si se la pasas a un fotógrafo):
+> fotografía de producto realista, vista frontal ligeramente elevada, [empaque] cerrado y de pie, con la etiqueta de la marca centrada y legible, sobre papel artesanal color hueso encima de madera oscura, dos o tres piezas del producto sueltas al lado, luz natural cálida lateral, fondo oscuro desenfocado, formato vertical 3:4
+
+| Código | Qué foto | Página |
+|---|---|---|
+| E1 | Patas de pollo empacadas | 04 |
+| E2 | Oreja de cerdo empacada | 05 |
+| E3 | Fémur de cerdo empacado | 07 |
+| E4 | Cajita cerrada (con la cinta, lista para regalar) | 03 |
+| E5 | Codorniz entera empacada | 06 |
+| — | Codornices 50 g | 02 · ✅ ya usa el render del frasco |
