@@ -16,6 +16,8 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 // Los precios de cada landing viven en la tabla `ofertas` (supabase/migraciones/002-ofertas.sql).
 const PRIORITARIO = 5000;
 const OFERTA_POR_DEFECTO = 'codornices-promo';
+// Una misma conexión (IP) solo puede hacer un pedido cada 72 horas (migración 005).
+const HORAS_ENTRE_PEDIDOS = 72;
 
 const DEPARTAMENTOS = new Set([
   'Amazonas', 'Antioquia', 'Arauca', 'Atlántico', 'Bogotá D.C.', 'Bolívar', 'Boyacá', 'Caldas', 'Caquetá',
@@ -169,7 +171,22 @@ Deno.serve(async (req) => {
   const { data: existente } = await supabase.from('pedidos').select('order_id, total').eq('event_id', eventId).maybeSingle();
   if (existente) return json({ ok: true, order_id: existente.order_id, total: existente.total });
 
+  const ip = (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim();
+  const ipHash = ip ? await sha256(ip) : null;
+  if (ipHash) {
+    const desde = new Date(Date.now() - HORAS_ENTRE_PEDIDOS * 3600 * 1000).toISOString();
+    const { count } = await supabase
+      .from('pedidos')
+      .select('id', { count: 'exact', head: true })
+      .eq('ip_hash', ipHash)
+      .gte('creado_en', desde);
+    if (count) {
+      return json({ ok: false, error: 'Ya hay un pedido reciente desde esta conexión' }, 429);
+    }
+  }
+
   const fila = {
+    ip_hash: ipHash,
     event_id: eventId,
     nombre, celular, direccion, barrio, ciudad, departamento,
     indicaciones: indicaciones || null,
@@ -201,7 +218,7 @@ Deno.serve(async (req) => {
     fbp: texto(b.fbp, 200),
     fbc: texto(b.fbc, 600),
     ua: req.headers.get('user-agent') ?? '',
-    ip: (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim(),
+    ip,
     url: texto(b.event_source_url, 500),
   };
   // Meta no debe frenar la respuesta al cliente si tarda o falla.
