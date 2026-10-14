@@ -33,6 +33,7 @@ create table if not exists public.pedidos (
   event_id      text not null unique,                 -- mismo id del Pixel y de Conversions API
   creado_en     timestamptz not null default now(),
   nombre        text not null check (char_length(nombre) between 3 and 120),
+  cedula        text check (cedula ~ '^[0-9]{6,10}$'), -- migración 006
   celular       text not null check (celular ~ '^573[0-9]{9}$'),
   direccion     text not null check (char_length(direccion) between 4 and 200),
   barrio        text not null check (char_length(barrio) between 2 and 120),

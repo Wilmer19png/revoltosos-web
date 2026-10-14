@@ -463,7 +463,9 @@ function tarjeta(p) {
   const quien = el('div');
   const tel = el('a', 'pedido-tel', p.celular.slice(2).replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'));
   tel.href = 'tel:+' + p.celular;
-  quien.append(el('div', 'pedido-nombre', p.nombre), tel);
+  quien.append(el('div', 'pedido-nombre', p.nombre));
+  if (p.cedula) quien.append(el('div', 'pedido-fecha', 'C.C. ' + p.cedula));
+  quien.append(tel);
 
   const dir = el('div', 'pedido-dir');
   dir.append(document.createTextNode(p.direccion + ', ' + p.barrio), el('strong', null, p.ciudad + ' · ' + p.departamento));
@@ -489,7 +491,7 @@ function tarjeta(p) {
   copiar.type = 'button';
   copiar.setAttribute('aria-label', 'Copiar datos de envío de ' + p.nombre);
   copiar.addEventListener('click', async () => {
-    const t = [p.nombre, p.celular.slice(2), p.direccion + ', ' + p.barrio, p.ciudad + ' - ' + p.departamento, p.indicaciones || '', 'Cobrar: ' + pesos(p.total)].filter(Boolean).join('\n');
+    const t = [p.nombre, p.cedula ? 'C.C. ' + p.cedula : '', p.celular.slice(2), p.direccion + ', ' + p.barrio, p.ciudad + ' - ' + p.departamento, p.indicaciones || '', 'Cobrar: ' + pesos(p.total)].filter(Boolean).join('\n');
     try { await navigator.clipboard.writeText(t); avisar('Datos copiados'); } catch (e) { avisar('No se pudo copiar'); }
   });
   acc.append(wa, copiar);

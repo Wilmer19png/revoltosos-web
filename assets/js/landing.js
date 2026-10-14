@@ -132,8 +132,14 @@ function normalizarCelular(v) {
   if (d.length === 12 && d.startsWith('57')) d = d.slice(2);
   return /^3\d{9}$/.test(d) ? '57' + d : '';
 }
+// Cédula colombiana: 6 a 10 dígitos; se quitan puntos y espacios.
+function normalizarCedula(v) {
+  const d = String(v).replace(/\D/g, '');
+  return /^\d{6,10}$/.test(d) ? d : '';
+}
 const reglas = {
   nombre: (v) => v.trim().length >= 3 && /\s/.test(v.trim()) ? '' : 'Escribe tu nombre y apellido.',
+  cedula: (v) => normalizarCedula(v) ? '' : 'Escribe tu número de cédula (solo números).',
   celular: (v) => normalizarCelular(v) ? '' : 'Escribe un celular de 10 dígitos que empiece por 3.',
   direccion: (v) => v.trim().length >= 4 ? '' : 'Escribe la dirección de entrega.',
   barrio: (v) => v.trim().length >= 2 ? '' : 'Escribe el barrio.',
@@ -237,6 +243,7 @@ $('#form-pedido').addEventListener('submit', async (e) => {
     oferta: P.oferta,
     event_id: eventId,
     nombre: form.nombre.value.trim(),
+    cedula: normalizarCedula(form.cedula.value),
     celular: normalizarCelular(form.celular.value),
     direccion: form.direccion.value.trim(),
     barrio: form.barrio.value.trim(),

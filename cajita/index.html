@@ -323,10 +323,20 @@
             </div>
           </fieldset>
 
+          <div class="form-seccion">
+            <h3>Datos para el envío</h3>
+            <p class="ayuda">La transportadora los necesita para entregarte el pedido.</p>
+          </div>
           <div class="campo">
-            <label for="f-nombre">Nombre completo</label>
-            <input id="f-nombre" name="nombre" type="text" autocomplete="name" placeholder="Como aparece en tu cédula" required maxlength="120" aria-describedby="e-nombre">
+            <label for="f-nombre">Tu nombre</label>
+            <input id="f-nombre" name="nombre" type="text" autocomplete="name" placeholder="Nombre y apellido" required maxlength="120" aria-describedby="e-nombre">
             <span class="error" id="e-nombre"></span>
+          </div>
+          <div class="campo">
+            <label for="f-cedula">Cédula</label>
+            <input id="f-cedula" name="cedula" type="text" inputmode="numeric" placeholder="1234567890" required maxlength="14" aria-describedby="a-cedula e-cedula">
+            <span class="ayuda" id="a-cedula">Solo números, sin puntos.</span>
+            <span class="error" id="e-cedula"></span>
           </div>
           <div class="campo">
             <label for="f-celular">Celular (WhatsApp)</label>
