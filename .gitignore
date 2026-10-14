@@ -17,3 +17,6 @@ dist/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Fotos originales pesadas (las optimizadas están en assets/img/productos)
+Recursos página/Fotos/
