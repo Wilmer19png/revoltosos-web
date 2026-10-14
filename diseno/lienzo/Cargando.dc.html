@@ -24,32 +24,32 @@ body{margin:0}
 </helmet>
 <div style="width: 390px; height: 844px; background: #FFFFFF; color: #2A231D; font-family: 'Figtree', system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px">
 
-  <svg aria-hidden="true" width="230" height="230" viewBox="0 0 240 240" fill="none">
+  <svg aria-hidden="true" width="150" height="150" viewBox="0 0 240 240" fill="none">
     <defs>
       <!-- Trazo de tinta irregular: un "temblor" distinto por cuadro -->
-      <filter id="ink1" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="2" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="5" result="d"></feDisplacementMap><feTurbulence type="fractalNoise" baseFrequency="0.85" seed="11" result="g"></feTurbulence><feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -5 3.4" result="m"></feColorMatrix><feComposite in="d" in2="m" operator="in"></feComposite></filter>
-      <filter id="ink2" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="5" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="5" result="d"></feDisplacementMap><feTurbulence type="fractalNoise" baseFrequency="0.85" seed="23" result="g"></feTurbulence><feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -5 3.4" result="m"></feColorMatrix><feComposite in="d" in2="m" operator="in"></feComposite></filter>
-      <filter id="ink3" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="9" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="5" result="d"></feDisplacementMap><feTurbulence type="fractalNoise" baseFrequency="0.85" seed="37" result="g"></feTurbulence><feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -5 3.4" result="m"></feColorMatrix><feComposite in="d" in2="m" operator="in"></feComposite></filter>
-      <filter id="ink4" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="14" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="5" result="d"></feDisplacementMap><feTurbulence type="fractalNoise" baseFrequency="0.85" seed="51" result="g"></feTurbulence><feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -5 3.4" result="m"></feColorMatrix><feComposite in="d" in2="m" operator="in"></feComposite></filter>
+      <filter id="ink1" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="2" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="3.5" result="d"></feDisplacementMap><feTurbulence type="fractalNoise" baseFrequency="0.85" seed="11" result="g"></feTurbulence><feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -4 3.2" result="m"></feColorMatrix><feComposite in="d" in2="m" operator="in"></feComposite></filter>
+      <filter id="ink2" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="5" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="3.5" result="d"></feDisplacementMap><feTurbulence type="fractalNoise" baseFrequency="0.85" seed="23" result="g"></feTurbulence><feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -4 3.2" result="m"></feColorMatrix><feComposite in="d" in2="m" operator="in"></feComposite></filter>
+      <filter id="ink3" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="9" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="3.5" result="d"></feDisplacementMap><feTurbulence type="fractalNoise" baseFrequency="0.85" seed="37" result="g"></feTurbulence><feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -4 3.2" result="m"></feColorMatrix><feComposite in="d" in2="m" operator="in"></feComposite></filter>
+      <filter id="ink4" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="14" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="3.5" result="d"></feDisplacementMap><feTurbulence type="fractalNoise" baseFrequency="0.85" seed="51" result="g"></feTurbulence><feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -4 3.2" result="m"></feColorMatrix><feComposite in="d" in2="m" operator="in"></feComposite></filter>
 
       <!-- Frasco a línea gruesa -->
-      <g id="jar" stroke="#1E1915" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+      <g id="jar" stroke="#1E1915" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M66 100 C 64 92, 70 88, 78 88 L 162 88 C 170 88, 176 92, 174 100 L 176 196 C 176 210, 166 216, 152 216 L 88 216 C 74 216, 64 210, 64 196 Z" fill="#FFFFFF"></path>
         <path d="M78 88 L 80 76 L 160 76 L 162 88" fill="#FFFFFF"></path>
         <rect x="82" y="126" width="62" height="48" rx="5" fill="#F5F1E8"></rect>
-        <path d="M74 112 L 74 150" stroke-width="5"></path>
-        <path d="M94 192 C 104 186, 112 196, 122 190 S 140 194, 150 188" stroke-width="5"></path>
+        <path d="M74 112 L 74 150" stroke-width="3.5"></path>
+        <path d="M94 192 C 104 186, 112 196, 122 190 S 140 194, 150 188" stroke-width="3.5"></path>
       </g>
       <!-- Snack (patita de codorniz) -->
-      <g id="snack" stroke="#1E1915" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+      <g id="snack" stroke="#1E1915" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M-14 -4 C -16 -14, -4 -18, 4 -12 C 12 -6, 10 6, 2 8 C -8 10, -12 4, -14 -4 Z" fill="#C98B52"></path>
         <path d="M4 6 L 14 16"></path>
-        <path d="M12 20 L 15 16 L 19 18" stroke-width="4"></path>
+        <path d="M12 20 L 15 16 L 19 18" stroke-width="3"></path>
       </g>
       <!-- Tapa -->
-      <g id="lid" stroke="#1E1915" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+      <g id="lid" stroke="#1E1915" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
         <rect x="-46" y="-12" width="92" height="24" rx="6" fill="#F2C230"></rect>
-        <path d="M-30 -4 L -30 4 M -14 -4 L -14 4 M 2 -4 L 2 4 M 18 -4 L 18 4 M 32 -4 L 32 4" stroke-width="4"></path>
+        <path d="M-30 -4 L -30 4 M -14 -4 L -14 4 M 2 -4 L 2 4 M 18 -4 L 18 4 M 32 -4 L 32 4" stroke-width="3"></path>
       </g>
     </defs>
 

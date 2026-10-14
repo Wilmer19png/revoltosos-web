@@ -295,6 +295,12 @@ a{color:#4F5D3A}a:hover{color:#2A231D}
                 <sc-if value="{{ b.best }}" hint-placeholder-val="{{ false }}">
                   <span style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); white-space: nowrap; background: #C2185B; color: #FFFFFF; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.08em">PROMO</span>
                 </sc-if>
+                <span aria-hidden="true" style="display: flex; align-items: flex-end; justify-content: center; gap: 2px; height: 48px; margin-bottom: 4px">
+                  <svg width="34" height="44" viewBox="0 0 34 44" fill="none" stroke="#2A231D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="22" height="7" rx="2" fill="#F2C230"></rect><path d="M9 9.5v3M25 9.5v3"></path><path d="M5 16c0-2 1.5-3.5 3.5-3.5h17c2 0 3.5 1.5 3.5 3.5v21.5c0 2.5-2 4-4.5 4h-15C7 41.5 5 40 5 37.5z" fill="#FFFFFF"></path><rect x="8.5" y="21" width="17" height="11" rx="1.5" fill="#12110F" stroke="none"></rect><path d="M10 36.5c3-1.5 5 1 7.5-.5s4.5 1 6.5-.5" stroke="#8B4A1F"></path></svg>
+                  <sc-if value="{{ b.best }}" hint-placeholder-val="{{ false }}">
+                    <svg width="34" height="44" viewBox="0 0 34 44" fill="none" stroke="#2A231D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: -6px; transform: rotate(8deg)"><rect x="6" y="2.5" width="22" height="7" rx="2" fill="#F2C230"></rect><path d="M9 9.5v3M25 9.5v3"></path><path d="M5 16c0-2 1.5-3.5 3.5-3.5h17c2 0 3.5 1.5 3.5 3.5v21.5c0 2.5-2 4-4.5 4h-15C7 41.5 5 40 5 37.5z" fill="#FFFFFF"></path><rect x="8.5" y="21" width="17" height="11" rx="1.5" fill="#12110F" stroke="none"></rect><path d="M10 36.5c3-1.5 5 1 7.5-.5s4.5 1 6.5-.5" stroke="#8B4A1F"></path></svg>
+                  </sc-if>
+                </span>
                 <span style="font-weight: 800; font-size: 16px">{{ b.label }}</span>
                 <span style="font-family: 'Young Serif', Georgia, serif; font-size: 24px; font-variant-numeric: tabular-nums">{{ b.priceText }}</span>
                 <span style="{{ b.noteStyle }}">{{ b.note }}</span>
