@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Pantalla de carga</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=Figtree:wght@400;600;700&amp;display=swap">
+<style>
+body{margin:0}
+@keyframes rvJar{0%{transform:rotate(-24deg)}25%{transform:rotate(-30deg)}50%{transform:rotate(-24deg)}75%{transform:rotate(-18deg)}}
+@keyframes rvLid{0%{transform:translate(0,0) rotate(0)}25%{transform:translate(8px,-14px) rotate(14deg)}50%{transform:translate(4px,-8px) rotate(8deg)}75%{transform:translate(10px,-18px) rotate(18deg)}}
+@keyframes rvS1{0%{transform:translate(0,0) rotate(0)}25%{transform:translate(26px,-58px) rotate(90deg)}50%{transform:translate(54px,-92px) rotate(180deg)}75%{transform:translate(84px,-70px) rotate(270deg)}}
+@keyframes rvS2{0%{transform:translate(0,0) rotate(0)}25%{transform:translate(-6px,-70px) rotate(-90deg)}50%{transform:translate(-14px,-120px) rotate(-180deg)}75%{transform:translate(-26px,-96px) rotate(-270deg)}}
+@keyframes rvS3{0%{transform:translate(0,0) rotate(0)}25%{transform:translate(52px,-26px) rotate(90deg)}50%{transform:translate(98px,-34px) rotate(180deg)}75%{transform:translate(132px,-6px) rotate(270deg)}}
+@keyframes rvS4{0%{transform:translate(0,0) rotate(0)}25%{transform:translate(34px,-96px) rotate(-90deg)}50%{transform:translate(60px,-150px) rotate(-180deg)}75%{transform:translate(70px,-128px) rotate(-270deg)}}
+@keyframes rvDots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+.rv-jar{animation:rvJar .9s steps(1,end) infinite;transform-origin:50% 90%}
+.rv-lid{animation:rvLid .9s steps(1,end) infinite}
+.rv-s1{animation:rvS1 .9s steps(1,end) infinite}
+.rv-s2{animation:rvS2 .9s steps(1,end) infinite -.225s}
+.rv-s3{animation:rvS3 .9s steps(1,end) infinite -.45s}
+.rv-s4{animation:rvS4 .9s steps(1,end) infinite -.675s}
+.rv-dots::after{content:'';animation:rvDots 1.2s steps(1,end) infinite}
+@media (prefers-reduced-motion: reduce){.rv-jar,.rv-lid,.rv-s1,.rv-s2,.rv-s3,.rv-s4,.rv-dots::after{animation:none}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; background: #FFFFFF; color: #2A231D; font-family: 'Figtree', system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px">
+
+  <div aria-hidden="true" style="position: relative; width: 300px; height: 300px">
+    <!-- Frasco inclinado -->
+    <div class="rv-jar" style="position: absolute; left: 40px; top: 96px; width: 150px; height: 180px">
+      <svg width="150" height="180" viewBox="0 0 150 180" fill="none">
+        <rect x="14" y="40" width="122" height="134" rx="24" fill="#F5F1E8" stroke="#2A231D" stroke-width="3"></rect>
+        <rect x="28" y="24" width="94" height="22" rx="6" fill="#F5F1E8" stroke="#2A231D" stroke-width="3"></rect>
+        <path d="M24 136c14-8 22 6 36-2s20 4 34-4 22 6 34 0v24c0 8-6 14-14 14H38c-8 0-14-6-14-14z" fill="#8B4A1F"></path>
+        <rect x="14" y="78" width="122" height="46" fill="#12110F"></rect>
+        <circle cx="75" cy="101" r="15" fill="#F5F1E8"></circle>
+        <text x="75" y="107" text-anchor="middle" font-family="Young Serif, Georgia, serif" font-size="17" fill="#2A231D">R</text>
+        <path d="M30 56v16" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" opacity="0.9"></path>
+      </svg>
+      <!-- Tapa amarilla -->
+      <div class="rv-lid" style="position: absolute; left: 24px; top: -6px; width: 102px; height: 26px">
+        <svg width="102" height="26" viewBox="0 0 102 26"><rect x="1.5" y="1.5" width="99" height="23" rx="7" fill="#F2C230" stroke="#2A231D" stroke-width="3"></rect><path d="M14 6v14M26 6v14M38 6v14M50 6v14M62 6v14M74 6v14M86 6v14" stroke="#C99A12" stroke-width="2"></path></svg>
+      </div>
+    </div>
+
+    <!-- Snacks saltando: 4 cuadros cada uno -->
+    <sc-for list="{{ snacks }}" as="s" hint-placeholder-count="4">
+      <div class="{{ s.cls }}" style="position: absolute; left: 150px; top: 108px; width: 40px; height: 40px">
+        <svg width="40" height="40" viewBox="0 0 40 40">
+          <ellipse cx="16" cy="16" rx="12" ry="9" fill="#8B4A1F" transform="rotate(-35 16 16)"></ellipse>
+          <ellipse cx="13" cy="13" rx="5" ry="2.6" fill="#B5703A" transform="rotate(-35 13 13)"></ellipse>
+          <path d="M24 24l9 9" stroke="#E9DCC3" stroke-width="4" stroke-linecap="round"></path>
+          <circle cx="34.5" cy="34.5" r="3.2" fill="#E9DCC3"></circle>
+        </svg>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; padding: 0 24px">
+    <p role="status" style="margin: 0; font-family: 'Young Serif', Georgia, serif; font-size: 25px; line-height: 1.2">Preparando tu snack ideal<span class="rv-dots"></span></p>
+    <div aria-hidden="true" style="width: 180px; height: 6px; border-radius: 999px; background: #F3D3E0; overflow: hidden">
+      <div style="width: 62%; height: 100%; border-radius: 999px; background: #C2185B"></div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      snacks: [{ cls: 'rv-s1' }, { cls: 'rv-s2' }, { cls: 'rv-s3' }, { cls: 'rv-s4' }]
+    };
+  }
+}
+</script>
+</body>
+</html>

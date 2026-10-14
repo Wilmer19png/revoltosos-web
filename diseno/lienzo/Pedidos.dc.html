@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Panel de pedidos</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=Figtree:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#C2185B}a:hover{color:#A3124B}
+</style>
+</helmet>
+<div style="background: #F5F1E8; color: #2A231D; font-family: 'Figtree', system-ui, sans-serif; font-size: 16px; line-height: 1.5; min-height: 100%">
+
+  <header style="background: #12110F; color: #F5F1E8; padding: 12px 16px">
+    <div style="max-width: 1240px; margin: 0 auto; display: flex; align-items: center; gap: 12px">
+      <span style="width: 44px; height: 44px; border-radius: 50%; background: #F5F1E8; display: flex; align-items: center; justify-content: center; flex: none">
+        <img src="/_blob/00331c2fff049e916725932383519400" alt="Revoltosos" style="width: 36px; height: 36px; object-fit: contain; mix-blend-mode: multiply">
+      </span>
+      <div style="flex: 1 1 auto; min-width: 0">
+        <h1 style="margin: 0; font-family: 'Young Serif', Georgia, serif; font-weight: 400; font-size: 24px; line-height: 1.1">Pedidos</h1>
+        <div style="font-size: 13px; color: #9C9384; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">[correo del dueño]</div>
+      </div>
+      <button type="button" style="min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid #4A443C; background: transparent; color: #F5F1E8; font: inherit; font-weight: 600; cursor: pointer">Salir</button>
+    </div>
+  </header>
+
+  <div style="max-width: 1240px; margin: 0 auto; padding: 16px 16px 48px; display: flex; flex-direction: column; gap: 14px">
+
+    <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px">
+      <sc-for list="{{ filters }}" as="f" hint-placeholder-count="7">
+        <button type="button" aria-pressed="{{ f.pressed }}" onClick="{{ f.pick }}" style="{{ f.style }}">{{ f.label }} <span style="opacity: 0.7; font-variant-numeric: tabular-nums">{{ f.count }}</span></button>
+      </sc-for>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <label for="buscar" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Buscar pedido</label>
+      <input id="buscar" type="search" placeholder="Buscar por nombre, celular o número de pedido" onInput="{{ onSearch }}" style="min-height: 48px; padding: 0 14px; border: 1.5px solid #CFC5B3; border-radius: 12px; font: inherit; background: #FFFFFF; color: #2A231D">
+    </div>
+
+    <p style="margin: 0; font-size: 13px; color: #6B6157">Datos de ejemplo para el diseño.</p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr)); gap: 14px">
+      <sc-for list="{{ orders }}" as="o" hint-placeholder-count="4">
+        <article style="background: #FFFFFF; border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 12px 30px -24px rgba(42,35,29,0.5)">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px">
+            <div>
+              <div style="font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: 0.01em">{{ o.id }}</div>
+              <div style="font-size: 13px; color: #6B6157">{{ o.fecha }}</div>
+            </div>
+            <label style="position: relative">
+              <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Estado del pedido</span>
+              <select value="{{ o.estado }}" onChange="{{ o.setEstado }}" style="{{ o.estadoStyle }}">
+                <sc-for list="{{ estados }}" as="e" hint-placeholder-count="6">
+                  <option value="{{ e }}">{{ e }}</option>
+                </sc-for>
+              </select>
+            </label>
+          </div>
+
+          <div>
+            <div style="font-size: 19px; font-weight: 700">{{ o.nombre }}</div>
+            <a href="{{ o.tel }}" style="font-weight: 600; font-variant-numeric: tabular-nums">{{ o.celText }}</a>
+          </div>
+
+          <div style="background: #F5F1E8; border-radius: 12px; padding: 12px 14px; font-size: 15px">
+            <div>{{ o.dir }}, {{ o.barrio }}</div>
+            <div style="font-weight: 700">{{ o.ciudad }} · {{ o.depto }}</div>
+            <sc-if value="{{ o.hasInd }}" hint-placeholder-val="{{ true }}">
+              <div style="color: #6B6157">{{ o.ind }}</div>
+            </sc-if>
+          </div>
+
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 15px">
+            <span style="font-weight: 600">{{ o.qty }} × Codornices 50 g</span>
+            <sc-if value="{{ o.prio }}" hint-placeholder-val="{{ false }}">
+              <span style="padding: 2px 10px; border-radius: 999px; background: #F6ECD6; color: #6E5110; font-size: 13px; font-weight: 800">Prioritario</span>
+            </sc-if>
+            <span style="color: #6B6157">· {{ o.para }}</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: baseline; border-top: 1.5px dashed #D6CCBA; padding-top: 10px">
+            <span style="font-weight: 700">Cobrar al entregar</span>
+            <span style="font-family: 'Young Serif', Georgia, serif; font-size: 24px; font-variant-numeric: tabular-nums">{{ o.totalText }}</span>
+          </div>
+
+          <a href="{{ o.wa }}" target="_blank" rel="noopener" style="display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; border-radius: 14px; background: #C2185B; color: #FFFFFF; font-weight: 800; text-decoration: none">
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"></path></svg>
+            Confirmar por WhatsApp
+          </a>
+        </article>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+      <p style="margin: 24px 0; text-align: center; color: #6B6157">No hay pedidos con ese filtro.</p>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":2900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      filter: 'Todos',
+      q: '',
+      estados: {}
+    };
+  }
+  renderVals() {
+    const ESTADOS = ['Nuevo', 'Confirmado', 'Despachado', 'Entregado', 'Devuelto', 'Cancelado'];
+    const COLORS = {
+      Nuevo: ['#FBEAF1', '#A3124B'],
+      Confirmado: ['#E6EADB', '#3E4A2D'],
+      Despachado: ['#F6ECD6', '#6E5110'],
+      Entregado: ['#DCE9DF', '#1F5E3A'],
+      Devuelto: ['#EDE6D8', '#5A5047'],
+      Cancelado: ['#F3E1DC', '#8A2E1E']
+    };
+    const fmt = (n) => '$' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    const SAMPLE = [
+      { id: 'REV-20261013-4821', fecha: '13 oct · 9:42 p. m.', nombre: 'Laura Gómez', cel: '3001234567', dir: 'Calle 2 #5-20', barrio: 'La Sultana', ciudad: 'Manizales', depto: 'Caldas', ind: 'Casa esquinera, reja negra', qty: 2, prio: true, total: 34800, para: 'Perro mediano', estado: 'Nuevo' },
+      { id: 'REV-20261013-4790', fecha: '13 oct · 6:15 p. m.', nombre: 'Andrés Rojas', cel: '3157654321', dir: 'Cra 45 #10-32 apto 502', barrio: 'Laureles', ciudad: 'Medellín', depto: 'Antioquia', ind: 'Torre 2', qty: 1, prio: false, total: 14900, para: 'Gato', estado: 'Nuevo' },
+      { id: 'REV-20261012-4655', fecha: '12 oct · 11:03 a. m.', nombre: 'Camila Torres', cel: '3209876543', dir: 'Av. 6N #23-15', barrio: 'Granada', ciudad: 'Cali', depto: 'Valle del Cauca', ind: '', qty: 3, prio: false, total: 44700, para: 'Perro grande', estado: 'Confirmado' },
+      { id: 'REV-20261011-4502', fecha: '11 oct · 4:27 p. m.', nombre: 'Juan Pablo Díaz', cel: '3112223344', dir: 'Calle 80 #20-11', barrio: 'Chapinero', ciudad: 'Bogotá', depto: 'Bogotá D.C.', ind: 'Dejar en portería', qty: 1, prio: true, total: 19900, para: 'Perro pequeño', estado: 'Despachado' }
+    ];
+    const all = SAMPLE.map((o) => ({ ...o, estado: this.state.estados[o.id] || o.estado }));
+    const q = this.state.q.trim().toLowerCase();
+    const visible = all.filter((o) =>
+      (this.state.filter === 'Todos' || o.estado === this.state.filter) &&
+      (!q || (o.nombre + ' ' + o.cel + ' ' + o.id).toLowerCase().includes(q))
+    );
+
+    const waMsg = (o) => [
+      '¡Hola ' + o.nombre.split(' ')[0] + '! 🐾 Somos Revoltosos.',
+      'Recibimos tu pedido #' + o.id + ':',
+      '• ' + o.qty + ' x Snacks de Codorniz Deshidratada 50 g',
+      '• Envío: GRATIS' + (o.prio ? ' + Prioritario $5.000' : ''),
+      '• Total a pagar al recibir: ' + fmt(o.total),
+      '📍 ' + o.dir + ', ' + o.barrio + ', ' + o.ciudad + ' - ' + o.depto,
+      o.ind,
+      '¿Nos confirmas que los datos están correctos para despacharlo? ✅'
+    ].filter(Boolean).join('\n');
+
+    const chip = 'flex: none; min-height: 40px; padding: 0 14px; border-radius: 999px; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; ';
+    const filters = ['Todos'].concat(ESTADOS).map((label) => {
+      const on = this.state.filter === label;
+      return {
+        label,
+        count: label === 'Todos' ? all.length : all.filter((o) => o.estado === label).length,
+        pressed: on ? 'true' : 'false',
+        style: chip + (on ? 'background: #12110F; color: #F5F1E8; border: 1.5px solid #12110F' : 'background: #FFFFFF; color: #2A231D; border: 1.5px solid #D6CCBA'),
+        pick: () => this.setState({ filter: label })
+      };
+    });
+
+    const orders = visible.map((o) => {
+      const c = COLORS[o.estado];
+      return {
+        ...o,
+        celText: o.cel.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'),
+        tel: 'tel:+57' + o.cel,
+        hasInd: !!o.ind,
+        totalText: fmt(o.total),
+        wa: 'https://wa.me/57' + o.cel + '?text=' + encodeURIComponent(waMsg(o)),
+        estadoStyle: 'min-height: 40px; padding: 0 12px; border-radius: 999px; border: 0; font: inherit; font-size: 14px; font-weight: 800; cursor: pointer; background: ' + c[0] + '; color: ' + c[1],
+        setEstado: (e) => this.setState({ estados: { ...this.state.estados, [o.id]: e.target.value } })
+      };
+    });
+
+    return {
+      filters,
+      orders,
+      estados: ESTADOS,
+      empty: orders.length === 0,
+      onSearch: (e) => this.setState({ q: e.target.value })
+    };
+  }
+}
+</script>
+</body>
+</html>

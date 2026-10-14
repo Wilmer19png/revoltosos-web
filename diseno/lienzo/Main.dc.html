@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Revoltosos · Snacks de Codorniz</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=Figtree:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#4F5D3A}a:hover{color:#2A231D}
+@keyframes rvMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion: reduce){.rv-marquee{animation:none!important}}
+</style>
+</helmet>
+<div style="background: #F5F1E8; color: #2A231D; font-family: 'Figtree', system-ui, sans-serif; font-size: 17px; line-height: 1.55; min-width: 0; overflow-x: hidden">
+
+  <!-- 1. Barra superior: texto que se desliza -->
+  <div style="background: #C2185B; color: #FFFFFF; overflow: hidden; white-space: nowrap; font-size: 14px; font-weight: 700; letter-spacing: 0.02em">
+    <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Envío gratis a toda Colombia. Pagas al recibir. 100 % natural. Hecho en Colombia.</span>
+    <div class="rv-marquee" aria-hidden="true" style="display: flex; width: max-content; animation: rvMarquee 28s linear infinite">
+      <sc-for list="{{ ticker }}" as="t" hint-placeholder-count="16">
+        <span style="display: inline-flex; align-items: center; gap: 16px; padding: 11px 16px 11px 0">{{ t }}<svg width="10" height="10" viewBox="0 0 10 10" fill="#FFFFFF"><path d="M5 0l1.2 3.8L10 5 6.2 6.2 5 10 3.8 6.2 0 5l3.8-1.2z"></path></svg></span>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- 2. Hero claro -->
+  <section style="background: #FFFFFF; color: #2A231D; padding: 16px 16px clamp(56px, 8vw, 104px)">
+    <header style="display: flex; justify-content: center; padding-bottom: 14px">
+      <img src="/_blob/00331c2fff049e916725932383519400" alt="Revoltosos — proteína 100 % natural" style="width: 76px; height: 76px; object-fit: contain">
+    </header>
+    <div style="max-width: 1180px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: clamp(24px, 4vw, 64px)">
+
+      <div style="flex: 1 1 340px; min-width: 0">
+        <div style="background: #FFFFFF; border-radius: 20px; overflow: hidden; border: 1px solid #EDE6D8; box-shadow: 0 24px 50px -32px rgba(42,35,29,0.45); aspect-ratio: 1 / 1">
+          <img src="/_blob/2b2b905253e0408d2eea1e59551c58d1" alt="Frasco de codornices deshidratadas Revoltosos de 50 g abierto, con codornices cayendo" style="width: 100%; height: 100%; object-fit: cover; object-position: 30% 50%; display: block">
+        </div>
+      </div>
+
+      <div style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+        <h1 style="margin: 0; font-family: 'Young Serif', Georgia, serif; font-weight: 400; font-size: clamp(44px, 6.2vw, 80px); line-height: 1; letter-spacing: -0.02em; text-wrap: balance; color: #2A231D">Codornices deshidratadas</h1>
+        <p style="margin: 0; font-size: clamp(19px, 1.8vw, 23px); font-weight: 700; color: #4F5D3A">El premio que tu perro va a pedir todos los días.</p>
+        <p style="margin: 0; font-size: clamp(17px, 1.5vw, 19px); color: #6B6157; max-width: 34em">Codorniz 100 % natural, deshidratada lentamente. Sin conservantes, sin sal, sin colorantes. Solo codorniz.</p>
+
+        <!-- Guía de envío: el precio como etiqueta de despacho -->
+        <div style="background: #F5F1E8; color: #2A231D; border: 1.5px solid #2A231D; border-radius: 14px; padding: 16px 18px 14px; margin-top: 4px">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px">
+            <span style="font-weight: 600">Frasco de 50 g</span>
+            <span style="font-family: 'Young Serif', Georgia, serif; font-size: 36px; line-height: 1; font-variant-numeric: tabular-nums">$14.900</span>
+          </div>
+          <div style="font-size: 14px; color: #6B6157; margin-top: 2px">Aprox. 30 unidades por frasco</div>
+          <div aria-hidden="true" style="border-top: 1.5px dashed #B9AD98; margin: 12px -18px"></div>
+          <div style="display: flex; align-items: center; gap: 14px">
+            <div style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 4px; font-size: 15px">
+              <span>Envío: <s style="color: #8A7F73">$12.000</s> <strong style="color: #4F5D3A; font-weight: 800">GRATIS</strong></span>
+              <span>Pagas: <strong style="font-weight: 800">al recibir en tu casa</strong></span>
+            </div>
+            <div aria-hidden="true" style="flex: none; width: 68px; height: 68px; border-radius: 50%; background: #D9A441; color: #2A231D; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 10px; font-weight: 800; line-height: 1.1; letter-spacing: 0.04em; transform: rotate(-8deg)">PAGO<br>CONTRA<br>ENTREGA</div>
+          </div>
+        </div>
+
+        <a href="#pedido" style="display: flex; align-items: center; justify-content: center; min-height: 58px; padding: 0 24px; border-radius: 14px; background: #C2185B; color: #FFFFFF; font-weight: 800; font-size: 18px; text-decoration: none; box-shadow: 0 12px 26px -12px rgba(194,24,91,0.9)">Pedir ahora — Pagar al recibir</a>
+
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; font-size: 14px; font-weight: 600; color: #4F5D3A">
+          <span style="display: inline-flex; align-items: center; gap: 6px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v9H3z"></path><path d="M14 9h4l3 3v3h-7"></path><circle cx="7" cy="17.5" r="1.8"></circle><circle cx="17" cy="17.5" r="1.8"></circle></svg>Envío gratis</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"></rect><circle cx="12" cy="12" r="2.6"></circle></svg>Contraentrega</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14z"></path><path d="M5 19l8-8"></path></svg>100 % natural</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Galería -->
+  <section style="padding: clamp(48px, 6vw, 88px) 0 clamp(40px, 5vw, 72px)" aria-label="Fotos del producto">
+    <div style="max-width: 1180px; margin: 0 auto; padding: 0 16px">
+      <h2 style="margin: 0 0 18px; font-family: 'Young Serif', Georgia, serif; font-weight: 400; font-size: clamp(28px, 3.4vw, 40px); line-height: 1.1">Así llega a tu casa</h2>
+    </div>
+    <div style="max-width: 1180px; margin: 0 auto; display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 0 16px 8px">
+      <figure style="margin: 0; flex: 0 0 clamp(250px, 72%, 280px); scroll-snap-align: start; aspect-ratio: 4 / 5; border-radius: 16px; overflow: hidden; background: #FFFFFF">
+        <img src="/_blob/2b2b905253e0408d2eea1e59551c58d1" alt="Frasco de 50 g con tapa amarilla" style="width: 100%; height: 100%; object-fit: cover; object-position: 28% 60%; display: block">
+      </figure>
+      <sc-for list="{{ gallery }}" as="g" hint-placeholder-count="3">
+        <figure style="margin: 0; flex: 0 0 clamp(250px, 72%, 280px); scroll-snap-align: start; aspect-ratio: 4 / 5; border-radius: 16px; background: #E3DBCB; border: 1.5px dashed #A99C86; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: #6B6157; text-align: center; padding: 20px; box-sizing: border-box">
+          <svg aria-hidden="true" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>
+          <figcaption style="font-size: 14px; font-weight: 600">{{ g.label }}</figcaption>
+        </figure>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- 3b. Anatomía del snack -->
+  <section style="padding: clamp(24px, 4vw, 48px) 16px clamp(56px, 7vw, 104px)">
+    <div style="max-width: 1180px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: clamp(28px, 5vw, 80px)">
+      <div style="flex: 1 1 400px; min-width: 0">
+        <div style="position: relative; aspect-ratio: 1 / 1; border-radius: 20px; background: #E3DBCB; border: 1.5px dashed #A99C86; display: flex; align-items: center; justify-content: center; text-align: center; padding: 48px; box-sizing: border-box; color: #6B6157">
+          <span style="font-size: 14px; font-weight: 600; max-width: 18em">[Foto real · A1] Una sola codorniz deshidratada sobre fondo hueso, vista cenital</span>
+          <sc-for list="{{ anatomy }}" as="m" hint-placeholder-count="4">
+            <span aria-hidden="true" style="{{ m.dot }}">{{ m.n }}</span>
+          </sc-for>
+        </div>
+      </div>
+      <div style="flex: 1 1 360px; min-width: 0">
+        <h2 style="margin: 0 0 8px; font-family: 'Young Serif', Georgia, serif; font-weight: 400; font-size: clamp(30px, 4vw, 48px); line-height: 1.08">Anatomía del snack</h2>
+        <p style="margin: 0 0 22px; color: #6B6157; max-width: 32em">Así luce una codorniz Revoltosos de cerca. Lo que ves es todo lo que tiene.</p>
+        <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column">
+          <sc-for list="{{ anatomy }}" as="m" hint-placeholder-count="4">
+            <li style="display: flex; gap: 14px; padding: 14px 0; border-top: 1px solid #D6CCBA">
+              <span style="flex: none; width: 30px; height: 30px; border-radius: 50%; background: #C2185B; color: #FFFFFF; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center">{{ m.n }}</span>
+              <div><strong style="display: block">{{ m.title }}</strong><span style="color: #6B6157">{{ m.text }}</span></div>
+            </li>
+          </sc-for>
+        </ol>
+        <a href="#pedido" style="display: flex; align-items: center; justify-content: center; max-width: 420px; min-height: 56px; margin-top: 22px; border-radius: 14px; background: #C2185B; color: #FFFFFF; font-weight: 800; font-size: 17px; text-decoration: none; box-shadow: 0 12px 26px -12px rgba(194,24,91,0.9)">Pedir ahora — Pagar al recibir</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Videos -->
+  <section style="background: #EDE6D8; padding: clamp(56px, 7vw, 96px) 0">
+    <div style="max-width: 1180px; margin: 0 auto; padding: 0 16px">
+      <h2 style="margin: 0 0 6px; font-family: 'Young Serif', Georgia, serif; font-weight: 400; font-size: clamp(30px, 4vw, 48px); line-height: 1.08">Míralos tú mismo</h2>
+      <p style="margin: 0 0 22px; color: #6B6157">Perritos de nuestros clientes probando la codorniz por primera vez.</p>
+    </div>
+    <div style="max-width: 1180px; margin: 0 auto; display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 0 16px 8px">
+      <sc-for list="{{ videos }}" as="v" hint-placeholder-count="4">
+        <div style="flex: 0 0 clamp(200px, 58%, 270px); scroll-snap-align: start; aspect-ratio: 9 / 16; border-radius: 18px; background: #2A231D; color: #D8CFBF; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 18px; box-sizing: border-box">
+          <span style="width: 56px; height: 56px; border-radius: 50%; background: rgba(245,241,232,0.14); display: flex; align-items: center; justify-content: center">
+            <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="#F5F1E8"><path d="M8 5l11 7-11 7z"></path></svg>
+          </span>
+          <span style="font-size: 14px; font-weight: 600">{{ v.label }}</span>
+          <span style="position: absolute; left: 12px; bottom: 12px; font-size: 12px; color: #B9AD98">vertical · sin sonido · en bucle</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="max-width: 1180px; margin: 0 auto; padding: 18px 16px 0">
+      <a href="#pedido" style="display: flex; align-items: center; justify-content: center; max-width: 420px; min-height: 56px; border-radius: 14px; background: #C2185B; color: #FFFFFF; font-weight: 800; font-size: 17px; text-decoration: none; box-shadow: 0 12px 26px -12px rgba(194,24,91,0.9)">Pedir ahora — Pagar al recibir</a>
+    </div>
+  </section>
+
+  <!-- 5. Beneficios en negro -->
+  <section style="background: #12110F; color: #F5F1E8; padding: clamp(64px, 8vw, 112px) 16px">
+    <div style="max-width: 1180px; margin: 0 auto">
+      <h2 style="margin: 0 0 8px; font-family: 'Young Serif', Georgia, serif; font-weight: 400; font-size: clamp(32px, 4.4vw, 54px); line-height: 1.06; max-width: 15em; text-wrap: balance">Un solo ingrediente. Todo lo que necesita.</h2>
+      <p style="margin: 0 0 clamp(28px, 4vw, 48px); color: #CFC8BA; max-width: 36em">Codorniz entera, con carne y hueso, deshidratada despacio para que conserve lo bueno.</p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); column-gap: 40px">
+
+        <div style="display: flex; gap: 16px; padding: 18px 0; border-top: 1px solid rgba(245,241,232,0.18)">
+          <svg aria-hidden="true" style="flex: none; color: #D9A441" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 3.5a5 5 0 0 1 0 7.1l-2.8 2.8-4.1-4.1 2.8-2.8a5 5 0 0 1 4.1-3z"></path><path d="M8.6 9.3L5 12.9a1.6 1.6 0 1 0 2.3 2.3 1.6 1.6 0 1 0 2.3 2.3l3.6-3.6"></path></svg>
+          <div><h3 style="margin: 0 0 2px; font-size: 18px; font-weight: 700">Proteína de verdad</h3><p style="margin: 0; color: #CFC8BA">Un solo ingrediente: codorniz entera. Carne magra con mucha proteína.</p></div>
+        </div>
+
+        <div style="display: flex; gap: 16px; padding: 18px 0; border-top: 1px solid rgba(245,241,232,0.18)">
+          <svg aria-hidden="true" style="flex: none; color: #D9A441" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M18 6l-2.5 2.5M8.5 15.5L6 18"></path></svg>
+          <div><h3 style="margin: 0 0 2px; font-size: 18px; font-weight: 700">Proteína novedosa</h3><p style="margin: 0; color: #CFC8BA">Una buena opción si tu mascota no se lleva bien con el pollo o la res.</p></div>
+        </div>
+
+        <div style="display: flex; gap: 16px; padding: 18px 0; border-top: 1px solid rgba(245,241,232,0.18)">
+          <svg aria-hidden="true" style="flex: none; color: #D9A441" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7l8 8"></path><circle cx="6.5" cy="7.5" r="2.2"></circle><circle cx="8.5" cy="5" r="2.2"></circle><circle cx="15.5" cy="19" r="2.2"></circle><circle cx="18" cy="16.5" r="2.2"></circle></svg>
+          <div><h3 style="margin: 0 0 2px; font-size: 18px; font-weight: 700">Calcio y fósforo naturales</h3><p style="margin: 0; color: #CFC8BA">Como incluye el hueso, aporta minerales como calcio, fósforo y zinc.</p></div>
+        </div>
+
+        <div style="display: flex; gap: 16px; padding: 18px 0; border-top: 1px solid rgba(245,241,232,0.18)">
+          <svg aria-hidden="true" style="flex: none; color: #D9A441" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4c-2.5 0-3.5 2.5-3 5 .6 3 1.7 4 2 7 .3 2.5 1 4 2 4s1.5-2 2-4.5c.3-1.5 1-1.5 2 0s1.5 4.5 2 4.5c1 0 1.7-1.5 2-4 .3-3 1.4-4 2-7 .5-2.5-.5-5-3-5-2 0-3 1-5 1s-3-1-5-1z"></path></svg>
+          <div><h3 style="margin: 0 0 2px; font-size: 18px; font-weight: 700">Dientes más limpios</h3><p style="margin: 0; color: #CFC8BA">Masticarla ayuda a reducir placa y sarro, y mejora el aliento.</p></div>
+        </div>
+
+        <div style="display: flex; gap: 16px; padding: 18px 0; border-top: 1px solid rgba(245,241,232,0.18)">
+          <svg aria-hidden="true" style="flex: none; color: #D9A441" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"></path></svg>
+          <div><h3 style="margin: 0 0 2px; font-size: 18px; font-weight: 700">Menos ansiedad, menos destrozos</h3><p style="margin: 0; color: #CFC8BA">Masticar los calma, los entretiene y satisface su instinto natural.</p></div>
+        </div>
+
+        <div style="display: flex; gap: 16px; padding: 18px 0; border-top: 1px solid rgba(245,241,232,0.18)">
+          <svg aria-hidden="true" style="flex: none; color: #D9A441" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><path d="M6 6l12 12"></path></svg>
+          <div><h3 style="margin: 0 0 2px; font-size: 18px; font-weight: 700">Sin aditivos</h3><p style="margin: 0; color: #CFC8BA">Sin conservantes, sin sal añadida, sin colorantes.</p></div>
+        </div>
+
+        <div style="display: flex; gap: 16px; padding: 18px 0; border-top: 1px solid rgba(245,241,232,0.18)">
+          <svg aria-hidden="true" style="flex: none; color: #D9A441" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="7" width="12" height="13" rx="2.5"></rect><path d="M8 4h8v3H8z"></path></svg>
+          <div><h3 style="margin: 0 0 2px; font-size: 18px; font-weight: 700">Larga duración</h3><p style="margin: 0; color: #CFC8BA">Fácil de guardar. Ideal para premiar o entrenar.</p></div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: clamp(28px, 4vw, 44px)">
+        <a href="#pedido" style="display: flex; align-items: center; justify-content: center; flex: 1 1 280px; max-width: 420px; min-height: 56px; border-radius: 14px; background: #C2185B; color: #FFFFFF; font-weight: 800; font-size: 17px; text-decoration: none">Quiero probarla — Pagar al recibir</a>
+        <span style="color: #D9A441; font-weight: 700; font-size: 15px">$14.900 · Envío gratis</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. ¿Para quién es? + 7. Cómo darlo -->
+  <section style="padding: clamp(56px, 7vw, 104px) 16px">
+    <div style="max-width: 1180px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: clamp(48px, 6vw, 96px)">
+      <div style="flex: 1 1 340px; min-width: 0">
+        <h2 style="margin: 0 0 18px; font-family: 'Young Serif', Georgia, serif; font-weight: 400; font-size: clamp(30px, 3.6vw, 44px); line-height: 1.08">¿Para quién es?</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px">
+          <sc-for list="{{ forWho }}" as="c" hint-placeholder-count="6">
+            <span style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 999px; background: #FFFFFF; border: 1px solid #D6CCBA; font-size: 15px; font-weight: 600">{{ c }}</span>
+          </sc-for>
+        </div>
+        <h3 style="margin: 26px 0 10px; font-size: 16px; font-weight: 700; color: #6B6157">Úsalo como</h3>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px">
+          <sc-for list="{{ uses }}" as="u" hint-placeholder-count="4">
+            <span style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 999px; background: #E6EADB; color: #3E4A2D; font-size: 15px; font-weight: 600">{{ u }}</span>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="flex: 1 1 340px; min-width: 0">
+        <h2 style="margin: 0 0 18px; font-family: 'Young Serif', Georgia, serif; font-weight: 400; font-size: clamp(30px, 3.6vw, 44px); line-height: 1.08">Cómo darlo</h2>
+        <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 18px">
+          <li style="display: flex; gap: 16px; align-items: flex-start">
+            <span style="flex: none; width: 40px; height: 40px; border-radius: 50%; background: #C2185B; color: #FFFFFF; font-family: 'Young Serif', Georgia, serif; font-size: 19px; display: flex; align-items: center; justify-content: center">1</span>
+            <p style="margin: 6px 0 0"><strong>Ofrécelo como premio:</strong> de 1 a 3 unidades al día, según el tamaño de tu mascota.</p>
+          </li>
+          <li style="display: flex; gap: 16px; align-items: flex-start">
+            <span style="flex: none; width: 40px; height: 40px; border-radius: 50%; background: #C2185B; color: #FFFFFF; font-family: 'Young Serif', Georgia, serif; font-size: 19px; display: flex; align-items: center; justify-content: center">2</span>
+            <p style="margin: 6px 0 0"><strong>Siempre bajo supervisión</strong> y con agua fresca a la mano.</p>
+          </li>
+          <li style="display: flex; gap: 16px; align-items: flex-start">
+            <span style="flex: none; width: 40px; height: 40px; border-radius: 50%; background: #C2185B; color: #FFFFFF; font-family: 'Young Serif', Georgia, serif; font-size: 19px; display: flex; align-items: center; justify-content: center">3</span>
+            <p style="margin: 6px 0 0"><strong>Guárdalo bien cerrado</strong> en un lugar fresco y seco.</p>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Opiniones -->
+  <section style="background: #EDE6D8; padding: clamp(56px, 7vw, 104px) 16px">
+    <div style="max-width: 1180px; margin: 0 auto">
+      <h2 style="margin: 0 0 22px; font-family: 'Young Serif', Georgia, serif; font-weight: 400; font-size: clamp(30px, 4vw, 48px); line-height: 1.08">Lo que dicen sus dueños</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 14px">
+        <sc-for list="{{ reviews }}" as="r" hint-placeholder-count="3">
+          <figure style="margin: 0; background: #FBF9F4; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+            <div style="display: flex; align-items: center; gap: 12px">
+              <div aria-hidden="true" style="width: 52px; height: 52px; border-radius: 50%; background: #CFC5B3; flex: none"></div>
+              <div>
+                <div style="font-weight: 700">{{ r.name }}</div>
+                <div style="color: #C2185B; letter-spacing: 2px; font-size: 15px" aria-label="5 de 5 estrellas">★★★★★</div>
+              </div>
+            </div>
+            <blockquote style="margin: 0; color: #6B6157">{{ r.text }}</blockquote>
+          </figure>
+        </sc-for>
+      </div>
+      <a href="#pedido" style="display: flex; align-items: center; justify-content: center; max-width: 420px; min-height: 56px; margin: 24px auto 0; border-radius: 14px; background: #C2185B; color: #FFFFFF; font-weight: 800; font-size: 17px; text-decoration: none; box-shadow: 0 12px 26px -12px rgba(194,24,91,0.9)">Pedir el mío — Pagar al recibir</a>
+    </div>
+  </section>
+
+  <!-- 9. Cómo funciona tu pedido -->
+  <section style="padding: clamp(56px, 7vw, 104px) 16px clamp(28px, 4vw, 48px)">
+    <div style="max-width: 1180px; margin: 0 auto">
+      <h2 style="margin: 0 0 24px; font-family: 'Young Serif', Georgia, serif; font-weight: 400; font-size: clamp(30px, 4vw, 48px); line-height: 1.08">Pedir es así de fácil</h2>
+      <ol style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 0 28px">
+        <li style="display: flex; gap: 14px; padding: 16px 0; border-top: 2px solid #2A231D">
+          <svg aria-hidden="true" style="flex: none; color: #4F5D3A" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3.5" width="14" height="17" rx="2"></rect><path d="M8.5 8h7M8.5 12h7M8.5 16h4"></path></svg>
+          <div><strong style="display: block">Llenas el formulario</strong><span style="color: #6B6157">Te toma unos 30 segundos.</span></div>
+        </li>
+        <li style="display: flex; gap: 14px; padding: 16px 0; border-top: 2px solid #2A231D">
+          <svg aria-hidden="true" style="flex: none; color: #4F5D3A" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"></path></svg>
+          <div><strong style="display: block">Te escribimos por WhatsApp</strong><span style="color: #6B6157">Para confirmar tus datos.</span></div>
+        </li>
+        <li style="display: flex; gap: 14px; padding: 16px 0; border-top: 2px solid #2A231D">
+          <svg aria-hidden="true" style="flex: none; color: #4F5D3A" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"></rect><circle cx="12" cy="12" r="2.6"></circle><path d="M6.5 9.5v5M17.5 9.5v5"></path></svg>
+          <div><strong style="display: block">Lo recibes y pagas ahí</strong><span style="color: #6B6157">En la puerta de tu casa. Envío gratis.</span></div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 10. Formulario -->
+  <section id="pedido" style="padding: clamp(28px, 4vw, 48px) 16px clamp(64px, 8vw, 112px)">
+    <div style="max-width: 1180px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: clamp(28px, 4vw, 56px); align-items: flex-start">
+
+      <form style="flex: 1 1 520px; min-width: 0; background: #FFFFFF; border-radius: 22px; padding: clamp(20px, 3vw, 40px); box-shadow: 0 24px 60px -36px rgba(42,35,29,0.45); display: flex; flex-direction: column; gap: 18px">
+        <div>
+          <h2 style="margin: 0 0 4px; font-family: 'Young Serif', Georgia, serif; font-weight: 400; font-size: clamp(30px, 3.6vw, 42px); line-height: 1.08">Haz tu pedido</h2>
+          <p style="margin: 0; color: #6B6157">No pagas nada ahora. Envío gratis a toda Colombia.</p>
+        </div>
+
+        <fieldset style="border: 0; margin: 0; padding: 0">
+          <legend style="font-weight: 700; margin-bottom: 10px; padding: 0">¿Cuántos frascos quieres?</legend>
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+            <sc-for list="{{ bundles }}" as="b" hint-placeholder-count="3">
+              <button type="button" aria-pressed="{{ b.pressed }}" onClick="{{ b.pick }}" style="{{ b.style }}">
+                <sc-if value="{{ b.best }}" hint-placeholder-val="{{ false }}">
+                  <span style="position: absolute; top: -11px; left: 50%; transform: translateX(-50%); white-space: nowrap; background: #D9A441; color: #2A231D; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 999px; letter-spacing: 0.03em">RECOMENDADO</span>
+                </sc-if>
+                <span style="font-weight: 800; font-size: 16px">{{ b.label }}</span>
+                <span style="font-family: 'Young Serif', Georgia, serif; font-size: 19px; font-variant-numeric: tabular-nums">{{ b.priceText }}</span>
+                <span style="font-size: 12px; color: #6B6157">{{ b.note }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </fieldset>
+
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label for="f-nombre" style="font-weight: 700; font-size: 15px">Nombre completo</label>
+          <input id="f-nombre" type="text" autocomplete="name" placeholder="Como aparece en tu cédula" style="min-height: 50px; padding: 0 14px; border: 1.5px solid #CFC5B3; border-radius: 12px; font: inherit; background: #FBF9F4; color: #2A231D">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label for="f-cel" style="font-weight: 700; font-size: 15px">Celular (WhatsApp)</label>
+          <input id="f-cel" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="300 123 4567" style="min-height: 50px; padding: 0 14px; border: 1.5px solid #CFC5B3; border-radius: 12px; font: inherit; background: #FBF9F4; color: #2A231D">
+          <span style="font-size: 13px; color: #6B6157">Por aquí te confirmamos el pedido.</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 14px">
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <label for="f-dir" style="font-weight: 700; font-size: 15px">Dirección</label>
+            <input id="f-dir" type="text" autocomplete="address-line1" placeholder="Calle 2 #5-20" style="min-height: 50px; padding: 0 14px; border: 1.5px solid #CFC5B3; border-radius: 12px; font: inherit; background: #FBF9F4; color: #2A231D">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <label for="f-barrio" style="font-weight: 700; font-size: 15px">Barrio</label>
+            <input id="f-barrio" type="text" placeholder="Barrio La Sultana" style="min-height: 50px; padding: 0 14px; border: 1.5px solid #CFC5B3; border-radius: 12px; font: inherit; background: #FBF9F4; color: #2A231D">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <label for="f-depto" style="font-weight: 700; font-size: 15px">Departamento</label>
+            <select id="f-depto" style="min-height: 50px; padding: 0 12px; border: 1.5px solid #CFC5B3; border-radius: 12px; font: inherit; background: #FBF9F4; color: #2A231D">
+              <option value="">Elige tu departamento</option>
+              <sc-for list="{{ deptos }}" as="d" hint-placeholder-count="5">
+                <option value="{{ d }}">{{ d }}</option>
+              </sc-for>
+            </select>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <label for="f-ciudad" style="font-weight: 700; font-size: 15px">Ciudad o municipio</label>
+            <input id="f-ciudad" type="text" autocomplete="address-level2" placeholder="Ej. Medellín" style="min-height: 50px; padding: 0 14px; border: 1.5px solid #CFC5B3; border-radius: 12px; font: inherit; background: #FBF9F4; color: #2A231D">
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label for="f-ind" style="font-weight: 700; font-size: 15px">Indicaciones adicionales <span style="font-weight: 500; color: #6B6157">(opcional)</span></label>
+          <input id="f-ind" type="text" placeholder="Apto, torre, casa, punto de referencia" style="min-height: 50px; padding: 0 14px; border: 1.5px solid #CFC5B3; border-radius: 12px; font: inherit; background: #FBF9F4; color: #2A231D">
+        </div>
+
+        <fieldset style="border: 0; margin: 0; padding: 0">
+          <legend style="font-weight: 700; font-size: 15px; margin-bottom: 8px; padding: 0">¿Para quién es? <span style="font-weight: 500; color: #6B6157">(opcional)</span></legend>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px">
+            <sc-for list="{{ pets }}" as="p" hint-placeholder-count="4">
+              <button type="button" aria-pressed="{{ p.pressed }}" onClick="{{ p.pick }}" style="{{ p.style }}">{{ p.label }}</button>
+            </sc-for>
+          </div>
+        </fieldset>
+
+        <label style="display: flex; gap: 12px; align-items: flex-start; padding: 14px; border-radius: 14px; border: 1.5px dashed #C2185B; background: #FBEAF1; cursor: pointer">
+          <input type="checkbox" checked="{{ prio }}" onChange="{{ togglePrio }}" style="width: 22px; height: 22px; margin: 1px 0 0; accent-color: #C2185B; flex: none">
+          <span><strong>Envío prioritario: +$5.000</strong><br><span style="color: #6B6157; font-size: 15px">Despachamos tu pedido primero.</span></span>
+        </label>
+
+        <!-- Resumen: guía de pedido -->
+        <div style="background: #F5F1E8; border: 1.5px solid #2A231D; border-radius: 14px; padding: 16px 18px">
+          <div style="display: flex; justify-content: space-between; gap: 12px"><span>Subtotal ({{ qtyText }})</span><span style="font-variant-numeric: tabular-nums">{{ subtotalText }}</span></div>
+          <div style="display: flex; justify-content: space-between; gap: 12px; margin-top: 4px"><span>Envío</span><span><s style="color: #8A7F73">$12.000</s> <strong style="color: #4F5D3A; font-weight: 800">GRATIS</strong></span></div>
+          <sc-if value="{{ prio }}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; justify-content: space-between; gap: 12px; margin-top: 4px"><span>Envío prioritario</span><span style="font-variant-numeric: tabular-nums">$5.000</span></div>
+          </sc-if>
+          <div aria-hidden="true" style="border-top: 1.5px dashed #B9AD98; margin: 12px -18px"></div>
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px">
+            <strong>Total a pagar al recibir</strong>
+            <span style="font-family: 'Young Serif', Georgia, serif; font-size: 30px; line-height: 1; font-variant-numeric: tabular-nums">{{ totalText }}</span>
+          </div>
+        </div>
+
+        <label style="display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: #6B6157; cursor: pointer">
+          <input type="checkbox" style="width: 20px; height: 20px; margin: 1px 0 0; accent-color: #4F5D3A; flex: none">
+          <span>Autorizo el tratamiento de mis datos para gestionar mi pedido, según la <a href="#datos">política de datos</a> (Ley 1581 de 2012).</span>
+        </label>
+
+        <button type="button" style="min-height: 62px; border: 0; border-radius: 14px; background: #C2185B; color: #FFFFFF; font: inherit; font-weight: 800; font-size: 20px; letter-spacing: 0.04em; cursor: pointer; box-shadow: 0 12px 26px -14px rgba(194,24,91,0.9)">PAGAR AL RECIBIR</button>
+        <p style="margin: -6px 0 0; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; color: #6B6157; text-align: center">
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>
+          No pagas nada ahora. Pagas cuando llegue a tu casa.
+        </p>
+      </form>
+
+      <aside style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+        <div style="display: flex; gap: 14px; align-items: center">
+          <div style="width: 84px; height: 84px; border-radius: 14px; overflow: hidden; background: #FFFFFF; flex: none">
+            <img src="/_blob/2b2b905253e0408d2eea1e59551c58d1" alt="" style="width: 100%; height: 100%; object-fit: cover; object-position: 28% 55%">
+          </div>
+          <div><strong style="display: block">Snacks de Codorniz Deshidratada</strong><span style="color: #6B6157">50 g · aprox. 30 unidades</span></div>
+        </div>
+        <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px">
+          <li style="display: flex; gap: 10px; align-items: center"><svg aria-hidden="true" style="flex: none; color: #4F5D3A" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Envío gratis a cualquier ciudad o municipio</li>
+          <li style="display: flex; gap: 10px; align-items: center"><svg aria-hidden="true" style="flex: none; color: #4F5D3A" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Pagas en efectivo cuando lo recibes</li>
+          <li style="display: flex; gap: 10px; align-items: center"><svg aria-hidden="true" style="flex: none; color: #4F5D3A" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Te confirmamos por WhatsApp antes de despachar</li>
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <!-- 11. Preguntas frecuentes -->
+  <section style="background: #EDE6D8; padding: clamp(56px, 7vw, 104px) 16px">
+    <div style="max-width: 820px; margin: 0 auto">
+      <h2 style="margin: 0 0 18px; font-family: 'Young Serif', Georgia, serif; font-weight: 400; font-size: clamp(30px, 4vw, 48px); line-height: 1.08">Preguntas frecuentes</h2>
+      <sc-for list="{{ faqs }}" as="q" hint-placeholder-count="7">
+        <details style="border-top: 1px solid #CFC5B3; padding: 0">
+          <summary style="display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 60px; cursor: pointer; font-weight: 700; font-size: 17px">{{ q.q }}<svg aria-hidden="true" style="flex: none" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C2185B" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></summary>
+          <p style="margin: 0 0 18px; color: #6B6157">{{ q.a }}</p>
+        </details>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- 12. Footer -->
+  <footer style="background: #12110F; color: #E9E2D3; padding: 44px 16px 120px">
+    <div style="max-width: 1180px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 24px 48px; align-items: flex-start; justify-content: space-between">
+      <div style="display: flex; align-items: center; gap: 14px">
+        <div style="width: 64px; height: 64px; border-radius: 50%; background: #F5F1E8; display: flex; align-items: center; justify-content: center; flex: none">
+          <img src="/_blob/00331c2fff049e916725932383519400" alt="Revoltosos" style="width: 54px; height: 54px; object-fit: contain; mix-blend-mode: multiply">
+        </div>
+        <div><strong style="font-family: 'Young Serif', Georgia, serif; font-weight: 400; font-size: 22px; color: #F5F1E8">Revoltosos</strong><br><span style="font-size: 14px">Hecho en Colombia con amor</span></div>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px">
+        <a href="https://instagram.com/revoltosos.vet" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid #6B6157; color: #F5F1E8; text-decoration: none; font-weight: 600"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="5"></rect><circle cx="12" cy="12" r="3.6"></circle></svg>@revoltosos.vet</a>
+        <a href="https://wa.me/573122448276" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid #6B6157; color: #F5F1E8; text-decoration: none; font-weight: 600"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"></path></svg>312 244 8276</a>
+      </div>
+      <div style="flex-basis: 100%; border-top: 1px solid #4A4038; padding-top: 18px; display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 13px; color: #B9AD98">
+        <span>© 2026 Revoltosos</span>
+        <a id="datos" href="#datos" style="color: #E9E2D3">Política de tratamiento de datos (Ley 1581 de 2012)</a>
+        <a href="#terminos" style="color: #E9E2D3">Términos y condiciones</a>
+      </div>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":11600}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { bundle: 1, prio: false, pets: {} };
+  }
+  renderVals() {
+    const PRODUCT = {
+      id: 'codorniz-50g',
+      unitPrice: 14900,
+      shippingAnchor: 12000,
+      priorityFee: 5000,
+      bundles: [
+        { qty: 1, label: '1 frasco', price: 14900, note: 'Para probar' },
+        { qty: 2, label: '2 frascos', price: 29800, note: 'Ahorro: [por definir]', best: true },
+        { qty: 3, label: '3 frascos', price: 44700, note: 'Ahorro: [por definir]' }
+      ]
+    };
+    const fmt = (n) => '$' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    const sel = PRODUCT.bundles.find((b) => b.qty === this.state.bundle) || PRODUCT.bundles[0];
+    const prio = this.state.prio;
+    const total = sel.price + (prio ? PRODUCT.priorityFee : 0);
+
+    const bundleBase = 'position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 96px; padding: 16px 6px 12px; border-radius: 14px; font: inherit; color: #2A231D; cursor: pointer; ';
+    const bundles = PRODUCT.bundles.map((b) => {
+      const on = b.qty === this.state.bundle;
+      return {
+        ...b,
+        best: !!b.best,
+        priceText: fmt(b.price),
+        pressed: on ? 'true' : 'false',
+        style: bundleBase + (on ? 'background: #F2F4EC; border: 2px solid #4F5D3A; box-shadow: 0 0 0 3px rgba(79,93,58,0.15)' : 'background: #FBF9F4; border: 1.5px solid #CFC5B3'),
+        pick: () => this.setState({ bundle: b.qty })
+      };
+    });
+
+    const petBase = 'min-height: 44px; padding: 0 16px; border-radius: 999px; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; ';
+    const pets = ['Perro pequeño', 'Perro mediano', 'Perro grande', 'Gato'].map((label) => {
+      const on = !!this.state.pets[label];
+      return {
+        label,
+        pressed: on ? 'true' : 'false',
+        style: petBase + (on ? 'background: #4F5D3A; color: #F5F1E8; border: 1.5px solid #4F5D3A' : 'background: #FBF9F4; color: #2A231D; border: 1.5px solid #CFC5B3'),
+        pick: () => this.setState({ pets: { ...this.state.pets, [label]: !on } })
+      };
+    });
+
+    return {
+      bundles,
+      pets,
+      prio,
+      togglePrio: () => this.setState({ prio: !this.state.prio }),
+      qtyText: sel.qty === 1 ? '1 frasco' : sel.qty + ' frascos',
+      subtotalText: fmt(sel.price),
+      totalText: fmt(total),
+      anatomy: [
+        { n: '1', title: 'Carne magra', text: 'Proteína de verdad, sin rellenos ni harinas.', x: 46, y: 34 },
+        { n: '2', title: 'Hueso deshidratado', text: 'Aporta calcio, fósforo y zinc de forma natural.', x: 62, y: 58 },
+        { n: '3', title: 'Piel', text: 'El sabor y el olor que los vuelve locos.', x: 30, y: 62 },
+        { n: '4', title: 'Tamaño real', text: '[Medida por confirmar] · aprox. 30 unidades por frasco de 50 g.', x: 74, y: 24 }
+      ].map((m) => ({ ...m, dot: 'position: absolute; left: ' + m.x + '%; top: ' + m.y + '%; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; background: #C2185B; color: #FFFFFF; font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 4px rgba(255,255,255,0.85)' })),
+      benefits: [
+        { img: '[Imagen B1] Codorniz de cerca, textura de la carne', title: 'Proteína de verdad', text: 'Un solo ingrediente: codorniz entera. Carne magra con mucha proteína.' },
+        { img: '[Imagen B2] Perro feliz recibiendo el snack', title: 'Proteína novedosa', text: 'Una buena opción si tu mascota no se lleva bien con el pollo o la res.' },
+        { img: '[Imagen B3] Detalle del hueso deshidratado', title: 'Calcio y fósforo naturales', text: 'Como incluye el hueso, aporta minerales como calcio, fósforo y zinc.' },
+        { img: '[Imagen B4] Perro masticando, dientes limpios', title: 'Dientes más limpios', text: 'Masticarla ayuda a reducir placa y sarro, y mejora el aliento.' },
+        { img: '[Imagen B5] Perro tranquilo mordiendo en su cama', title: 'Menos ansiedad, menos destrozos', text: 'Masticar los calma, los entretiene y satisface su instinto natural.' },
+        { img: '[Imagen B6] Codornices solas sobre lino, sin nada más', title: 'Sin aditivos', text: 'Sin conservantes, sin sal añadida, sin colorantes.' },
+        { img: '[Imagen B7] Premio en entrenamiento al aire libre', title: 'Larga duración', text: 'Fácil de guardar. Ideal para premiar o entrenar.' }
+      ],
+      ticker: [0, 1, 2, 3].flatMap(() => ['Envío GRATIS a toda Colombia', 'Pagas al recibir', '100 % natural', 'Hecho en Colombia']),
+      gallery: [
+        { label: '[Foto real] Codorniz suelta fuera del frasco' },
+        { label: '[Foto real] Textura de cerca' },
+        { label: '[Foto real] Tu perro comiéndola' }
+      ],
+      videos: [
+        { label: '[Video 1] Perrito comiendo' },
+        { label: '[Video 2] Perrito comiendo' },
+        { label: '[Video 3] Perrito comiendo' },
+        { label: '[Video 4] Perrito comiendo' }
+      ],
+      forWho: ['Perros de todas las razas y tamaños', 'Cachorros desde ~3 meses', 'Adultos', 'Seniors · en trozos pequeños', 'Razas pequeñas · en trozos', 'Gatos'],
+      uses: ['Premio diario', 'Entrenamiento', 'Topper triturado sobre la comida', 'Enriquecimiento'],
+      reviews: [
+        { name: '[Nombre del cliente] — [Ciudad]', text: '[Comentario real del cliente, copiado de WhatsApp o Instagram con su permiso]' },
+        { name: '[Nombre del cliente] — [Ciudad]', text: '[Comentario real del cliente]' },
+        { name: '[Nombre del cliente] — [Ciudad]', text: '[Comentario real del cliente]' }
+      ],
+      faqs: [
+        { q: '¿Cuánto tarda el envío?', a: '[Por confirmar: X a Y días hábiles según tu ciudad.] Te avisamos por WhatsApp cuando lo despachemos.' },
+        { q: '¿De verdad el envío es gratis?', a: 'Sí. El envío es gratis a toda Colombia, desde un solo frasco.' },
+        { q: '¿Cómo pago?', a: 'Pagas al recibir: le entregas el dinero a la transportadora cuando el pedido llega a tu casa. No pagas nada por adelantado.' },
+        { q: '¿Le sirve a mi gato?', a: 'Sí. Ofrécele trozos pequeños, siempre bajo supervisión y con agua fresca disponible.' },
+        { q: '¿Cuántas le doy al día?', a: 'De 1 a 3 unidades al día, según el tamaño de tu mascota. Es un premio, no reemplaza su comida.' },
+        { q: '¿Cuánto dura el producto abierto?', a: '[Por confirmar con el dueño.] Guárdalo bien cerrado en un lugar fresco y seco.' },
+        { q: '¿Qué es el envío prioritario?', a: 'Por $5.000 adicionales despachamos tu pedido antes que los demás.' }
+      ],
+      deptos: ['Amazonas', 'Antioquia', 'Arauca', 'Atlántico', 'Bogotá D.C.', 'Bolívar', 'Boyacá', 'Caldas', 'Caquetá', 'Casanare', 'Cauca', 'Cesar', 'Chocó', 'Córdoba', 'Cundinamarca', 'Guainía', 'Guaviare', 'Huila', 'La Guajira', 'Magdalena', 'Meta', 'Nariño', 'Norte de Santander', 'Putumayo', 'Quindío', 'Risaralda', 'San Andrés y Providencia', 'Santander', 'Sucre', 'Tolima', 'Valle del Cauca', 'Vaupés', 'Vichada']
+    };
+  }
+}
+</script>
+</body>
+</html>

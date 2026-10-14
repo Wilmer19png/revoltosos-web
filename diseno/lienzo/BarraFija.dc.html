@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Botón fijo móvil</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=Figtree:wght@400;600;800&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 200px; position: relative; overflow: hidden; background: #12110F; font-family: 'Figtree', system-ui, sans-serif; color: #F5F1E8">
+  <div style="padding: 22px 16px; opacity: 0.55">
+    <div style="font-family: 'Young Serif', Georgia, serif; font-size: 26px; line-height: 1.1">Un solo ingrediente. Todo lo que necesita.</div>
+    <div style="margin-top: 10px; font-size: 15px">Codorniz entera, con carne y hueso…</div>
+  </div>
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; background: rgba(245,241,232,0.97); border-top: 1px solid #D6CCBA; padding: 10px 12px 14px; box-shadow: 0 -10px 24px -16px rgba(42,35,29,0.5)">
+    <a href="#pedido" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 56px; padding: 0 18px; border-radius: 14px; background: #C2185B; color: #FFFFFF; text-decoration: none">
+      <span style="font-weight: 800; font-size: 17px">Pedir ahora</span>
+      <span style="display: flex; flex-direction: column; align-items: flex-end; line-height: 1.15">
+        <span style="font-family: 'Young Serif', Georgia, serif; font-size: 19px">$14.900</span>
+        <span style="font-size: 12px; font-weight: 600">Pagas al recibir · Envío gratis</span>
+      </span>
+    </a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":200}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

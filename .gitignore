@@ -1,0 +1,19 @@
+# Secretos
+.env
+.env.*
+!.env.example
+
+# Supabase local
+supabase/.temp/
+supabase/.branches/
+
+# Dependencias y builds
+node_modules/
+dist/
+.netlify/
+.vercel/
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
