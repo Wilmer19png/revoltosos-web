@@ -262,7 +262,7 @@ $('#form-pedido').addEventListener('submit', async (e) => {
       body: JSON.stringify(datos)
     });
     const r = await res.json().catch(() => ({}));
-    if (!res.ok || !r.ok) throw new Error(r.error || 'No pudimos registrar el pedido.');
+    if (!res.ok || !r.ok) throw Object.assign(new Error(r.error || 'No pudimos registrar el pedido.'), { status: res.status });
 
     const pedido = { ...datos, order_id: r.order_id, total: r.total };
     if (window.fbq) {
@@ -274,7 +274,11 @@ $('#form-pedido').addEventListener('submit', async (e) => {
     mostrarGracias(pedido);
   } catch (err) {
     const texto = 'Hola, quiero pedir ' + unidades(estado.cantidad) + ' de ' + P.producto + '. Mis datos: ' + datos.nombre + ', ' + datos.direccion + ', ' + datos.barrio + ', ' + datos.ciudad + ' - ' + datos.departamento + '.';
-    errorGeneral.innerHTML = 'No pudimos enviar tu pedido. Revisa tu conexión e inténtalo de nuevo, o <a href="https://wa.me/' + CONFIG.WHATSAPP + '?text=' + encodeURIComponent(texto) + '" target="_blank" rel="noopener">pídelo por WhatsApp</a>.';
+    const wa = '<a href="https://wa.me/' + CONFIG.WHATSAPP + '?text=' + encodeURIComponent(texto) + '" target="_blank" rel="noopener">';
+    // 429: ya hubo un pedido desde esta conexión en las últimas 72 horas (ver crear-pedido).
+    errorGeneral.innerHTML = err.status === 429
+      ? 'Ya recibimos un pedido desde esta conexión hace poco. Si quieres pedir otro, ' + wa + 'escríbenos por WhatsApp</a> y te ayudamos.'
+      : 'No pudimos enviar tu pedido. Revisa tu conexión e inténtalo de nuevo, o ' + wa + 'pídelo por WhatsApp</a>.';
     errorGeneral.hidden = false;
     btn.disabled = false;
     btn.textContent = 'PAGAR AL RECIBIR';
