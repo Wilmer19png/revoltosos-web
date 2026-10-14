@@ -277,49 +277,61 @@ $('#form-pedido').addEventListener('submit', async (e) => {
     const lista = $('#videos-lista');
     videos.forEach((v) => {
       const video = document.createElement('video');
-      video.muted = true;
-      video.loop = true;
-      video.playsInline = true;
-      video.setAttribute('playsinline', '');
-      video.preload = 'none';
-      if (v.poster) video.poster = v.poster;
       video.setAttribute('aria-label', v.alt || 'Perro comiendo su snack Revoltosos');
+      if (v.poster) video.poster = v.poster;
       video.dataset.src = v.src;
       lista.appendChild(video);
     });
-    const obs = new IntersectionObserver((entradas) => entradas.forEach((en) => {
-      const v = en.target;
-      if (en.isIntersecting) {
-        if (!v.src) { v.src = v.dataset.src + '#t=0.1'; v.preload = 'auto'; }
-        v.play().catch(() => {});
-      } else v.pause();
-    }), { threshold: 0.4, rootMargin: '200px 0px' });
-    $$('video', lista).forEach((v) => obs.observe(v));
     $('#videos').hidden = false;
-
-    // Carrusel: flechas y puntos (solo si los videos no caben todos a la vista)
-    const nav = $('#videos-nav');
-    if (nav) {
-      const puntos = $('#videos-puntos');
-      const prev = $('#videos-prev');
-      const next = $('#videos-next');
-      puntos.innerHTML = videos.map(() => '<span></span>').join('');
-      const paso = () => { const v = lista.querySelector('video'); return v ? v.getBoundingClientRect().width + 12 : lista.clientWidth; };
-      const actualizar = () => {
-        const cabe = lista.scrollWidth <= lista.clientWidth + 4;
-        nav.hidden = cabe;
-        const i = Math.round(lista.scrollLeft / paso());
-        $$('span', puntos).forEach((p, k) => p.classList.toggle('activo', k === i));
-        prev.disabled = lista.scrollLeft <= 4;
-        next.disabled = lista.scrollLeft + lista.clientWidth >= lista.scrollWidth - 4;
-      };
-      prev.addEventListener('click', () => lista.scrollBy({ left: -paso() }));
-      next.addEventListener('click', () => lista.scrollBy({ left: paso() }));
-      lista.addEventListener('scroll', () => requestAnimationFrame(actualizar), { passive: true });
-      window.addEventListener('resize', actualizar);
-      actualizar();
-    }
   }
+})();
+
+/* Videos: se cargan y reproducen solo cuando están a la vista (sin sonido, en bucle) */
+(function () {
+  const todos = $$('video[data-src]');
+  todos.forEach((v) => {
+    v.muted = true;
+    v.loop = true;
+    v.playsInline = true;
+    v.setAttribute('playsinline', '');
+    v.setAttribute('muted', '');
+    v.preload = 'none';
+  });
+  if (!('IntersectionObserver' in window)) { todos.forEach((v) => { v.src = v.dataset.src; }); return; }
+  const obs = new IntersectionObserver((entradas) => entradas.forEach((en) => {
+    const v = en.target;
+    if (en.isIntersecting) {
+      if (!v.getAttribute('src')) { v.src = v.dataset.src + '#t=0.1'; v.preload = 'auto'; }
+      v.play().catch(() => {});
+    } else v.pause();
+  }), { threshold: 0.4, rootMargin: '200px 0px' });
+  todos.forEach((v) => obs.observe(v));
+})();
+
+/* Carruseles: flechas y puntos para cada .carrusel-nav[data-para] */
+(function () {
+  $$('.carrusel-nav[data-para]').forEach((nav) => {
+    const pista = document.getElementById(nav.dataset.para);
+    if (!pista) return;
+    const puntos = $('.carrusel-puntos', nav);
+    const [prev, next] = $$('.carrusel-btn', nav);
+    const items = () => Array.from(pista.children);
+    puntos.innerHTML = items().map(() => '<span></span>').join('');
+    const paso = () => { const it = items()[0]; return it ? it.getBoundingClientRect().width + 12 : pista.clientWidth; };
+    const actualizar = () => {
+      nav.hidden = pista.scrollWidth <= pista.clientWidth + 4;
+      const fin = pista.scrollLeft + pista.clientWidth >= pista.scrollWidth - 4;
+      const i = fin ? items().length - 1 : Math.round(pista.scrollLeft / paso());
+      $$('span', puntos).forEach((p, k) => p.classList.toggle('activo', k === i));
+      prev.disabled = pista.scrollLeft <= 4;
+      next.disabled = fin;
+    };
+    prev.addEventListener('click', () => pista.scrollBy({ left: -paso() }));
+    next.addEventListener('click', () => pista.scrollBy({ left: paso() }));
+    pista.addEventListener('scroll', () => requestAnimationFrame(actualizar), { passive: true });
+    window.addEventListener('resize', actualizar);
+    actualizar();
+  });
 })();
 
 pintarResumen();

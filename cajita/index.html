@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="/assets/css/landing.css?v=4">
+<link rel="stylesheet" href="/assets/css/landing.css?v=5">
 
 <script>
   // Precio: debe coincidir con la oferta 'cajita-perros' de la tabla `ofertas` en Supabase.
@@ -87,6 +87,8 @@
   <symbol id="i-hoja" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14z"/><path d="M5 19l8-8"/></g></symbol>
   <symbol id="i-whatsapp" viewBox="0 0 24 24"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></symbol>
   <symbol id="i-estrella" viewBox="0 0 10 10"><path d="M5 0l1.2 3.8L10 5 6.2 6.2 5 10 3.8 6.2 0 5l3.8-1.2z" fill="currentColor"/></symbol>
+  <symbol id="i-ant" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-sig" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-mas" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="#C2185B" stroke-width="2" stroke-linecap="round"/></symbol>
   <symbol id="i-camara" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></g></symbol>
 </svg>
@@ -184,6 +186,41 @@
           </article>
         </div>
         <a href="#pedido" class="btn btn--ancho" style="margin-top: 24px" data-cta="contenido">Pedir mi cajita — Pagar al recibir</a>
+      </div>
+    </section>
+
+    <!-- Así llega a tu casa -->
+    <section class="seccion" style="background: var(--hueso-2)" aria-labelledby="t-llega">
+      <div class="contenedor">
+        <h2 class="titulo" id="t-llega">Así llega a tu casa</h2>
+        <p class="bajada" style="margin: 6px 0 20px">Una caja Revoltosos con los 5 snacks, lista para darle o para regalar.</p>
+        <div class="pista pista--foto" id="pista-llega">
+          <figure><img src="/assets/img/productos/cajita-escena.jpg" width="750" height="1000" loading="lazy" alt="Caja Revoltosos abierta con snacks deshidratados sobre una mesa de madera"><figcaption>La cajita</figcaption></figure>
+          <figure><img src="/assets/img/productos/cajita-producto-fondo-blanco.jpg" width="1000" height="1000" loading="lazy" alt="Cajita Revoltosos abierta con patas de pollo, oreja de cerdo, codornicitas, codornices enteras y fémur"><figcaption>Todo lo que trae</figcaption></figure>
+          <figure><img src="/assets/img/productos/patas-pollo-empaque.jpg" width="750" height="1000" loading="lazy" alt="Tarro de patas de pollo Revoltosos por 5 unidades"><figcaption>Cada snack en su empaque</figcaption></figure>
+          <figure><img src="/assets/img/productos/femur-cerdo-empaque.jpg" width="750" height="1000" loading="lazy" alt="Fémur de cerdo empacado con etiqueta Revoltosos"><figcaption>Fémur bien sellado</figcaption></figure>
+        </div>
+        <div class="carrusel-nav" data-para="pista-llega" hidden>
+          <button type="button" class="carrusel-btn" aria-label="Foto anterior"><svg width="20" height="20" aria-hidden="true"><use href="#i-ant"/></svg></button>
+          <div class="carrusel-puntos" aria-hidden="true"></div>
+          <button type="button" class="carrusel-btn" aria-label="Siguiente foto"><svg width="20" height="20" aria-hidden="true"><use href="#i-sig"/></svg></button>
+        </div>
+
+        <div class="disfrutan">
+          <h3>Y así lo disfrutan</h3>
+          <p class="bajada" style="margin: 6px 0 18px">Los peludos de nuestros clientes con sus snacks Revoltosos.</p>
+          <div class="pista pista--duenos" id="pista-duenos">
+            <figure><img src="/assets/img/productos/cliente-golden-bolsa.jpg" width="600" height="800" loading="lazy" alt="Golden retriever con una bolsa de codorniz Revoltosos en la boca"></figure>
+            <figure><img src="/assets/img/productos/cliente-perro-blanco-bolsas.jpg" width="600" height="800" loading="lazy" alt="Perro blanco sonriendo junto a dos bolsas de codorniz Revoltosos"></figure>
+            <figure><img src="/assets/img/productos/cliente-bulldog-bolsas.jpg" width="450" height="800" loading="lazy" alt="Bulldog francés blanco junto a sus bolsas de snacks Revoltosos"></figure>
+          </div>
+          <div class="carrusel-nav" data-para="pista-duenos" hidden>
+            <button type="button" class="carrusel-btn" aria-label="Foto anterior"><svg width="20" height="20" aria-hidden="true"><use href="#i-ant"/></svg></button>
+            <div class="carrusel-puntos" aria-hidden="true"></div>
+            <button type="button" class="carrusel-btn" aria-label="Siguiente foto"><svg width="20" height="20" aria-hidden="true"><use href="#i-sig"/></svg></button>
+          </div>
+        </div>
+        <a href="#pedido" class="btn btn--ancho" style="margin-top: 24px" data-cta="llega">Pedir mi cajita — Pagar al recibir</a>
       </div>
     </section>
 
@@ -429,6 +466,6 @@
   <button type="button" id="cookies-ok">Entendido</button>
 </div>
 
-<script src="/assets/js/landing.js?v=4"></script>
+<script src="/assets/js/landing.js?v=5"></script>
 </body>
 </html>

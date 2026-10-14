@@ -300,9 +300,6 @@ html[data-oferta="codornices-unidad"] .solo-promo { display: none !important; }
 .paquetes--uno .paquete-iconos { height: auto; margin: 0; }
 
 /* Videos */
-.videos-lista { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; margin: 0 -16px; padding: 0 16px 4px; scroll-padding: 0 16px; }
-.videos-lista::-webkit-scrollbar { display: none; }
-.videos-lista video { flex: 0 0 min(64%, 260px); aspect-ratio: 3 / 4; border-radius: 18px; object-fit: cover; background: var(--tinta); scroll-snap-align: start; }
 
 /* Galería */
 .galeria { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
@@ -347,5 +344,25 @@ html[data-oferta="codornices-unidad"] .solo-promo { display: none !important; }
 .carrusel-puntos span { width: 8px; height: 8px; border-radius: 999px; background: #CFC5B3; transition: width .2s ease, background-color .2s ease; }
 .carrusel-puntos span.activo { width: 22px; background: var(--rosa); }
 @media (min-width: 860px) {
-  .videos-lista video { flex-basis: 240px; }
 }
+
+/* Carruseles (videos, así llega, dueños) */
+.pista { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; margin: 0 -16px; padding: 0 16px 4px; scroll-padding: 0 16px; }
+.pista::-webkit-scrollbar { display: none; }
+.pista > * { flex: none; width: 240px; height: 320px; min-width: 0; margin: 0; border-radius: 18px; overflow: hidden; position: relative; scroll-snap-align: start; background: var(--tinta); }
+.pista > video, .pista > * > img, .pista > * > video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pista figcaption { position: absolute; left: 10px; bottom: 10px; padding: 5px 12px; border-radius: 999px; background: rgba(18,17,15,.82); color: #F5F1E8; font-size: 13px; font-weight: 800; }
+.pista--foto > * { width: 260px; height: 325px; background: #FFFFFF; }
+.pista--duenos > * { width: 220px; height: 293px; background: var(--hueso-2); }
+.sellos-llega { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.sellos-llega span { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; background: #FFFFFF; font-size: 14px; font-weight: 700; }
+.sellos-llega svg { color: var(--salvia); }
+.disfrutan { margin-top: 40px; padding-top: 32px; border-top: 1px solid var(--linea); }
+.disfrutan h3 { font-family: var(--serif); font-weight: 400; font-size: clamp(26px, 3vw, 34px); line-height: 1.1; }
+
+/* Sí, son feítas */
+.feitas { background: var(--negro); color: #F5F1E8; background-image: url("/assets/img/patron-femur.svg"); background-size: 300px 300px; }
+.feitas .contenedor { max-width: 860px; text-align: center; }
+.feitas-frase { font-family: var(--serif); font-size: clamp(34px, 5.2vw, 60px); line-height: 1.05; letter-spacing: -0.01em; }
+.feitas-frase span { color: var(--rosa-claro); }
+.feitas p:not(.feitas-frase) { margin: 18px auto 0; max-width: 34em; color: var(--sobre-negro); font-size: 18px; }
