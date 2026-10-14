@@ -66,3 +66,9 @@
   to = "/"
   status = 404
   force = true
+
+# Formulario de reseñas: no hace falta que aparezca en Google.
+[[headers]]
+  for = "/opina/*"
+  [headers.values]
+    X-Robots-Tag = "noindex"

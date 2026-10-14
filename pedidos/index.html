@@ -91,11 +91,13 @@ a:hover { color: var(--rosa-hover); }
 .pedido-total { display: flex; justify-content: space-between; align-items: baseline; border-top: 1.5px dashed var(--linea); padding-top: 10px; }
 .pedido-total span:last-child { font-family: var(--serif); font-size: 24px; font-variant-numeric: tabular-nums; }
 .pedido-origen { font-size: 12px; color: var(--tinta-2); }
-.acciones { display: flex; gap: 8px; }
+.acciones { display: flex; flex-wrap: wrap; gap: 8px; }
 .acciones .btn { flex: 1 1 auto; }
 .pestanas { max-width: 1240px; margin: 10px auto 0; display: flex; gap: 6px; }
 .pestana { min-height: 44px; padding: 0 16px; border: 0; border-radius: 12px 12px 0 0; background: transparent; color: #CFC8BA; font: inherit; font-weight: 700; cursor: pointer; }
 .pestana[aria-selected="true"] { background: var(--hueso); color: var(--tinta); }
+.contador { display: inline-block; min-width: 20px; padding: 1px 7px; border-radius: 999px; background: var(--rosa); color: #FFFFFF; font-size: 12px; text-align: center; }
+.contador[hidden] { display: none; }
 .filtro-landing { min-height: 48px; padding: 0 36px 0 12px; border: 1.5px solid var(--campo); border-radius: 12px; font: inherit; font-size: 15px; background: #FFFFFF; color: var(--tinta); appearance: none; -webkit-appearance: none; background-repeat: no-repeat; background-position: right 12px center; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%232A231D' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); max-width: 46%; }
 .pedido-oferta { align-self: flex-start; padding: 2px 10px; border-radius: 999px; background: var(--hueso); color: var(--tinta-2); font-size: 12px; font-weight: 700; }
 .landing { background: #FFFFFF; border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 12px 30px -24px rgba(42,35,29,.5); }
@@ -169,6 +171,7 @@ a:hover { color: var(--rosa-hover); }
     <div class="pestanas" role="tablist" aria-label="Secciones del panel">
       <button type="button" class="pestana" role="tab" id="t-pedidos" aria-controls="tab-pedidos" aria-selected="true">Pedidos</button>
       <button type="button" class="pestana" role="tab" id="t-landings" aria-controls="tab-landings" aria-selected="false">Landings</button>
+      <button type="button" class="pestana" role="tab" id="t-resenas" aria-controls="tab-resenas" aria-selected="false">Reseñas <span class="contador" id="resenas-pendientes" hidden></span></button>
     </div>
   </header>
 
@@ -190,6 +193,17 @@ a:hover { color: var(--rosa-hover); }
   <main class="contenido" id="tab-landings" role="tabpanel" aria-labelledby="t-landings" hidden>
     <p class="nota-landings">Cada landing vende una oferta con su propio precio. Las <strong>ocultas</strong> no aparecen en ningún menú: solo entra quien tenga el link (sirven para pruebas de anuncios). Las cifras no cuentan pedidos cancelados ni devueltos.</p>
     <div class="lista" id="landings"></div>
+  </main>
+
+  <main class="contenido" id="tab-resenas" role="tabpanel" aria-labelledby="t-resenas" hidden>
+    <div class="pedido">
+      <strong>Pide reseñas a tus clientes</strong>
+      <p style="margin: 0; font-size: 14px; color: var(--tinta-2)">Mándales este link cuando ya hayan recibido su pedido. En cada pedido marcado como <strong>Entregado</strong> también aparece el botón "Pedir reseña".</p>
+      <div class="landing-link"><code>revoltosos.netlify.app/opina</code><button type="button" class="btn-sec" id="r-copiar">Copiar</button></div>
+    </div>
+    <div class="filtros" id="filtros-resenas" role="group" aria-label="Filtrar reseñas"></div>
+    <p class="estado-carga" id="r-estado" aria-live="polite">Cargando reseñas…</p>
+    <div class="lista" id="lista-resenas"></div>
   </main>
 </div>
 
@@ -293,9 +307,10 @@ $('#p-salir').addEventListener('click', () => sb.auth.signOut());
 async function cargar() {
   $('#p-estado').hidden = false;
   $('#p-estado').textContent = 'Cargando pedidos…';
-  const [rp, ro] = await Promise.all([
+  const [rp, ro, rr] = await Promise.all([
     sb.from('pedidos').select('*').order('creado_en', { ascending: false }).limit(1000),
-    sb.from('ofertas').select('*').order('orden')
+    sb.from('ofertas').select('*').order('orden'),
+    sb.from('resenas').select('*').order('creado_en', { ascending: false }).limit(300)
   ]);
   if (rp.error) {
     $('#p-estado').textContent = 'No pudimos cargar los pedidos. Revisa tu conexión y toca actualizar.';
@@ -303,9 +318,99 @@ async function cargar() {
   }
   pedidos = rp.data;
   ofertas = ro.error ? [] : ro.data;
+  resenas = rr.error ? null : rr.data;
   pintarSelectorLanding();
   pintar();
   pintarLandings();
+  pintarResenas();
+}
+
+/* ---------- Reseñas ---------- */
+let resenas = [];
+let filtroResena = 'Pendiente';
+const ETIQUETA_RESENA = { Pendiente: 'Pendientes', Publicada: 'Publicadas', Oculta: 'Ocultas' };
+
+function pintarResenas() {
+  const estado = $('#r-estado');
+  const lista = $('#lista-resenas');
+  const filtros = $('#filtros-resenas');
+  lista.textContent = '';
+  filtros.textContent = '';
+  if (resenas === null) {
+    estado.hidden = false;
+    estado.textContent = 'No se encontró la tabla de reseñas. Ejecuta supabase/migraciones/004-resenas.sql en Supabase.';
+    return;
+  }
+  const pendientes = resenas.filter((r) => r.estado === 'Pendiente').length;
+  const badge = $('#resenas-pendientes');
+  badge.hidden = !pendientes;
+  badge.textContent = pendientes;
+
+  Object.keys(ETIQUETA_RESENA).forEach((est) => {
+    const b = el('button', 'filtro', ETIQUETA_RESENA[est] + ' ');
+    b.type = 'button';
+    b.setAttribute('aria-pressed', String(filtroResena === est));
+    b.append(el('span', null, String(resenas.filter((r) => r.estado === est).length)));
+    b.addEventListener('click', () => { filtroResena = est; pintarResenas(); });
+    filtros.append(b);
+  });
+
+  const visibles = resenas.filter((r) => r.estado === filtroResena);
+  estado.hidden = visibles.length > 0;
+  estado.textContent = resenas.length ? 'No hay reseñas en esta lista.' : 'Todavía no llegan reseñas. Comparte el link /opina con tus clientes.';
+
+  visibles.forEach((r) => {
+    const art = el('article', 'pedido');
+    if (r.foto_path) {
+      const img = el('img');
+      img.src = CONFIG.SUPABASE_URL + '/storage/v1/object/public/resenas/' + encodeURIComponent(r.foto_path);
+      img.alt = 'Foto enviada por ' + r.nombre;
+      img.loading = 'lazy';
+      img.style.cssText = 'width: calc(100% + 32px); margin: -16px -16px 0; height: 220px; object-fit: cover; border-radius: 18px 18px 0 0';
+      art.append(img);
+    }
+    const top = el('div', 'pedido-top');
+    top.append(el('span', 'pedido-fecha', fechaCorta.format(new Date(r.creado_en))), el('span', 'estado', r.estado));
+    top.lastChild.dataset.e = r.estado === 'Publicada' ? 'Entregado' : r.estado === 'Oculta' ? 'Devuelto' : 'Nuevo';
+    top.lastChild.style.cssText = 'display: inline-flex; align-items: center; min-height: 28px; background-image: none; padding: 0 12px';
+    const estrellas = el('span', null, '★'.repeat(r.estrellas) + '☆'.repeat(5 - r.estrellas));
+    estrellas.style.cssText = 'color: var(--rosa); font-weight: 800; letter-spacing: 2px';
+    estrellas.setAttribute('aria-label', r.estrellas + ' de 5 estrellas');
+    const texto = el('blockquote', null, r.texto);
+    texto.style.margin = '0';
+    const quien = el('div', 'pedido-fecha');
+    quien.style.fontSize = '14px';
+    quien.append(el('strong', null, r.nombre), ' · ' + r.ciudad + (r.mascota ? ' · con ' + r.mascota : '') + ' · ' + r.producto);
+    const acc = el('div', 'acciones');
+    const accion = (texto, nuevo, primario) => {
+      const b = el('button', primario ? 'btn' : 'btn-sec', texto);
+      b.type = 'button';
+      if (primario) b.style.background = 'var(--salvia)';
+      b.addEventListener('click', async () => {
+        b.disabled = true;
+        const { error } = await sb.from('resenas').update({ estado: nuevo }).eq('id', r.id);
+        if (error) { b.disabled = false; avisar('No se pudo guardar'); return; }
+        r.estado = nuevo;
+        avisar(nuevo === 'Publicada' ? 'Reseña publicada en la página' : 'Reseña ' + nuevo.toLowerCase());
+        pintarResenas();
+      });
+      return b;
+    };
+    if (r.estado !== 'Publicada') acc.append(accion('Publicar', 'Publicada', true));
+    if (r.estado !== 'Oculta') acc.append(accion('Ocultar', 'Oculta', false));
+    art.append(top, estrellas, texto, quien, acc);
+    lista.append(art);
+  });
+}
+$('#r-copiar').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText('https://revoltosos.netlify.app/opina/'); avisar('Link copiado'); } catch (e) { avisar('No se pudo copiar'); }
+});
+
+function mensajeResena(p) {
+  const primerNombre = p.nombre.split(/\s+/)[0];
+  const cajita = (p.oferta || '').startsWith('cajita');
+  const link = 'https://revoltosos.netlify.app/opina/?n=' + encodeURIComponent(primerNombre) + (cajita ? '&p=cajita' : '');
+  return '¡Hola ' + primerNombre + '! 🐾 Somos Revoltosos. ¿Qué le ' + (cajita ? 'pareció la cajita' : 'parecieron las codornices') + ' a tu peludo? Nos ayudaría mucho que nos contaras aquí, y si quieres, con una foto 👉 ' + link;
 }
 
 const nombreOferta = (slug) => (ofertas.find((o) => o.slug === slug) || {}).nombre || slug || 'Codornices · Promo 2 frascos';
@@ -388,6 +493,14 @@ function tarjeta(p) {
     try { await navigator.clipboard.writeText(t); avisar('Datos copiados'); } catch (e) { avisar('No se pudo copiar'); }
   });
   acc.append(wa, copiar);
+  if (p.estado === 'Entregado') {
+    const pedir = el('a', 'btn-sec', 'Pedir reseña');
+    pedir.href = 'https://wa.me/' + p.celular + '?text=' + encodeURIComponent(mensajeResena(p));
+    pedir.target = '_blank';
+    pedir.rel = 'noopener';
+    pedir.style.cssText = 'display: inline-flex; align-items: center; text-decoration: none';
+    acc.append(pedir);
+  }
 
   art.append(top, el('span', 'pedido-oferta', nombreOferta(p.oferta)), quien, dir, prod, tot, acc);
   if (p.utm_source || p.utm_campaign) art.append(el('div', 'pedido-origen', 'Origen: ' + [p.utm_source, p.utm_campaign].filter(Boolean).join(' · ')));
@@ -494,13 +607,14 @@ function pintarLandings() {
 }
 
 function mostrarPestana(cual) {
-  ['pedidos', 'landings'].forEach((t) => {
+  ['pedidos', 'landings', 'resenas'].forEach((t) => {
     $('#t-' + t).setAttribute('aria-selected', String(t === cual));
     $('#tab-' + t).hidden = t !== cual;
   });
 }
 $('#t-pedidos').addEventListener('click', () => mostrarPestana('pedidos'));
 $('#t-landings').addEventListener('click', () => mostrarPestana('landings'));
+$('#t-resenas').addEventListener('click', () => mostrarPestana('resenas'));
 $('#p-landing').addEventListener('change', (e) => { filtroLanding = e.target.value; pintar(); });
 
 $('#p-buscar').addEventListener('input', (e) => { busqueda = e.target.value.trim(); pintar(); });

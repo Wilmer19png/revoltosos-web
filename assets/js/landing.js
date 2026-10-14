@@ -255,24 +255,9 @@ $('#form-pedido').addEventListener('submit', async (e) => {
   new IntersectionObserver(([e]) => { formVisible = e.isIntersecting; actualizar(); }, { threshold: 0.05 }).observe($('#pedido'));
 })();
 
-/* Reseñas y videos reales (la sección aparece solo si hay contenido) */
+/* Videos de clientes (la sección aparece solo si hay videos) */
 (function () {
-  const reviews = P.reviews || [];
   const videos = P.videos || [];
-  if (reviews.length && $('#opiniones')) {
-    const lista = $('#opiniones-lista');
-    reviews.forEach((r) => {
-      const fig = document.createElement('figure');
-      fig.style.cssText = 'margin:0;background:#FBF9F4;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px';
-      fig.innerHTML = '<div style="display:flex;align-items:center;gap:12px"><img alt="" loading="lazy" style="width:52px;height:52px;border-radius:50%;object-fit:cover;background:#CFC5B3"><div><strong style="display:block"></strong><span style="color:#6B6157;font-size:14px"></span></div></div><blockquote style="margin:0;color:#6B6157"></blockquote>';
-      if (r.foto) fig.querySelector('img').src = r.foto; else fig.querySelector('img').remove();
-      fig.querySelector('strong').textContent = r.nombre;
-      fig.querySelector('span').textContent = r.ciudad;
-      fig.querySelector('blockquote').textContent = '“' + r.texto + '”';
-      lista.appendChild(fig);
-    });
-    $('#opiniones').hidden = false;
-  }
   if (videos.length && $('#videos')) {
     const lista = $('#videos-lista');
     videos.forEach((v) => {
@@ -309,10 +294,10 @@ $('#form-pedido').addEventListener('submit', async (e) => {
 })();
 
 /* Carruseles: flechas y puntos para cada .carrusel-nav[data-para] */
-(function () {
-  $$('.carrusel-nav[data-para]').forEach((nav) => {
+function iniciarCarrusel(nav) {
+  {
     const pista = document.getElementById(nav.dataset.para);
-    if (!pista) return;
+    if (!pista || !pista.children.length) return;
     const puntos = $('.carrusel-puntos', nav);
     const [prev, next] = $$('.carrusel-btn', nav);
     const items = () => Array.from(pista.children);
@@ -331,7 +316,62 @@ $('#form-pedido').addEventListener('submit', async (e) => {
     pista.addEventListener('scroll', () => requestAnimationFrame(actualizar), { passive: true });
     window.addEventListener('resize', actualizar);
     actualizar();
-  });
+  }
+}
+$$('.carrusel-nav[data-para]:not([data-tarde])').forEach(iniciarCarrusel);
+
+/* Reseñas reales: solo las que María José marcó como Publicadas en el panel */
+(async function () {
+  const seccion = $('#opiniones');
+  const pista = $('#pista-resenas');
+  if (!seccion || !pista) return;
+  try {
+    const url = CONFIG.SUPABASE_URL + '/rest/v1/resenas?select=nombre,ciudad,mascota,producto,estrellas,texto,foto_path&estado=eq.Publicada&order=creado_en.desc&limit=12';
+    const res = await fetch(url, { headers: { apikey: CONFIG.SUPABASE_KEY } });
+    if (!res.ok) return;
+    const lista = await res.json();
+    if (!Array.isArray(lista) || !lista.length) return;
+    const mio = P.productoId === 'cajita-perros' ? 'Cajita para perros' : 'Codornices';
+    lista.sort((a, b) => (b.producto === mio) - (a.producto === mio));
+    const estrella = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="#C2185B"/></svg>';
+    lista.forEach((r) => {
+      const art = document.createElement('article');
+      if (r.foto_path) {
+        const img = document.createElement('img');
+        img.src = CONFIG.SUPABASE_URL + '/storage/v1/object/public/resenas/' + encodeURIComponent(r.foto_path);
+        img.alt = r.mascota ? r.mascota + ', la mascota de ' + r.nombre : 'La mascota de ' + r.nombre;
+        img.loading = 'lazy';
+        img.width = 560;
+        img.height = 420;
+        art.appendChild(img);
+      }
+      const cuerpo = document.createElement('div');
+      cuerpo.className = 'resena-cuerpo';
+      const n = Math.max(1, Math.min(5, Number(r.estrellas) || 5));
+      const est = document.createElement('span');
+      est.className = 'resena-estrellas';
+      est.setAttribute('role', 'img');
+      est.setAttribute('aria-label', n + ' de 5 estrellas');
+      est.innerHTML = estrella.repeat(n);
+      const cita = document.createElement('blockquote');
+      cita.textContent = r.texto;
+      const pie = document.createElement('div');
+      pie.className = 'resena-pie';
+      const quien = document.createElement('span');
+      const nombre = document.createElement('strong');
+      nombre.textContent = r.nombre;
+      quien.append(nombre, ' · ' + r.ciudad + (r.mascota ? ' · con ' + r.mascota : ''));
+      const tag = document.createElement('span');
+      tag.className = 'resena-tag';
+      tag.textContent = r.producto === 'Cajita para perros' ? 'Cajita' : r.producto;
+      pie.append(quien, tag);
+      cuerpo.append(est, cita, pie);
+      art.appendChild(cuerpo);
+      pista.appendChild(art);
+    });
+    seccion.hidden = false;
+    iniciarCarrusel($('.carrusel-nav[data-para="pista-resenas"]'));
+  } catch (e) { /* sin reseñas: la sección sigue escondida */ }
 })();
 
 pintarResumen();

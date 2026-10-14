@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700;800&display=swap">
 <link rel="preload" as="image" href="/assets/img/frascos2-600.jpg" imagesrcset="/assets/img/frascos2-600.jpg 600w, /assets/img/frascos2-1000.jpg 1000w" imagesizes="(min-width: 860px) 520px, 90vw">
-<link rel="stylesheet" href="/assets/css/landing.css?v=5">
+<link rel="stylesheet" href="/assets/css/landing.css?v=6">
 
 <script>
   // Variantes de esta landing. La dirección decide cuál se muestra:
@@ -337,12 +337,19 @@
       </div>
     </section>
 
-    <!-- Opiniones (aparecen cuando hay reseñas reales en PAGINA.reviews) -->
+    <!-- Opiniones reales: salen de Supabase (tabla resenas, solo las Publicadas). Si no hay, la sección no aparece. -->
     <section class="seccion" id="opiniones" aria-labelledby="t-opiniones" hidden style="background: var(--hueso-2)">
       <div class="contenedor">
-        <h2 class="titulo" id="t-opiniones" style="margin-bottom: 22px">Lo que dicen sus dueños</h2>
-        <div id="opiniones-lista" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 14px"></div>
-        <a href="#pedido" class="btn btn--ancho" style="margin: 24px auto 0" data-cta="opiniones">Pedir el mío — Pagar al recibir</a>
+        <h2 class="titulo" id="t-opiniones">Lo que dicen sus dueños</h2>
+        <p class="bajada" style="margin: 6px 0 20px">Opiniones de clientes que ya compraron, con su permiso.</p>
+        <div class="pista pista--resenas" id="pista-resenas"></div>
+        <div class="carrusel-nav" data-para="pista-resenas" data-tarde hidden>
+          <button type="button" class="carrusel-btn" aria-label="Opinión anterior"><svg width="20" height="20" aria-hidden="true"><use href="#i-ant"/></svg></button>
+          <div class="carrusel-puntos" aria-hidden="true"></div>
+          <button type="button" class="carrusel-btn" aria-label="Siguiente opinión"><svg width="20" height="20" aria-hidden="true"><use href="#i-sig"/></svg></button>
+        </div>
+        <p style="margin-top: 16px; text-align: center"><a href="/opina/" style="font-weight: 700; min-height: 44px; display: inline-flex; align-items: center">¿Ya lo probó tu peludo? Cuéntanos aquí</a></p>
+        <a href="#pedido" class="btn btn--ancho" style="margin: 12px auto 0" data-cta="opiniones">Pedir el mío — Pagar al recibir</a>
       </div>
     </section>
 
@@ -563,6 +570,6 @@
   <button type="button" id="cookies-ok">Entendido</button>
 </div>
 
-<script src="/assets/js/landing.js?v=5"></script>
+<script src="/assets/js/landing.js?v=6"></script>
 </body>
 </html>
