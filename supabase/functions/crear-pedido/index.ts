@@ -57,9 +57,12 @@ function generarOrderId(): string {
 }
 
 async function enviarAMeta(pedido: Record<string, unknown>, extra: { fbp: string; fbc: string; ua: string; ip: string; url: string }) {
-  const pixel = Deno.env.get('META_PIXEL_ID');
-  const token = Deno.env.get('META_ACCESS_TOKEN');
-  if (!pixel || !token) return;
+  const pixel = Deno.env.get('META_PIXEL_ID')?.trim();
+  const token = Deno.env.get('META_ACCESS_TOKEN')?.trim();
+  if (!pixel || !token) {
+    console.warn(`Meta CAPI omitido: falta ${!pixel ? 'META_PIXEL_ID' : ''} ${!token ? 'META_ACCESS_TOKEN' : ''}`.trim());
+    return;
+  }
 
   const version = Deno.env.get('META_API_VERSION') ?? 'v23.0';
   const [nombre, ...apellidos] = String(pedido.nombre).split(/\s+/);
@@ -96,7 +99,7 @@ async function enviarAMeta(pedido: Record<string, unknown>, extra: { fbp: string
       },
     }],
   };
-  const prueba = Deno.env.get('META_TEST_EVENT_CODE');
+  const prueba = Deno.env.get('META_TEST_EVENT_CODE')?.trim();
   if (prueba) cuerpo.test_event_code = prueba;
 
   const res = await fetch(`https://graph.facebook.com/${version}/${pixel}/events?access_token=${encodeURIComponent(token)}`, {
@@ -104,7 +107,9 @@ async function enviarAMeta(pedido: Record<string, unknown>, extra: { fbp: string
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(cuerpo),
   });
-  if (!res.ok) console.error('Meta CAPI', res.status, await res.text());
+  const respuesta = await res.text();
+  if (!res.ok) console.error('Meta CAPI error', res.status, respuesta);
+  else console.log(`Meta CAPI ok ${pedido.order_id} (pixel ${pixel}${prueba ? ', prueba ' + prueba : ''}): ${respuesta}`);
 }
 
 Deno.serve(async (req) => {
