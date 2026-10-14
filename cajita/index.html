@@ -105,11 +105,7 @@
         <div class="hero-logo"><img src="/assets/img/logo.jpg" width="150" height="150" alt="Revoltosos — proteína 100 % natural"></div>
         <div class="hero-grid">
           <div class="hero-foto">
-            <!-- FOTO PENDIENTE: reemplazar por <img src="/assets/img/cajita.jpg" …> -->
-            <div class="pendiente" style="width: 100%; max-width: 520px; aspect-ratio: 1 / 1; border-radius: 20px">
-              <svg width="36" height="36" aria-hidden="true"><use href="#i-camara"/></svg>
-              Foto de la cajita abierta con los 5 snacks
-            </div>
+            <img src="/assets/img/productos/cajita-producto-fondo-blanco-600.jpg" srcset="/assets/img/productos/cajita-producto-fondo-blanco-600.jpg 600w, /assets/img/productos/cajita-producto-fondo-blanco.jpg 1000w" sizes="(min-width: 860px) 520px, 90vw" width="1000" height="1000" fetchpriority="high" alt="Cajita Revoltosos abierta con patas de pollo, oreja de cerdo, codornicitas, codornices enteras y fémur de cerdo">
           </div>
           <div class="hero-texto">
             <h1>Cajita para perros</h1>
@@ -144,6 +140,22 @@
       </div>
     </section>
 
+    <!-- Envío gratis, bien grande -->
+    <section class="envio" aria-labelledby="t-envio">
+      <div class="contenedor envio-grid">
+        <svg class="envio-icono" width="64" height="64" aria-hidden="true"><use href="#i-camion"/></svg>
+        <div>
+          <h2 id="t-envio" class="envio-titulo">Envío GRATIS a toda Colombia</h2>
+          <p class="envio-texto">Te llevamos la cajita a la puerta de tu casa y pagas cuando la recibes.</p>
+        </div>
+        <ul class="envio-puntos">
+          <li><svg width="22" height="22" aria-hidden="true"><use href="#i-check"/></svg>Cualquier ciudad o municipio</li>
+          <li><svg width="22" height="22" aria-hidden="true"><use href="#i-check"/></svg>$0 de envío</li>
+          <li><svg width="22" height="22" aria-hidden="true"><use href="#i-check"/></svg>Pago contraentrega</li>
+        </ul>
+      </div>
+    </section>
+
     <!-- Qué trae -->
     <section class="seccion" aria-labelledby="t-trae">
       <div class="contenedor">
@@ -151,23 +163,23 @@
         <p class="bajada" style="margin-top: 8px">Cinco snacks distintos para que nunca se aburra.</p>
         <div class="caja-grid">
           <article class="caja-item">
-            <div class="pendiente"><svg width="28" height="28" aria-hidden="true"><use href="#i-camara"/></svg>Foto: patas de pollo</div>
+            <img src="/assets/img/productos/patas-pollo-producto-600.jpg" width="600" height="600" loading="lazy" alt="Patas de pollo deshidratadas">
             <div><span class="caja-cantidad">×5</span><strong>Patas de pollo</strong><span>Crocantes y fáciles de masticar.</span></div>
           </article>
           <article class="caja-item">
-            <div class="pendiente"><svg width="28" height="28" aria-hidden="true"><use href="#i-camara"/></svg>Foto: oreja de cerdo</div>
+            <img src="/assets/img/productos/oreja-cerdo-producto-600.jpg" width="600" height="600" loading="lazy" alt="Oreja de cerdo deshidratada">
             <div><span class="caja-cantidad">×1</span><strong>Oreja de cerdo</strong><span>Para masticar un buen rato.</span></div>
           </article>
           <article class="caja-item">
-            <img src="/assets/img/frasco-600.jpg" width="600" height="600" loading="lazy" alt="Frasco de codornicitas Revoltosos de 50 g">
+            <img src="/assets/img/productos/codornicitas-producto-600.jpg" width="600" height="600" loading="lazy" alt="Codornicitas deshidratadas">
             <div><span class="caja-cantidad">50 g</span><strong>Codornicitas</strong><span>Nuestro frasco de codorniz, ideal para premiar.</span></div>
           </article>
           <article class="caja-item">
-            <img src="/assets/img/anatomia.jpg" width="900" height="900" loading="lazy" alt="Codorniz entera deshidratada Revoltosos">
+            <img src="/assets/img/productos/codorniz-entera-x2-producto-600.jpg" width="600" height="600" loading="lazy" alt="Dos codornices enteras deshidratadas">
             <div><span class="caja-cantidad">×2</span><strong>Codorniz entera</strong><span>Carne, piel y hueso en un solo snack.</span></div>
           </article>
           <article class="caja-item">
-            <div class="pendiente"><svg width="28" height="28" aria-hidden="true"><use href="#i-camara"/></svg>Foto: fémur de cerdo</div>
+            <img src="/assets/img/productos/femur-cerdo-empaque.jpg" width="750" height="1000" loading="lazy" alt="Fémur de cerdo deshidratado empacado">
             <div><span class="caja-cantidad">×1</span><strong>Fémur de cerdo</strong><span>Un reto para los que muerden fuerte.</span></div>
           </article>
         </div>
@@ -338,7 +350,8 @@
 
         <aside class="aparte" aria-label="Resumen de garantías">
           <div class="aparte-producto">
-            <span class="pendiente" style="width: 72px; height: 72px; padding: 0; border-radius: 12px"><svg width="32" height="29" aria-hidden="true"><use href="#i-caja"/></svg></span>
+            <img src="/assets/img/productos/cajita-producto-fondo-blanco-600.jpg" width="600" height="600" alt="" loading="lazy" style="width: 72px; height: 72px; object-fit: cover">
+
             <div><strong style="display: block">Cajita para perros</strong><span style="color: var(--tinta-2)">5 snacks naturales</span></div>
           </div>
           <ul>

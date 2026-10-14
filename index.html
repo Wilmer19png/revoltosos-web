@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700;800&display=swap">
-<link rel="preload" as="image" href="/assets/img/frasco-600.jpg" imagesrcset="/assets/img/frasco-600.jpg 600w, /assets/img/frasco-1000.jpg 1000w" imagesizes="(min-width: 860px) 520px, 90vw">
+<link rel="preload" as="image" href="/assets/img/frascos2-600.jpg" imagesrcset="/assets/img/frascos2-600.jpg 600w, /assets/img/frascos2-1000.jpg 1000w" imagesizes="(min-width: 860px) 520px, 90vw">
 <link rel="stylesheet" href="/assets/css/landing.css">
 
 <script>
@@ -127,7 +127,16 @@
         <div class="hero-logo"><img src="/assets/img/logo.jpg" width="150" height="150" alt="Revoltosos — proteína 100 % natural"></div>
         <div class="hero-grid">
           <div class="hero-foto">
-            <img src="/assets/img/frasco-600.jpg" srcset="/assets/img/frasco-600.jpg 600w, /assets/img/frasco-1000.jpg 1000w" sizes="(min-width: 860px) 520px, 90vw" width="1000" height="1000" fetchpriority="high" alt="Frasco abierto de codornices deshidratadas Revoltosos de 50 g, con la tapa amarilla y codornices saltando">
+            <img id="hero-img" src="/assets/img/frascos2-600.jpg" srcset="/assets/img/frascos2-600.jpg 600w, /assets/img/frascos2-1000.jpg 1000w" sizes="(min-width: 860px) 520px, 90vw" width="1000" height="1000" fetchpriority="high" alt="Dos frascos de codornices deshidratadas Revoltosos de 50 g, uno abierto con codornices saltando">
+            <script>
+              // La variante de 1 frasco muestra la foto de un solo frasco.
+              if (document.documentElement.getAttribute('data-oferta') === 'codornices-unidad') {
+                var h = document.getElementById('hero-img');
+                h.srcset = '/assets/img/frasco-600.jpg 600w, /assets/img/frasco-1000.jpg 1000w';
+                h.src = '/assets/img/frasco-600.jpg';
+                h.alt = 'Frasco abierto de codornices deshidratadas Revoltosos de 50 g, con codornices saltando';
+              }
+            </script>
           </div>
           <div class="hero-texto">
             <h1>Codornices deshidratadas</h1>
@@ -166,6 +175,22 @@
             </div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- Envío gratis, bien grande -->
+    <section class="envio" aria-labelledby="t-envio">
+      <div class="contenedor envio-grid">
+        <svg class="envio-icono" width="64" height="64" aria-hidden="true"><use href="#i-camion"/></svg>
+        <div>
+          <h2 id="t-envio" class="envio-titulo">Envío GRATIS a toda Colombia</h2>
+          <p class="envio-texto">Desde 1 frasco, sin mínimo de compra. Llega a tu puerta y pagas cuando lo recibes.</p>
+        </div>
+        <ul class="envio-puntos">
+          <li><svg width="22" height="22" aria-hidden="true"><use href="#i-check"/></svg>Cualquier ciudad o municipio</li>
+          <li><svg width="22" height="22" aria-hidden="true"><use href="#i-check"/></svg>$0 de envío</li>
+          <li><svg width="22" height="22" aria-hidden="true"><use href="#i-check"/></svg>Pago contraentrega</li>
+        </ul>
       </div>
     </section>
 
