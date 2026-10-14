@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700;800&display=swap">
 <link rel="preload" as="image" href="/assets/img/frascos2-600.jpg" imagesrcset="/assets/img/frascos2-600.jpg 600w, /assets/img/frascos2-1000.jpg 1000w" imagesizes="(min-width: 860px) 520px, 90vw">
-<link rel="stylesheet" href="/assets/css/landing.css">
+<link rel="stylesheet" href="/assets/css/landing.css?v=4">
 
 <script>
   // Variantes de esta landing. La dirección decide cuál se muestra:
@@ -223,6 +223,11 @@
         <h2 class="titulo" id="t-videos">Míralos tú mismo</h2>
         <p class="bajada" style="margin: 6px 0 22px">Perritos de nuestros clientes probando la codorniz.</p>
         <div class="videos-lista" id="videos-lista"></div>
+        <div class="carrusel-nav" id="videos-nav" hidden>
+          <button type="button" class="carrusel-btn" id="videos-prev" aria-label="Video anterior"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+          <div class="carrusel-puntos" id="videos-puntos" aria-hidden="true"></div>
+          <button type="button" class="carrusel-btn" id="videos-next" aria-label="Siguiente video"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+        </div>
         <a href="#pedido" class="btn btn--ancho" style="margin-top: 18px" data-cta="videos">Pedir ahora — Pagar al recibir</a>
       </div>
     </section>
@@ -507,6 +512,6 @@
   <button type="button" id="cookies-ok">Entendido</button>
 </div>
 
-<script src="/assets/js/landing.js"></script>
+<script src="/assets/js/landing.js?v=4"></script>
 </body>
 </html>

@@ -296,6 +296,29 @@ $('#form-pedido').addEventListener('submit', async (e) => {
     }), { threshold: 0.4, rootMargin: '200px 0px' });
     $$('video', lista).forEach((v) => obs.observe(v));
     $('#videos').hidden = false;
+
+    // Carrusel: flechas y puntos (solo si los videos no caben todos a la vista)
+    const nav = $('#videos-nav');
+    if (nav) {
+      const puntos = $('#videos-puntos');
+      const prev = $('#videos-prev');
+      const next = $('#videos-next');
+      puntos.innerHTML = videos.map(() => '<span></span>').join('');
+      const paso = () => { const v = lista.querySelector('video'); return v ? v.getBoundingClientRect().width + 12 : lista.clientWidth; };
+      const actualizar = () => {
+        const cabe = lista.scrollWidth <= lista.clientWidth + 4;
+        nav.hidden = cabe;
+        const i = Math.round(lista.scrollLeft / paso());
+        $$('span', puntos).forEach((p, k) => p.classList.toggle('activo', k === i));
+        prev.disabled = lista.scrollLeft <= 4;
+        next.disabled = lista.scrollLeft + lista.clientWidth >= lista.scrollWidth - 4;
+      };
+      prev.addEventListener('click', () => lista.scrollBy({ left: -paso() }));
+      next.addEventListener('click', () => lista.scrollBy({ left: paso() }));
+      lista.addEventListener('scroll', () => requestAnimationFrame(actualizar), { passive: true });
+      window.addEventListener('resize', actualizar);
+      actualizar();
+    }
   }
 })();
 

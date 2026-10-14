@@ -300,8 +300,9 @@ html[data-oferta="codornices-unidad"] .solo-promo { display: none !important; }
 .paquetes--uno .paquete-iconos { height: auto; margin: 0; }
 
 /* Videos */
-.videos-lista { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
-.videos-lista video { flex: 0 0 clamp(140px, 36%, 190px); aspect-ratio: 3 / 4; border-radius: 18px; object-fit: cover; background: var(--tinta); scroll-snap-align: start; }
+.videos-lista { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; margin: 0 -16px; padding: 0 16px 4px; scroll-padding: 0 16px; }
+.videos-lista::-webkit-scrollbar { display: none; }
+.videos-lista video { flex: 0 0 min(64%, 260px); aspect-ratio: 3 / 4; border-radius: 18px; object-fit: cover; background: var(--tinta); scroll-snap-align: start; }
 
 /* Galería */
 .galeria { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
@@ -334,4 +335,17 @@ html[data-oferta="codornices-unidad"] .solo-promo { display: none !important; }
   .envio-grid { grid-template-columns: auto minmax(0, 1fr) auto; }
   .envio-icono { width: 72px; height: 72px; }
   .envio-puntos { flex-direction: column; }
+}
+
+/* Carrusel de videos */
+.carrusel-nav { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 14px; }
+.carrusel-nav[hidden] { display: none; }
+.carrusel-btn { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--tinta); background: #FFFFFF; color: var(--tinta); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.carrusel-btn:hover { background: var(--tinta); color: #FFFFFF; }
+.carrusel-btn[disabled] { opacity: .3; cursor: default; background: #FFFFFF; color: var(--tinta); }
+.carrusel-puntos { display: flex; gap: 6px; }
+.carrusel-puntos span { width: 8px; height: 8px; border-radius: 999px; background: #CFC5B3; transition: width .2s ease, background-color .2s ease; }
+.carrusel-puntos span.activo { width: 22px; background: var(--rosa); }
+@media (min-width: 860px) {
+  .videos-lista video { flex-basis: 240px; }
 }

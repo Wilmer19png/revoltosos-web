@@ -9,11 +9,28 @@
     X-Robots-Tag = "noindex, nofollow"
     Cache-Control = "no-store"
 
-# Imágenes: se guardan en el celular por una semana.
+# Imágenes y videos: se guardan en el celular por una semana.
 [[headers]]
-  for = "/assets/*"
+  for = "/assets/img/*"
   [headers.values]
     Cache-Control = "public, max-age=604800"
+
+[[headers]]
+  for = "/assets/video/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+# CSS y JS: el celular pregunta siempre si hay versión nueva (si no cambió, no se descarga de nuevo).
+# Además, al cambiarlos hay que subir el número ?v= en index.html y cajita/index.html.
+[[headers]]
+  for = "/assets/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/assets/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
 
 # Variante oculta de prueba (1 frasco a $14.900): usa la misma página que la principal.
 [[headers]]
