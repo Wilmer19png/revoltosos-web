@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+  <defs>
+    <g id="femur">
+      <path d="M-28 -9 C-10 -12 10 -11 30 -8 C38 -12 46 -20 56 -19 C66 -18 72 -10 71 -2 C72 6 70 14 62 17 C56 20 50 18 46 14 C42 16 36 14 30 9 C10 12 -10 13 -28 10 C-36 14 -44 22 -54 21 C-64 20 -72 14 -73 5 C-75 -4 -72 -12 -66 -16 C-62 -20 -58 -24 -52 -24 C-44 -24 -38 -18 -34 -14 C-31 -11 -29 -10 -28 -9 Z"/>
+      <path d="M-62 -6 C-58 -2 -54 0 -48 1"/>
+      <path d="M-46 -17 C-43 -13 -40 -11 -36 -10"/>
+      <path d="M50 -10 C54 -6 56 -1 55 5"/>
+      <path d="M-14 -6 C0 -7 12 -6 22 -4"/>
+    </g>
+  </defs>
+  <g fill="none" stroke="#D9A441" stroke-opacity="0.16" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <use href="#femur" transform="translate(85 85) rotate(-30) scale(0.9)"/>
+    <use href="#femur" transform="translate(215 168) rotate(25) scale(0.78)"/>
+    <use href="#femur" transform="translate(96 242) rotate(8) scale(0.68)"/>
+  </g>
+</svg>
