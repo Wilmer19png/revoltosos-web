@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Pedidos · Revoltosos</title>
+<meta name="theme-color" content="#12110F">
+<link rel="icon" href="../assets/img/logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700;800&display=swap">
+<style>
+:root {
+  --hueso: #F5F1E8; --negro: #12110F; --tinta: #2A231D; --tinta-2: #6B6157; --linea: #D6CCBA; --campo: #CFC5B3;
+  --salvia: #4F5D3A; --rosa: #C2185B; --rosa-hover: #A3124B; --error: #B3261E;
+  --serif: 'Young Serif', Georgia, serif; --sans: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--hueso); color: var(--tinta); font-family: var(--sans); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+img, svg { display: block; }
+h1, h2, p { margin: 0; }
+a { color: var(--rosa); text-underline-offset: 3px; }
+a:hover { color: var(--rosa-hover); }
+::selection { background: #FBEAF1; }
+:focus-visible { outline: 3px solid var(--rosa); outline-offset: 3px; border-radius: 6px; }
+[hidden] { display: none !important; }
+.oculto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 0 20px; border: 0; border-radius: 14px; background: var(--rosa); color: #FFFFFF; font: inherit; font-weight: 800; text-decoration: none; cursor: pointer; }
+.btn:hover { background: var(--rosa-hover); color: #FFFFFF; }
+.btn[disabled] { opacity: .7; cursor: progress; }
+.btn-sec { min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1.5px solid var(--linea); background: #FFFFFF; color: var(--tinta); font: inherit; font-weight: 700; cursor: pointer; }
+.btn-sec:hover { border-color: var(--tinta); }
+
+/* Ingreso */
+.ingreso { min-height: 100vh; background: var(--negro); color: #F5F1E8; padding: 64px 20px 32px; display: flex; flex-direction: column; align-items: center; gap: 28px; }
+.ingreso-marca { display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+.medallon { width: 72px; height: 72px; border-radius: 50%; background: var(--hueso); display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 0 0 5px var(--negro), 0 0 0 6px rgba(217,164,65,.6); }
+.medallon img { width: 60px; height: 60px; }
+.ingreso h1 { font-family: var(--serif); font-weight: 400; font-size: 34px; line-height: 1.1; }
+.ingreso-marca p { color: #CFC8BA; font-size: 15px; }
+.tarjeta { width: 100%; max-width: 380px; background: var(--hueso); color: var(--tinta); border-radius: 20px; padding: 24px 20px; display: flex; flex-direction: column; gap: 16px; }
+.campo { display: flex; flex-direction: column; gap: 6px; }
+.campo label { font-weight: 700; font-size: 15px; }
+.campo input, .buscar { min-height: 50px; width: 100%; padding: 0 14px; border: 1.5px solid var(--campo); border-radius: 12px; font: inherit; font-size: 16px; background: #FFFFFF; color: var(--tinta); }
+.campo input:focus, .buscar:focus { outline: none; border-color: var(--salvia); box-shadow: 0 0 0 3px rgba(79,93,58,.2); }
+.mensaje { font-size: 14px; font-weight: 600; }
+.mensaje.error { color: var(--error); }
+.mensaje.ok { color: var(--salvia); }
+.link-boton { align-self: center; background: none; border: 0; padding: 8px; font: inherit; font-weight: 600; color: var(--rosa); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.pie-ingreso { margin-top: auto; display: flex; align-items: center; gap: 8px; font-size: 13px; color: #9C9384; }
+
+/* Panel */
+.cabecera { background: var(--negro); color: #F5F1E8; padding: 12px 16px; position: sticky; top: 0; z-index: 10; }
+.cabecera-in { max-width: 1240px; margin: 0 auto; display: flex; align-items: center; gap: 12px; }
+.cabecera .medallon { width: 44px; height: 44px; box-shadow: none; }
+.cabecera .medallon img { width: 36px; height: 36px; }
+.cabecera h1 { font-family: var(--serif); font-weight: 400; font-size: 24px; line-height: 1.1; }
+.cabecera small { display: block; font-size: 13px; color: #9C9384; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cabecera .btn-sec { background: transparent; color: #F5F1E8; border-color: #4A443C; }
+.cabecera .btn-sec:hover { border-color: #F5F1E8; }
+.contenido { max-width: 1240px; margin: 0 auto; padding: 16px 16px 48px; display: flex; flex-direction: column; gap: 14px; }
+.filtros { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.filtro { flex: none; min-height: 40px; padding: 0 14px; border-radius: 999px; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; background: #FFFFFF; color: var(--tinta); border: 1.5px solid var(--linea); }
+.filtro[aria-pressed="true"] { background: var(--negro); color: #F5F1E8; border-color: var(--negro); }
+.filtro span { opacity: .7; font-variant-numeric: tabular-nums; }
+.barra-herr { display: flex; gap: 10px; align-items: center; }
+.barra-herr .buscar { flex: 1 1 auto; min-height: 48px; }
+.estado-carga { color: var(--tinta-2); text-align: center; padding: 32px 0; }
+.lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr)); gap: 14px; }
+.pedido { background: #FFFFFF; border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 12px 30px -24px rgba(42,35,29,.5); }
+.pedido-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.pedido-id { font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: .01em; }
+.pedido-fecha { font-size: 13px; color: var(--tinta-2); }
+.estado { min-height: 40px; padding: 0 30px 0 12px; border-radius: 999px; border: 0; font: inherit; font-size: 14px; font-weight: 800; cursor: pointer; appearance: none; -webkit-appearance: none; background-repeat: no-repeat; background-position: right 10px center; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%232A231D' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); }
+.estado[data-e="Nuevo"] { background-color: #FBEAF1; color: #A3124B; }
+.estado[data-e="Confirmado"] { background-color: #E6EADB; color: #3E4A2D; }
+.estado[data-e="Despachado"] { background-color: #F6ECD6; color: #6E5110; }
+.estado[data-e="Entregado"] { background-color: #DCE9DF; color: #1F5E3A; }
+.estado[data-e="Devuelto"] { background-color: #EDE6D8; color: #5A5047; }
+.estado[data-e="Cancelado"] { background-color: #F3E1DC; color: #8A2E1E; }
+.pedido-nombre { font-size: 19px; font-weight: 700; }
+.pedido-tel { font-weight: 600; font-variant-numeric: tabular-nums; }
+.pedido-dir { background: var(--hueso); border-radius: 12px; padding: 12px 14px; font-size: 15px; }
+.pedido-dir strong { display: block; }
+.pedido-dir span { display: block; color: var(--tinta-2); }
+.pedido-prod { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 15px; }
+.pedido-prod b { font-weight: 600; }
+.tag { padding: 2px 10px; border-radius: 999px; background: #F6ECD6; color: #6E5110; font-size: 13px; font-weight: 800; }
+.pedido-total { display: flex; justify-content: space-between; align-items: baseline; border-top: 1.5px dashed var(--linea); padding-top: 10px; }
+.pedido-total span:last-child { font-family: var(--serif); font-size: 24px; font-variant-numeric: tabular-nums; }
+.pedido-origen { font-size: 12px; color: var(--tinta-2); }
+.acciones { display: flex; gap: 8px; }
+.acciones .btn { flex: 1 1 auto; }
+.aviso { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--negro); color: #F5F1E8; padding: 12px 18px; border-radius: 12px; font-weight: 600; font-size: 15px; z-index: 20; box-shadow: 0 16px 40px -20px rgba(0,0,0,.7); }
+</style>
+</head>
+<body>
+
+<!-- Ingreso -->
+<section class="ingreso" id="vista-ingreso" hidden>
+  <div class="ingreso-marca">
+    <span class="medallon"><img src="../assets/img/logo.jpg" width="150" height="150" alt="Revoltosos"></span>
+    <h1>Panel de pedidos</h1>
+    <p>Solo para el equipo de Revoltosos.</p>
+  </div>
+
+  <form class="tarjeta" id="form-ingreso" novalidate>
+    <div class="campo">
+      <label for="i-email">Correo</label>
+      <input id="i-email" type="email" autocomplete="username" placeholder="tucorreo@gmail.com" required>
+    </div>
+    <div class="campo" id="campo-pass">
+      <label for="i-pass">Contraseña</label>
+      <input id="i-pass" type="password" autocomplete="current-password" required>
+    </div>
+    <p class="mensaje" id="i-msg" role="alert"></p>
+    <button type="submit" class="btn" id="i-btn">Entrar</button>
+    <button type="button" class="link-boton" id="i-olvide">¿Olvidaste tu contraseña?</button>
+  </form>
+
+  <form class="tarjeta" id="form-nueva" novalidate hidden>
+    <p style="font-weight: 700">Escribe tu nueva contraseña</p>
+    <div class="campo">
+      <label for="n-pass">Nueva contraseña</label>
+      <input id="n-pass" type="password" autocomplete="new-password" minlength="8" required>
+    </div>
+    <p class="mensaje" id="n-msg" role="alert"></p>
+    <button type="submit" class="btn">Guardar contraseña</button>
+  </form>
+
+  <p class="pie-ingreso"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Página privada · no aparece en buscadores</p>
+</section>
+
+<!-- Panel -->
+<div id="vista-panel" hidden>
+  <header class="cabecera">
+    <div class="cabecera-in">
+      <span class="medallon"><img src="../assets/img/logo.jpg" width="150" height="150" alt=""></span>
+      <div style="flex: 1 1 auto; min-width: 0">
+        <h1>Pedidos</h1>
+        <small id="p-correo"></small>
+      </div>
+      <button type="button" class="btn-sec" id="p-salir">Salir</button>
+    </div>
+  </header>
+
+  <main class="contenido">
+    <div class="filtros" id="filtros" role="group" aria-label="Filtrar por estado"></div>
+    <div class="barra-herr">
+      <label for="p-buscar" class="oculto">Buscar pedido</label>
+      <input id="p-buscar" class="buscar" type="search" placeholder="Buscar por nombre, celular o número de pedido">
+      <button type="button" class="btn-sec" id="p-recargar" aria-label="Actualizar lista">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>
+      </button>
+    </div>
+    <p class="estado-carga" id="p-estado" aria-live="polite">Cargando pedidos…</p>
+    <div class="lista" id="lista"></div>
+  </main>
+</div>
+
+<div class="aviso" id="aviso" role="status" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+const CONFIG = {
+  SUPABASE_URL: 'https://jlvnrxmardcnarzspccs.supabase.co',
+  SUPABASE_KEY: 'sb_publishable_Jca2aMrjHOFVBrDnZpMj-Q_lDK6BWLF'
+};
+const ESTADOS = ['Nuevo', 'Confirmado', 'Despachado', 'Entregado', 'Devuelto', 'Cancelado'];
+
+const sb = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+const $ = (s) => document.querySelector(s);
+const pesos = (n) => '$' + String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+const fechaCorta = new Intl.DateTimeFormat('es-CO', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', timeZone: 'America/Bogota' });
+
+let pedidos = [];
+let filtro = 'Todos';
+let busqueda = '';
+
+function avisar(texto) {
+  const a = $('#aviso');
+  a.textContent = texto;
+  a.hidden = false;
+  clearTimeout(avisar.t);
+  avisar.t = setTimeout(() => { a.hidden = true; }, 2600);
+}
+
+/* ---------- Sesión ---------- */
+function mostrar(vista) {
+  $('#vista-ingreso').hidden = vista !== 'ingreso';
+  $('#vista-panel').hidden = vista !== 'panel';
+}
+
+sb.auth.onAuthStateChange((evento, sesion) => {
+  if (evento === 'PASSWORD_RECOVERY') {
+    mostrar('ingreso');
+    $('#form-ingreso').hidden = true;
+    $('#form-nueva').hidden = false;
+    $('#n-pass').focus();
+    return;
+  }
+  if (sesion) {
+    $('#p-correo').textContent = sesion.user.email;
+    if ($('#vista-panel').hidden) { mostrar('panel'); cargar(); }
+  } else {
+    mostrar('ingreso');
+  }
+});
+
+$('#form-ingreso').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const msg = $('#i-msg');
+  const btn = $('#i-btn');
+  msg.className = 'mensaje';
+  msg.textContent = '';
+  btn.disabled = true;
+  btn.textContent = 'Entrando…';
+  const { error } = await sb.auth.signInWithPassword({ email: $('#i-email').value.trim(), password: $('#i-pass').value });
+  btn.disabled = false;
+  btn.textContent = 'Entrar';
+  if (error) {
+    msg.className = 'mensaje error';
+    msg.textContent = 'Correo o contraseña incorrectos.';
+  }
+});
+
+$('#i-olvide').addEventListener('click', async () => {
+  const email = $('#i-email').value.trim();
+  const msg = $('#i-msg');
+  if (!email) { msg.className = 'mensaje error'; msg.textContent = 'Escribe tu correo arriba y vuelve a tocar aquí.'; $('#i-email').focus(); return; }
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
+  msg.className = error ? 'mensaje error' : 'mensaje ok';
+  msg.textContent = error ? 'No pudimos enviar el correo. Intenta en unos minutos.' : 'Te enviamos un enlace para crear una nueva contraseña.';
+});
+
+$('#form-nueva').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const pass = $('#n-pass').value;
+  const msg = $('#n-msg');
+  if (pass.length < 8) { msg.className = 'mensaje error'; msg.textContent = 'Usa al menos 8 caracteres.'; return; }
+  const { error } = await sb.auth.updateUser({ password: pass });
+  if (error) { msg.className = 'mensaje error'; msg.textContent = 'No se pudo guardar. Pide un enlace nuevo.'; return; }
+  $('#form-nueva').hidden = true;
+  $('#form-ingreso').hidden = false;
+  history.replaceState(null, '', location.pathname);
+  mostrar('panel');
+  cargar();
+});
+
+$('#p-salir').addEventListener('click', () => sb.auth.signOut());
+
+/* ---------- Pedidos ---------- */
+async function cargar() {
+  $('#p-estado').hidden = false;
+  $('#p-estado').textContent = 'Cargando pedidos…';
+  const { data, error } = await sb.from('pedidos').select('*').order('creado_en', { ascending: false }).limit(500);
+  if (error) {
+    $('#p-estado').textContent = 'No pudimos cargar los pedidos. Revisa tu conexión y toca actualizar.';
+    return;
+  }
+  pedidos = data;
+  pintar();
+}
+
+function mensajeWhatsApp(p) {
+  const primerNombre = p.nombre.split(/\s+/)[0];
+  return [
+    '¡Hola ' + primerNombre + '! 🐾 Somos Revoltosos.',
+    'Recibimos tu pedido #' + p.order_id + ':',
+    '• ' + p.cantidad + ' x Snacks de Codorniz Deshidratada 50 g',
+    '• Envío: GRATIS' + (p.prioritario ? ' + Prioritario $5.000' : ''),
+    '• Total a pagar al recibir: ' + pesos(p.total),
+    '📍 ' + p.direccion + ', ' + p.barrio + ', ' + p.ciudad + ' - ' + p.departamento,
+    p.indicaciones || '',
+    '¿Nos confirmas que los datos están correctos para despacharlo? ✅'
+  ].filter(Boolean).join('\n');
+}
+
+function el(tag, clase, texto) {
+  const n = document.createElement(tag);
+  if (clase) n.className = clase;
+  if (texto != null) n.textContent = texto;
+  return n;
+}
+
+function tarjeta(p) {
+  const art = el('article', 'pedido');
+
+  const top = el('div', 'pedido-top');
+  const ids = el('div');
+  ids.append(el('div', 'pedido-id', p.order_id), el('div', 'pedido-fecha', fechaCorta.format(new Date(p.creado_en))));
+  const lab = el('label');
+  lab.append(el('span', 'oculto', 'Estado del pedido ' + p.order_id));
+  const sel = el('select', 'estado');
+  ESTADOS.forEach((e) => { const o = el('option', null, e); o.value = e; sel.append(o); });
+  sel.value = p.estado;
+  sel.dataset.e = p.estado;
+  sel.addEventListener('change', async () => {
+    const anterior = p.estado;
+    sel.dataset.e = sel.value;
+    const { error } = await sb.from('pedidos').update({ estado: sel.value }).eq('id', p.id);
+    if (error) { sel.value = anterior; sel.dataset.e = anterior; avisar('No se pudo cambiar el estado'); return; }
+    p.estado = sel.value;
+    avisar('Pedido ' + p.order_id + ': ' + p.estado);
+    pintarFiltros();
+  });
+  lab.append(sel);
+  top.append(ids, lab);
+
+  const quien = el('div');
+  const tel = el('a', 'pedido-tel', p.celular.slice(2).replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'));
+  tel.href = 'tel:+' + p.celular;
+  quien.append(el('div', 'pedido-nombre', p.nombre), tel);
+
+  const dir = el('div', 'pedido-dir');
+  dir.append(document.createTextNode(p.direccion + ', ' + p.barrio), el('strong', null, p.ciudad + ' · ' + p.departamento));
+  if (p.indicaciones) dir.append(el('span', null, p.indicaciones));
+
+  const prod = el('div', 'pedido-prod');
+  prod.append(el('b', null, p.cantidad + ' × Codornices 50 g'));
+  if (p.prioritario) prod.append(el('span', 'tag', 'Prioritario'));
+  if (p.para_quien && p.para_quien.length) prod.append(el('span', null, '· ' + p.para_quien.join(', ')));
+
+  const tot = el('div', 'pedido-total');
+  tot.append(el('span', null, 'Cobrar al entregar'), el('span', null, pesos(p.total)));
+  tot.firstChild.style.fontWeight = '700';
+
+  const acc = el('div', 'acciones');
+  const wa = el('a', 'btn');
+  wa.href = 'https://wa.me/' + p.celular + '?text=' + encodeURIComponent(mensajeWhatsApp(p));
+  wa.target = '_blank';
+  wa.rel = 'noopener';
+  wa.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"/></svg>';
+  wa.append('Confirmar por WhatsApp');
+  const copiar = el('button', 'btn-sec', 'Copiar');
+  copiar.type = 'button';
+  copiar.setAttribute('aria-label', 'Copiar datos de envío de ' + p.nombre);
+  copiar.addEventListener('click', async () => {
+    const t = [p.nombre, p.celular.slice(2), p.direccion + ', ' + p.barrio, p.ciudad + ' - ' + p.departamento, p.indicaciones || '', 'Cobrar: ' + pesos(p.total)].filter(Boolean).join('\n');
+    try { await navigator.clipboard.writeText(t); avisar('Datos copiados'); } catch (e) { avisar('No se pudo copiar'); }
+  });
+  acc.append(wa, copiar);
+
+  art.append(top, quien, dir, prod, tot, acc);
+  if (p.utm_source || p.utm_campaign) art.append(el('div', 'pedido-origen', 'Origen: ' + [p.utm_source, p.utm_campaign].filter(Boolean).join(' · ')));
+  return art;
+}
+
+function pintarFiltros() {
+  const caja = $('#filtros');
+  caja.textContent = '';
+  ['Todos'].concat(ESTADOS).forEach((nombre) => {
+    const n = nombre === 'Todos' ? pedidos.length : pedidos.filter((p) => p.estado === nombre).length;
+    const b = el('button', 'filtro', nombre + ' ');
+    b.type = 'button';
+    b.setAttribute('aria-pressed', String(filtro === nombre));
+    b.append(el('span', null, String(n)));
+    b.addEventListener('click', () => { filtro = nombre; pintar(); });
+    caja.append(b);
+  });
+}
+
+function pintar() {
+  pintarFiltros();
+  const q = busqueda.toLowerCase();
+  const visibles = pedidos.filter((p) =>
+    (filtro === 'Todos' || p.estado === filtro) &&
+    (!q || (p.nombre + ' ' + p.celular + ' ' + p.order_id).toLowerCase().includes(q))
+  );
+  const lista = $('#lista');
+  lista.textContent = '';
+  visibles.forEach((p) => lista.append(tarjeta(p)));
+  const estado = $('#p-estado');
+  estado.hidden = visibles.length > 0;
+  estado.textContent = pedidos.length ? 'No hay pedidos con ese filtro.' : 'Todavía no hay pedidos. Aparecerán aquí apenas alguien compre.';
+}
+
+$('#p-buscar').addEventListener('input', (e) => { busqueda = e.target.value.trim(); pintar(); });
+$('#p-recargar').addEventListener('click', () => { cargar(); });
+// Se actualiza solo cada minuto mientras la pestaña está abierta.
+setInterval(() => { if (!document.hidden && !$('#vista-panel').hidden) cargar(); }, 60000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !$('#vista-panel').hidden) cargar(); });
+</script>
+</body>
+</html>
