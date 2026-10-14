@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-Static HTML + CSS + vanilla JS in a single `index.html` (product data in a `PRODUCT = {...}` object). Orders go to **Supabase** (decided 2026-10-13, replaces the Google Sheets + Apps Script plan): a `pedidos` table with RLS (anon can only insert), Supabase Auth email+password for the owner, a private `/pedidos` panel, and an Edge Function for the Meta Conversions API. Must stay easy to migrate later to Shopify / WooCommerce / Next.js. Deploy target: Netlify, Vercel or Hostinger. Repo: GitHub Wilmer19png/revoltosos-web (private).
+Static HTML + CSS + vanilla JS in a single `index.html` (product data in a `PRODUCT = {...}` object). Orders go to **Supabase** (decided 2026-10-13, replaces the Google Sheets + Apps Script plan): a `pedidos` table with RLS (only admins read/update; orders are inserted by the `crear-pedido` Edge Function, which also recalculates the price server-side), Supabase Auth email+password for the owner, a private `/pedidos` panel, and an Edge Function for the Meta Conversions API. Must stay easy to migrate later to Shopify / WooCommerce / Next.js. Deploy target: Netlify, Vercel or Hostinger. Repo: GitHub Wilmer19png/revoltosos-web (private).
 
 ## Users
 
@@ -16,7 +16,7 @@ Colombian pet owners (dogs mostly, also cats) arriving from Meta ads on their ph
 
 ## Product Purpose
 
-Sell one product, Codornices deshidratadas, 50 g jar (≈ 30 pieces): 1 jar $20.900 COP, promo 2 jars $29.900 (highlighted; saves $11.900). No 3-jar option (price change 2026-10-13). Success = the visitor fills the order form and taps "Pagar al recibir". The order lands in Google Sheets, the owner confirms on WhatsApp, and the Purchase event reaches Meta (Pixel + Conversions API, deduplicated).
+Sell one product, Codornices deshidratadas, 50 g jar (≈ 30 pieces): 1 jar $20.900 COP, promo 2 jars $29.900 (highlighted; saves $11.900). No 3-jar option (price change 2026-10-13). Success = the visitor fills the order form and taps "Pagar al recibir". The order lands in Supabase, the owner confirms on WhatsApp, and the Purchase event reaches Meta (Pixel + Conversions API, deduplicated).
 
 ## Positioning
 
@@ -24,7 +24,7 @@ Single-ingredient whole quail, slowly dehydrated, with nothing added (no preserv
 
 ## Capabilities and Constraints
 
-- Prices in COP, formatted `$14.900`. Free shipping always. Optional priority shipping +$5.000.
+- Prices in COP, formatted `$20.900`. Free shipping always. Optional priority shipping +$5.000.
 - Bundles: 1 jar $20.900, 2 jars $29.900 (promo). Keep configurable in `PRODUCT`. The product render image has the old price 14.900 printed on it; it needs a new render or crop.
 - Phone: 10 digits starting with 3, stored as `573XXXXXXXXX`.
 - No navigation menu and no links out of the page, except Instagram/WhatsApp/legal links in the footer.
