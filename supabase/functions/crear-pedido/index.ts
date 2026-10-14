@@ -13,10 +13,9 @@
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
-// Mismos precios que PRODUCT en index.html
-const PRECIOS: Record<number, number> = { 1: 20900, 2: 29900 };
+// Los precios de cada landing viven en la tabla `ofertas` (supabase/migraciones/002-ofertas.sql).
 const PRIORITARIO = 5000;
-const CONTENT_ID = 'codorniz-50g';
+const OFERTA_POR_DEFECTO = 'codornices-promo';
 
 const DEPARTAMENTOS = new Set([
   'Amazonas', 'Antioquia', 'Arauca', 'Atlántico', 'Bogotá D.C.', 'Bolívar', 'Boyacá', 'Caldas', 'Caquetá',
@@ -92,7 +91,7 @@ async function enviarAMeta(pedido: Record<string, unknown>, extra: { fbp: string
       custom_data: {
         value: pedido.total,
         currency: 'COP',
-        content_ids: [CONTENT_ID],
+        content_ids: [pedido.producto_id],
         content_type: 'product',
         num_items: pedido.cantidad,
         order_id: pedido.order_id,
@@ -138,7 +137,21 @@ Deno.serve(async (req) => {
   const prioritario = b.prioritario === true;
   const paraQuien = Array.isArray(b.para_quien) ? b.para_quien.filter((m) => MASCOTAS.has(String(m))).map(String) : [];
 
+  const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, {
+    auth: { persistSession: false },
+  });
+
+  // La oferta define el precio: lo que diga el navegador sobre precios se ignora.
+  const slug = texto(b.oferta, 60) || OFERTA_POR_DEFECTO;
+  const { data: oferta } = await supabase
+    .from('ofertas')
+    .select('slug, producto_id, producto_nombre, precios, prioritario, activa')
+    .eq('slug', slug)
+    .maybeSingle();
+  const precio = oferta?.activa ? Number((oferta.precios as Record<string, number>)[String(cantidad)]) : NaN;
+
   const errores: string[] = [];
+  if (!oferta || !oferta.activa) errores.push('oferta');
   if (!/^[0-9a-f-]{16,64}$/i.test(eventId)) errores.push('event_id');
   if (nombre.length < 3) errores.push('nombre');
   if (!/^573\d{9}$/.test(celular)) errores.push('celular');
@@ -146,14 +159,11 @@ Deno.serve(async (req) => {
   if (barrio.length < 2) errores.push('barrio');
   if (ciudad.length < 2) errores.push('ciudad');
   if (!DEPARTAMENTOS.has(departamento)) errores.push('departamento');
-  if (!PRECIOS[cantidad]) errores.push('cantidad');
+  if (!(precio > 0)) errores.push('cantidad');
   if (errores.length) return json({ ok: false, error: 'Revisa: ' + errores.join(', ') }, 422);
 
-  const total = PRECIOS[cantidad] + (prioritario ? PRIORITARIO : 0);
-
-  const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, {
-    auth: { persistSession: false },
-  });
+  const conPrioritario = prioritario && oferta!.prioritario;
+  const total = precio + (conPrioritario ? PRIORITARIO : 0);
 
   // Idempotencia: si el mismo event_id ya llegó (doble clic o reintento), se devuelve ese pedido.
   const { data: existente } = await supabase.from('pedidos').select('order_id, total').eq('event_id', eventId).maybeSingle();
@@ -163,7 +173,9 @@ Deno.serve(async (req) => {
     event_id: eventId,
     nombre, celular, direccion, barrio, ciudad, departamento,
     indicaciones: indicaciones || null,
-    cantidad, prioritario, total,
+    cantidad, prioritario: conPrioritario, total,
+    oferta: oferta!.slug,
+    producto: oferta!.producto_nombre,
     para_quien: paraQuien,
     utm_source: texto(b.utm_source, 120) || null,
     utm_campaign: texto(b.utm_campaign, 200) || null,
@@ -193,9 +205,9 @@ Deno.serve(async (req) => {
     url: texto(b.event_source_url, 500),
   };
   // Meta no debe frenar la respuesta al cliente si tarda o falla.
-  const meta = enviarAMeta({ ...fila, order_id: orderId }, extra).catch((e) => console.error('Meta', e));
+  const meta = enviarAMeta({ ...fila, order_id: orderId, producto_id: oferta!.producto_id }, extra).catch((e) => console.error('Meta', e));
   // @ts-ignore EdgeRuntime existe en Supabase
   if (typeof EdgeRuntime !== 'undefined') EdgeRuntime.waitUntil(meta); else await meta;
 
-  return json({ ok: true, order_id: orderId, total });
+  return json({ ok: true, order_id: orderId, total, producto: oferta!.producto_nombre });
 });

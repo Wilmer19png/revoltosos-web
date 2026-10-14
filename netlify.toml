@@ -15,6 +15,27 @@
   [headers.values]
     Cache-Control = "public, max-age=604800"
 
+# Variante oculta de prueba (1 frasco a $14.900): usa la misma página que la principal.
+[[headers]]
+  for = "/codornices/unidad/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[redirects]]
+  from = "/codornices/unidad"
+  to = "/codornices/unidad/"
+  status = 301
+
+[[redirects]]
+  from = "/codornices/unidad/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/codornices/*"
+  to = "/"
+  status = 301
+
 # Material interno que no hace falta servir.
 [[redirects]]
   from = "/Recursos*"

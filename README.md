@@ -27,6 +27,7 @@ Landing ──POST──▶ Edge Function crear-pedido ──insert──▶ tab
 
 ### 1. Base de datos ✅
 `supabase/schema.sql` ya se ejecutó. El registro público está apagado y el usuario de María José ya existe.
+Después: `supabase/migraciones/002-ofertas.sql` (ofertas por landing).
 
 ### 2. Subir la función `crear-pedido`
 1. Supabase → **Edge Functions** → **Deploy a new function** → **Via Editor**.
@@ -66,8 +67,26 @@ Es un sitio estático (sin build). Sirve en Netlify, Vercel, Cloudflare Pages o 
 6. Con `META_TEST_EVENT_CODE` puesto: en el Administrador de eventos → **Probar eventos** debe verse **Purchase** dos veces (navegador y servidor) marcado como **deduplicado**.
 7. Borrar `META_TEST_EVENT_CODE` y el pedido de prueba (Supabase → Table editor → pedidos).
 
-## Para cambiar precios
-Hay que cambiarlos en **dos** lugares: `PRODUCT` en `index.html` y `PRECIOS` en la función `crear-pedido` (y volver a desplegarla). El servidor manda: si no coinciden, se cobra el del servidor.
+## Landings y ofertas
+
+| Link | Oferta (`ofertas.slug`) | Qué vende | Visible |
+|---|---|---|---|
+| `/` | `codornices-promo` | 1 frasco $20.900 · 2 por $29.900 | Pública |
+| `/codornices/unidad/` | `codornices-unidad` | Solo 1 frasco a $14.900 (prueba A/B) | Oculta |
+| `/cajita/` | `cajita-perros` | Cajita para perros $72.900 | Pública |
+
+- El precio que se cobra sale de la tabla **`ofertas`** en Supabase (la función `crear-pedido` la lee). La página solo lo muestra.
+- `/` y `/codornices/unidad/` son **la misma página**: `index.html` mira la dirección y muestra u oculta los bloques `solo-promo` / `solo-unidad`.
+- Estilos y lógica compartidos: `assets/css/landing.css` y `assets/js/landing.js`. Cada landing solo define `window.PAGINA`.
+- El panel tiene la pestaña **Landings** con cada link, botón para copiarlo y cuántos pedidos y ventas trae.
+
+### Para cambiar un precio
+1. Supabase → **Table Editor → ofertas** → edita `precios` de la oferta (por ejemplo `{"1": 20900, "2": 29900}`).
+2. Cambia el mismo número en `window.PAGINA.precios` de la landing (para que se muestre bien).
+
+### Para crear otra variante oculta
+1. Agrega una fila en `ofertas` con su `slug`, `precios`, `ruta` y `oculta = true`.
+2. Agrega la variante en el `<script>` del `<head>` de la landing y la regla en `netlify.toml`.
 
 ## Contenido pendiente
 - Foto real de una codorniz para "Anatomía del snack" (por ahora va un recorte del render) y los puntos 1–3 encima.

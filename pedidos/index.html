@@ -93,6 +93,28 @@ a:hover { color: var(--rosa-hover); }
 .pedido-origen { font-size: 12px; color: var(--tinta-2); }
 .acciones { display: flex; gap: 8px; }
 .acciones .btn { flex: 1 1 auto; }
+.pestanas { max-width: 1240px; margin: 10px auto 0; display: flex; gap: 6px; }
+.pestana { min-height: 44px; padding: 0 16px; border: 0; border-radius: 12px 12px 0 0; background: transparent; color: #CFC8BA; font: inherit; font-weight: 700; cursor: pointer; }
+.pestana[aria-selected="true"] { background: var(--hueso); color: var(--tinta); }
+.filtro-landing { min-height: 48px; padding: 0 36px 0 12px; border: 1.5px solid var(--campo); border-radius: 12px; font: inherit; font-size: 15px; background: #FFFFFF; color: var(--tinta); appearance: none; -webkit-appearance: none; background-repeat: no-repeat; background-position: right 12px center; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%232A231D' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); max-width: 46%; }
+.pedido-oferta { align-self: flex-start; padding: 2px 10px; border-radius: 999px; background: var(--hueso); color: var(--tinta-2); font-size: 12px; font-weight: 700; }
+.landing { background: #FFFFFF; border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 12px 30px -24px rgba(42,35,29,.5); }
+.landing-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.landing h2 { font-family: var(--serif); font-weight: 400; font-size: 22px; line-height: 1.15; }
+.insignia { flex: none; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; }
+.insignia--publica { background: #E6EADB; color: #3E4A2D; }
+.insignia--oculta { background: #F6ECD6; color: #6E5110; }
+.insignia--inactiva { background: #F3E1DC; color: #8A2E1E; }
+.landing-precios { display: flex; flex-wrap: wrap; gap: 6px; font-size: 14px; }
+.landing-precios span { padding: 2px 10px; border-radius: 999px; background: var(--hueso); font-variant-numeric: tabular-nums; }
+.landing-link { display: flex; gap: 8px; align-items: center; background: var(--hueso); border-radius: 12px; padding: 6px 6px 6px 12px; }
+.landing-link code { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+.landing-link .btn-sec { min-height: 40px; }
+.cifras { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; text-align: center; }
+.cifras div { background: var(--hueso); border-radius: 12px; padding: 10px 6px; }
+.cifras strong { display: block; font-family: var(--serif); font-weight: 400; font-size: 22px; font-variant-numeric: tabular-nums; }
+.cifras span { font-size: 12px; color: var(--tinta-2); }
+.nota-landings { color: var(--tinta-2); font-size: 14px; }
 .aviso { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--negro); color: #F5F1E8; padding: 12px 18px; border-radius: 12px; font-weight: 600; font-size: 15px; z-index: 20; box-shadow: 0 16px 40px -20px rgba(0,0,0,.7); }
 </style>
 </head>
@@ -144,19 +166,30 @@ a:hover { color: var(--rosa-hover); }
       </div>
       <button type="button" class="btn-sec" id="p-salir">Salir</button>
     </div>
+    <div class="pestanas" role="tablist" aria-label="Secciones del panel">
+      <button type="button" class="pestana" role="tab" id="t-pedidos" aria-controls="tab-pedidos" aria-selected="true">Pedidos</button>
+      <button type="button" class="pestana" role="tab" id="t-landings" aria-controls="tab-landings" aria-selected="false">Landings</button>
+    </div>
   </header>
 
-  <main class="contenido">
+  <main class="contenido" id="tab-pedidos" role="tabpanel" aria-labelledby="t-pedidos">
     <div class="filtros" id="filtros" role="group" aria-label="Filtrar por estado"></div>
     <div class="barra-herr">
       <label for="p-buscar" class="oculto">Buscar pedido</label>
-      <input id="p-buscar" class="buscar" type="search" placeholder="Buscar por nombre, celular o número de pedido">
+      <input id="p-buscar" class="buscar" type="search" placeholder="Buscar por nombre, celular o pedido">
+      <label for="p-landing" class="oculto">Filtrar por landing</label>
+      <select id="p-landing" class="filtro-landing"><option value="">Todas las landings</option></select>
       <button type="button" class="btn-sec" id="p-recargar" aria-label="Actualizar lista">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>
       </button>
     </div>
     <p class="estado-carga" id="p-estado" aria-live="polite">Cargando pedidos…</p>
     <div class="lista" id="lista"></div>
+  </main>
+
+  <main class="contenido" id="tab-landings" role="tabpanel" aria-labelledby="t-landings" hidden>
+    <p class="nota-landings">Cada landing vende una oferta con su propio precio. Las <strong>ocultas</strong> no aparecen en ningún menú: solo entra quien tenga el link (sirven para pruebas de anuncios). Las cifras no cuentan pedidos cancelados ni devueltos.</p>
+    <div class="lista" id="landings"></div>
   </main>
 </div>
 
@@ -175,8 +208,13 @@ const $ = (s) => document.querySelector(s);
 const pesos = (n) => '$' + String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 const fechaCorta = new Intl.DateTimeFormat('es-CO', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', timeZone: 'America/Bogota' });
 
+const SITIO = 'https://revoltosos.netlify.app';
+const PRODUCTO_POR_DEFECTO = 'Codornices deshidratadas 50 g';
+
 let pedidos = [];
+let ofertas = [];
 let filtro = 'Todos';
+let filtroLanding = '';
 let busqueda = '';
 
 function avisar(texto) {
@@ -255,21 +293,29 @@ $('#p-salir').addEventListener('click', () => sb.auth.signOut());
 async function cargar() {
   $('#p-estado').hidden = false;
   $('#p-estado').textContent = 'Cargando pedidos…';
-  const { data, error } = await sb.from('pedidos').select('*').order('creado_en', { ascending: false }).limit(500);
-  if (error) {
+  const [rp, ro] = await Promise.all([
+    sb.from('pedidos').select('*').order('creado_en', { ascending: false }).limit(1000),
+    sb.from('ofertas').select('*').order('orden')
+  ]);
+  if (rp.error) {
     $('#p-estado').textContent = 'No pudimos cargar los pedidos. Revisa tu conexión y toca actualizar.';
     return;
   }
-  pedidos = data;
+  pedidos = rp.data;
+  ofertas = ro.error ? [] : ro.data;
+  pintarSelectorLanding();
   pintar();
+  pintarLandings();
 }
+
+const nombreOferta = (slug) => (ofertas.find((o) => o.slug === slug) || {}).nombre || slug || 'Codornices · Promo 2 frascos';
 
 function mensajeWhatsApp(p) {
   const primerNombre = p.nombre.split(/\s+/)[0];
   return [
     '¡Hola ' + primerNombre + '! 🐾 Somos Revoltosos.',
     'Recibimos tu pedido #' + p.order_id + ':',
-    '• ' + p.cantidad + ' x Snacks de Codorniz Deshidratada 50 g',
+    '• ' + p.cantidad + ' x ' + (p.producto || PRODUCTO_POR_DEFECTO),
     '• Envío: GRATIS' + (p.prioritario ? ' + Prioritario $5.000' : ''),
     '• Total a pagar al recibir: ' + pesos(p.total),
     '📍 ' + p.direccion + ', ' + p.barrio + ', ' + p.ciudad + ' - ' + p.departamento,
@@ -319,7 +365,7 @@ function tarjeta(p) {
   if (p.indicaciones) dir.append(el('span', null, p.indicaciones));
 
   const prod = el('div', 'pedido-prod');
-  prod.append(el('b', null, p.cantidad + ' × Codornices 50 g'));
+  prod.append(el('b', null, p.cantidad + ' × ' + (p.producto || PRODUCTO_POR_DEFECTO)));
   if (p.prioritario) prod.append(el('span', 'tag', 'Prioritario'));
   if (p.para_quien && p.para_quien.length) prod.append(el('span', null, '· ' + p.para_quien.join(', ')));
 
@@ -343,16 +389,19 @@ function tarjeta(p) {
   });
   acc.append(wa, copiar);
 
-  art.append(top, quien, dir, prod, tot, acc);
+  art.append(top, el('span', 'pedido-oferta', nombreOferta(p.oferta)), quien, dir, prod, tot, acc);
   if (p.utm_source || p.utm_campaign) art.append(el('div', 'pedido-origen', 'Origen: ' + [p.utm_source, p.utm_campaign].filter(Boolean).join(' · ')));
   return art;
 }
 
+const delaLanding = (p) => !filtroLanding || (p.oferta || 'codornices-promo') === filtroLanding;
+
 function pintarFiltros() {
   const caja = $('#filtros');
   caja.textContent = '';
+  const base = pedidos.filter(delaLanding);
   ['Todos'].concat(ESTADOS).forEach((nombre) => {
-    const n = nombre === 'Todos' ? pedidos.length : pedidos.filter((p) => p.estado === nombre).length;
+    const n = nombre === 'Todos' ? base.length : base.filter((p) => p.estado === nombre).length;
     const b = el('button', 'filtro', nombre + ' ');
     b.type = 'button';
     b.setAttribute('aria-pressed', String(filtro === nombre));
@@ -366,6 +415,7 @@ function pintar() {
   pintarFiltros();
   const q = busqueda.toLowerCase();
   const visibles = pedidos.filter((p) =>
+    delaLanding(p) &&
     (filtro === 'Todos' || p.estado === filtro) &&
     (!q || (p.nombre + ' ' + p.celular + ' ' + p.order_id).toLowerCase().includes(q))
   );
@@ -376,6 +426,82 @@ function pintar() {
   estado.hidden = visibles.length > 0;
   estado.textContent = pedidos.length ? 'No hay pedidos con ese filtro.' : 'Todavía no hay pedidos. Aparecerán aquí apenas alguien compre.';
 }
+
+/* ---------- Landings ---------- */
+function pintarSelectorLanding() {
+  const sel = $('#p-landing');
+  const actual = sel.value;
+  sel.length = 1;
+  ofertas.forEach((o) => { const op = el('option', null, o.nombre); op.value = o.slug; sel.append(op); });
+  sel.value = ofertas.some((o) => o.slug === actual) ? actual : '';
+}
+
+function pintarLandings() {
+  const caja = $('#landings');
+  caja.textContent = '';
+  if (!ofertas.length) {
+    caja.append(el('p', 'nota-landings', 'No se encontró la tabla de ofertas. Ejecuta supabase/migraciones/002-ofertas.sql en Supabase.'));
+    return;
+  }
+  ofertas.forEach((o) => {
+    const suyos = pedidos.filter((p) => (p.oferta || 'codornices-promo') === o.slug && !['Cancelado', 'Devuelto'].includes(p.estado));
+    const entregados = suyos.filter((p) => p.estado === 'Entregado').length;
+    const ventas = suyos.reduce((s, p) => s + p.total, 0);
+    const url = SITIO + o.ruta;
+
+    const card = el('article', 'landing');
+    const top = el('div', 'landing-top');
+    const tit = el('div');
+    tit.append(el('h2', null, o.nombre), el('span', 'pedido-fecha', o.producto_nombre));
+    const tipo = !o.activa ? ['inactiva', 'Inactiva'] : o.oculta ? ['oculta', 'Oculta'] : ['publica', 'Pública'];
+    top.append(tit, el('span', 'insignia insignia--' + tipo[0], tipo[1]));
+
+    const precios = el('div', 'landing-precios');
+    Object.entries(o.precios).forEach(([cant, precio]) => precios.append(el('span', null, cant + ' → ' + pesos(precio))));
+    if (o.prioritario) precios.append(el('span', null, 'Prioritario +$5.000'));
+
+    const link = el('div', 'landing-link');
+    const code = el('code', null, url.replace('https://', ''));
+    const copiar = el('button', 'btn-sec', 'Copiar');
+    copiar.type = 'button';
+    copiar.setAttribute('aria-label', 'Copiar link de ' + o.nombre);
+    copiar.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(url); avisar('Link copiado'); } catch (e) { avisar('No se pudo copiar'); }
+    });
+    const abrir = el('a', 'btn-sec', 'Abrir');
+    abrir.href = url;
+    abrir.target = '_blank';
+    abrir.rel = 'noopener';
+    abrir.style.display = 'inline-flex';
+    abrir.style.alignItems = 'center';
+    abrir.style.textDecoration = 'none';
+    link.append(code, copiar, abrir);
+
+    const cifras = el('div', 'cifras');
+    [[suyos.length, 'pedidos'], [entregados, 'entregados'], [pesos(ventas), 'en ventas']].forEach(([v, t]) => {
+      const d = el('div');
+      d.append(el('strong', null, String(v)), el('span', null, t));
+      cifras.append(d);
+    });
+
+    const ver = el('button', 'btn-sec', 'Ver sus pedidos');
+    ver.type = 'button';
+    ver.addEventListener('click', () => { filtroLanding = o.slug; $('#p-landing').value = o.slug; mostrarPestana('pedidos'); pintar(); });
+
+    card.append(top, precios, link, cifras, ver);
+    caja.append(card);
+  });
+}
+
+function mostrarPestana(cual) {
+  ['pedidos', 'landings'].forEach((t) => {
+    $('#t-' + t).setAttribute('aria-selected', String(t === cual));
+    $('#tab-' + t).hidden = t !== cual;
+  });
+}
+$('#t-pedidos').addEventListener('click', () => mostrarPestana('pedidos'));
+$('#t-landings').addEventListener('click', () => mostrarPestana('landings'));
+$('#p-landing').addEventListener('change', (e) => { filtroLanding = e.target.value; pintar(); });
 
 $('#p-buscar').addEventListener('input', (e) => { busqueda = e.target.value.trim(); pintar(); });
 $('#p-recargar').addEventListener('click', () => { cargar(); });
