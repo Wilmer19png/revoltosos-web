@@ -301,7 +301,7 @@ html[data-oferta="codornices-unidad"] .solo-promo { display: none !important; }
 
 /* Videos */
 .videos-lista { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
-.videos-lista video { flex: 0 0 clamp(200px, 58%, 270px); aspect-ratio: 9 / 16; border-radius: 18px; object-fit: cover; background: var(--tinta); scroll-snap-align: start; }
+.videos-lista video { flex: 0 0 clamp(150px, 42%, 210px); aspect-ratio: 9 / 16; border-radius: 18px; object-fit: cover; background: var(--tinta); scroll-snap-align: start; }
 
 /* Galería */
 .galeria { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
@@ -314,7 +314,7 @@ html[data-oferta="codornices-unidad"] .solo-promo { display: none !important; }
 /* Cajita: qué trae */
 .caja-grid { display: grid; gap: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 24px; }
 .caja-item { background: #FFFFFF; border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; }
-.caja-item .pendiente, .caja-item img { aspect-ratio: 1 / 1; width: 100%; object-fit: cover; border: 0; border-radius: 0; }
+.caja-item .pendiente, .caja-item img { aspect-ratio: 1 / 1; width: 100%; height: auto; object-fit: cover; border: 0; border-radius: 0; }
 .caja-item div:last-child { padding: 12px 14px 14px; }
 .caja-item strong { display: block; font-size: 16px; }
 .caja-item span { color: var(--tinta-2); font-size: 14px; }
