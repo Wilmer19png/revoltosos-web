@@ -34,7 +34,7 @@ Single-ingredient whole quail, slowly dehydrated, with nothing added (no preserv
 
 ## Brand Commitments
 
-- Name: Revoltosos · Instagram @revoltosos.vet · WhatsApp +57 312 244 8276.
+- Name: Revoltosos · Instagram @revoltosos.deshidratados · WhatsApp +57 312 244 8276.
 - Existing logo: brown shield with a dog and a cat, "Proteína 100 % natural".
 - Do NOT reuse the catalog's brown/orange paw-print look. Brief-pinned palette: bone #F5F1E8 / #EDE6D8, sage-olive #4F5D3A, terracotta CTA #C1652F (hover #A9541F), text #2A231D / #6B6157, mustard #D9A441 used sparingly.
 - Voice: warm, concrete Spanish (Colombia). No medical claims or promises to cure anything.
