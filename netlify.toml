@@ -22,11 +22,6 @@
     X-Robots-Tag = "noindex, nofollow"
 
 [[redirects]]
-  from = "/codornices/unidad"
-  to = "/codornices/unidad/"
-  status = 301
-
-[[redirects]]
   from = "/codornices/unidad/*"
   to = "/index.html"
   status = 200
