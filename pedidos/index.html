@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>Pedidos · Revoltosos</title>
+<title>Gestor · Revoltosos</title>
 <meta name="theme-color" content="#12110F">
 <link rel="icon" href="../assets/img/logo.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,47 +12,55 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700;800&display=swap">
 <style>
 :root {
-  --hueso: #F5F1E8; --negro: #12110F; --tinta: #2A231D; --tinta-2: #6B6157; --linea: #D6CCBA; --campo: #CFC5B3;
-  --salvia: #4F5D3A; --rosa: #C2185B; --rosa-hover: #A3124B; --error: #B3261E;
+  --hueso: #F5F1E8; --hueso-2: #EDE6D8; --negro: #12110F; --tinta: #2A231D; --tinta-2: #6B6157; --linea: #D6CCBA; --campo: #CFC5B3;
+  --salvia: #4F5D3A; --salvia-claro: #E6EADB; --verde: #24553A; --verde-claro: #DCE9DF; --rosa: #C2185B; --rosa-hover: #A3124B; --rosa-claro: #FBEAF1;
+  --mostaza: #D9A441; --ambar: #8A5A00; --ambar-claro: #FBF3E3; --error: #B3261E; --error-claro: #F3E1DC;
   --serif: 'Young Serif', Georgia, serif; --sans: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 *, *::before, *::after { box-sizing: border-box; }
 body { margin: 0; background: var(--hueso); color: var(--tinta); font-family: var(--sans); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
 img, svg { display: block; }
-h1, h2, p { margin: 0; }
+h1, h2, h3, p { margin: 0; }
 a { color: var(--rosa); text-underline-offset: 3px; }
 a:hover { color: var(--rosa-hover); }
-::selection { background: #FBEAF1; }
+::selection { background: var(--rosa-claro); }
 :focus-visible { outline: 3px solid var(--rosa); outline-offset: 3px; border-radius: 6px; }
 [hidden] { display: none !important; }
 .oculto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.num { font-variant-numeric: tabular-nums; }
 
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 0 20px; border: 0; border-radius: 14px; background: var(--rosa); color: #FFFFFF; font: inherit; font-weight: 800; text-decoration: none; cursor: pointer; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 0 18px; border: 0; border-radius: 14px; background: var(--rosa); color: #FFFFFF; font: inherit; font-weight: 800; text-decoration: none; cursor: pointer; }
 .btn:hover { background: var(--rosa-hover); color: #FFFFFF; }
 .btn[disabled] { opacity: .7; cursor: progress; }
-.btn-sec { min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1.5px solid var(--linea); background: #FFFFFF; color: var(--tinta); font: inherit; font-weight: 700; cursor: pointer; }
-.btn-sec:hover { border-color: var(--tinta); }
+.btn--oscuro { background: var(--tinta); }
+.btn--oscuro:hover { background: var(--negro); }
+.btn-sec { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1.5px solid var(--linea); background: #FFFFFF; color: var(--tinta); font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; }
+.btn-sec:hover { border-color: var(--tinta); color: var(--tinta); }
+.btn-peligro { color: var(--error); border-color: #E6C4BD; }
 
 /* Ingreso */
 .ingreso { min-height: 100vh; background: var(--negro); color: #F5F1E8; padding: 64px 20px 32px; display: flex; flex-direction: column; align-items: center; gap: 28px; }
 .ingreso-marca { display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
-.medallon { width: 72px; height: 72px; border-radius: 50%; background: var(--hueso); display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 0 0 5px var(--negro), 0 0 0 6px rgba(217,164,65,.6); }
+.medallon { width: 72px; height: 72px; border-radius: 50%; background: var(--hueso); display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 0 0 5px var(--negro), 0 0 0 6px rgba(217,164,65,.6); flex: none; }
 .medallon img { width: 60px; height: 60px; }
 .ingreso h1 { font-family: var(--serif); font-weight: 400; font-size: 34px; line-height: 1.1; }
 .ingreso-marca p { color: #CFC8BA; font-size: 15px; }
 .tarjeta { width: 100%; max-width: 380px; background: var(--hueso); color: var(--tinta); border-radius: 20px; padding: 24px 20px; display: flex; flex-direction: column; gap: 16px; }
-.campo { display: flex; flex-direction: column; gap: 6px; }
-.campo label { font-weight: 700; font-size: 15px; }
-.campo input, .buscar { min-height: 50px; width: 100%; padding: 0 14px; border: 1.5px solid var(--campo); border-radius: 12px; font: inherit; font-size: 16px; background: #FFFFFF; color: var(--tinta); }
-.campo input:focus, .buscar:focus { outline: none; border-color: var(--salvia); box-shadow: 0 0 0 3px rgba(79,93,58,.2); }
+.campo { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.campo label, .campo > span { font-weight: 700; font-size: 14px; }
+.campo input, .campo select, .campo textarea, .buscar, .entrada {
+  min-height: 46px; width: 100%; padding: 0 12px; border: 1.5px solid var(--campo); border-radius: 12px; font: inherit; font-size: 16px; background: #FFFFFF; color: var(--tinta);
+}
+.campo textarea { padding: 10px 12px; min-height: 80px; resize: vertical; }
+.campo input:focus, .campo select:focus, .buscar:focus, .entrada:focus { outline: none; border-color: var(--salvia); box-shadow: 0 0 0 3px rgba(79,93,58,.2); }
 .mensaje { font-size: 14px; font-weight: 600; }
 .mensaje.error { color: var(--error); }
 .mensaje.ok { color: var(--salvia); }
 .link-boton { align-self: center; background: none; border: 0; padding: 8px; font: inherit; font-weight: 600; color: var(--rosa); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .pie-ingreso { margin-top: auto; display: flex; align-items: center; gap: 8px; font-size: 13px; color: #9C9384; }
 
-/* Panel */
-.cabecera { background: var(--negro); color: #F5F1E8; padding: 12px 16px; position: sticky; top: 0; z-index: 10; }
+/* Cabecera y pestañas */
+.cabecera { background: var(--negro); color: #F5F1E8; padding: 12px 16px 0; position: sticky; top: 0; z-index: 10; }
 .cabecera-in { max-width: 1240px; margin: 0 auto; display: flex; align-items: center; gap: 12px; }
 .cabecera .medallon { width: 44px; height: 44px; box-shadow: none; }
 .cabecera .medallon img { width: 36px; height: 36px; }
@@ -60,15 +68,87 @@ a:hover { color: var(--rosa-hover); }
 .cabecera small { display: block; font-size: 13px; color: #9C9384; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cabecera .btn-sec { background: transparent; color: #F5F1E8; border-color: #4A443C; }
 .cabecera .btn-sec:hover { border-color: #F5F1E8; }
-.contenido { max-width: 1240px; margin: 0 auto; padding: 16px 16px 48px; display: flex; flex-direction: column; gap: 14px; }
+.pestanas { max-width: 1240px; margin: 10px auto 0; display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.pestanas::-webkit-scrollbar { display: none; }
+.pestana { flex: none; min-height: 44px; padding: 0 14px; border: 0; border-radius: 12px 12px 0 0; background: transparent; color: #CFC8BA; font: inherit; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.pestana[aria-selected="true"] { background: var(--hueso); color: var(--tinta); }
+.contador { display: inline-block; min-width: 20px; padding: 1px 7px; border-radius: 999px; background: var(--rosa); color: #FFFFFF; font-size: 12px; text-align: center; }
+.contenido { max-width: 1240px; margin: 0 auto; padding: 18px 16px 64px; display: flex; flex-direction: column; gap: 16px; }
+.cabeza-sec { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.cabeza-sec h2 { font-family: var(--serif); font-weight: 400; font-size: 30px; line-height: 1.1; }
+.cabeza-sec p { color: var(--tinta-2); font-size: 14px; }
+.aviso-migracion { background: var(--ambar-claro); color: var(--tinta); border-radius: 14px; padding: 14px 16px; font-size: 15px; }
+
+/* Tarjetas genéricas */
+.caja { background: #FFFFFF; border-radius: 18px; padding: 16px 18px; box-shadow: 0 12px 30px -24px rgba(42,35,29,.5); min-width: 0; }
+.caja h3 { font-size: 17px; margin-bottom: 10px; }
+.fila-cajas { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+.fila-cajas > * { flex: 1 1 340px; }
+.fila-cajas > .ancha { flex: 3 1 520px; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.kpi { background: #FFFFFF; border-radius: 18px; padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; border: 1px solid var(--hueso-2); }
+.kpi.destacado { border: 2px solid var(--salvia); }
+.kpi span { font-size: 13px; font-weight: 700; color: var(--tinta-2); }
+.kpi strong { font-size: 25px; line-height: 1.15; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.kpi small { font-size: 12px; color: var(--tinta-2); }
+.kpi .sube { color: var(--verde); font-weight: 700; }
+.kpi .baja { color: var(--error); font-weight: 700; }
+.meta { background: var(--negro); color: #F5F1E8; border-radius: 20px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; }
+.meta-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; align-items: flex-end; }
+.meta-top .antes { font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--mostaza); }
+.meta-top .cifra { font-family: var(--serif); font-size: 36px; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.meta-top .cifra small { font-family: var(--sans); font-size: 17px; color: #CFC8BA; }
+.meta-lado { text-align: right; font-size: 14px; color: #CFC8BA; }
+.meta-lado strong { color: #FFFFFF; }
+.meta-riel { position: relative; height: 14px; border-radius: 99px; background: rgba(255,255,255,.14); }
+.meta-riel span { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 99px; background: var(--mostaza); }
+.meta-riel i { position: absolute; top: -5px; bottom: -5px; width: 2px; background: #FFFFFF; }
+.meta-pie { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; font-size: 13px; color: #CFC8BA; }
+.meta-pie button { background: none; border: 0; color: var(--mostaza); font: inherit; font-weight: 800; text-decoration: underline; cursor: pointer; padding: 0; }
+.cascada { display: flex; flex-direction: column; gap: 9px; }
+.cascada div { display: flex; flex-direction: column; gap: 3px; }
+.cascada .fila { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; flex-direction: row; font-variant-numeric: tabular-nums; }
+.cascada .barra { height: 8px; border-radius: 4px; background: var(--hueso); }
+.cascada .barra span { display: block; height: 100%; border-radius: 4px; background: #C9A9B5; }
+.cascada .total { border-top: 1px solid var(--hueso-2); padding-top: 8px; font-weight: 800; }
+.cascada .total .barra span { background: var(--salvia); }
+.grafica-lectura { margin: 10px 0 6px; min-height: 38px; background: var(--hueso); border-radius: 10px; padding: 8px 12px; font-size: 14px; display: flex; flex-wrap: wrap; gap: 4px 16px; font-variant-numeric: tabular-nums; }
+.leyenda { display: flex; gap: 14px; font-size: 13px; font-weight: 700; }
+.leyenda span { display: inline-flex; align-items: center; gap: 6px; }
+.grafica { display: flex; gap: 8px; }
+.grafica-y { flex: none; width: 56px; display: flex; flex-direction: column; justify-content: space-between; height: 220px; font-size: 12px; color: var(--tinta-2); text-align: right; font-variant-numeric: tabular-nums; }
+.grafica svg { width: 100%; height: 220px; overflow: visible; }
+.grafica-x { display: flex; justify-content: space-between; font-size: 12px; color: var(--tinta-2); margin: 6px 0 0 64px; }
+.tabla-caja { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; color: var(--tinta-2); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; font-weight: 800; padding: 8px; white-space: nowrap; }
+td { padding: 9px 8px; border-top: 1px solid var(--hueso-2); vertical-align: middle; }
+td.der, th.der { text-align: right; font-variant-numeric: tabular-nums; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 13px; font-weight: 800; white-space: nowrap; }
+.chip.bien { background: var(--verde-claro); color: var(--verde); }
+.chip.bajo { background: var(--ambar-claro); color: var(--ambar); }
+.chip.cero { background: var(--error-claro); color: #8C2A1F; }
+.chip.gris { background: var(--hueso-2); color: #5A5148; }
+.alerta { display: flex; gap: 10px; align-items: flex-start; border-radius: 12px; padding: 10px 12px; font-size: 14px; background: var(--ambar-claro); color: var(--tinta); }
+.alerta svg { flex: none; color: var(--ambar); margin-top: 2px; }
+
+/* Pedidos */
 .filtros { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
 .filtro { flex: none; min-height: 40px; padding: 0 14px; border-radius: 999px; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; background: #FFFFFF; color: var(--tinta); border: 1.5px solid var(--linea); }
 .filtro[aria-pressed="true"] { background: var(--negro); color: #F5F1E8; border-color: var(--negro); }
 .filtro span { opacity: .7; font-variant-numeric: tabular-nums; }
+.fechas { background: #FFFFFF; border-radius: 16px; padding: 12px 14px; display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; }
+.fechas .rangos { display: flex; flex-wrap: wrap; gap: 6px; }
+.fechas .rangos button { min-height: 40px; padding: 0 12px; border-radius: 10px; border: 1.5px solid var(--linea); background: #FFFFFF; color: var(--tinta); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+.fechas .rangos button[aria-pressed="true"] { background: var(--negro); color: #FFFFFF; border-color: var(--negro); }
+.fechas label { display: flex; flex-direction: column; gap: 2px; font-size: 12px; font-weight: 700; color: var(--tinta-2); }
+.fechas input { min-height: 40px; padding: 0 10px; border-radius: 10px; border: 1.5px solid var(--campo); font: inherit; font-size: 14px; color: var(--tinta); background: #FFFFFF; }
+.fechas .total-rango { margin-left: auto; font-size: 14px; color: var(--tinta-2); }
+.fechas .total-rango strong { color: var(--tinta); }
 .barra-herr { display: flex; gap: 10px; align-items: center; }
-.barra-herr .buscar { flex: 1 1 auto; min-height: 48px; }
+.barra-herr .buscar { flex: 1 1 auto; }
 .estado-carga { color: var(--tinta-2); text-align: center; padding: 32px 0; }
-.lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr)); gap: 14px; }
+.lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 370px), 1fr)); gap: 14px; align-items: start; }
 .pedido { background: #FFFFFF; border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 12px 30px -24px rgba(42,35,29,.5); }
 .pedido-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
 .pedido-id { font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: .01em; }
@@ -76,7 +156,9 @@ a:hover { color: var(--rosa-hover); }
 .estado { min-height: 40px; padding: 0 30px 0 12px; border-radius: 999px; border: 0; font: inherit; font-size: 14px; font-weight: 800; cursor: pointer; appearance: none; -webkit-appearance: none; background-repeat: no-repeat; background-position: right 10px center; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%232A231D' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); }
 .estado[data-e="Nuevo"] { background-color: #FBEAF1; color: #A3124B; }
 .estado[data-e="Confirmado"] { background-color: #E6EADB; color: #3E4A2D; }
+.estado[data-e="No confirmado"] { background-color: #EDE6D8; color: #5A5047; }
 .estado[data-e="Despachado"] { background-color: #F6ECD6; color: #6E5110; }
+.estado[data-e="En reparto"] { background-color: #E3ECF5; color: #1F4E79; }
 .estado[data-e="Entregado"] { background-color: #DCE9DF; color: #1F5E3A; }
 .estado[data-e="Devuelto"] { background-color: #EDE6D8; color: #5A5047; }
 .estado[data-e="Cancelado"] { background-color: #F3E1DC; color: #8A2E1E; }
@@ -85,39 +167,71 @@ a:hover { color: var(--rosa-hover); }
 .pedido-dir { background: var(--hueso); border-radius: 12px; padding: 12px 14px; font-size: 15px; }
 .pedido-dir strong { display: block; }
 .pedido-dir span { display: block; color: var(--tinta-2); }
-.pedido-prod { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 15px; }
-.pedido-prod b { font-weight: 600; }
+.pedido-items { display: flex; flex-direction: column; gap: 4px; font-size: 15px; }
+.pedido-items div { display: flex; justify-content: space-between; gap: 10px; font-variant-numeric: tabular-nums; }
+.pedido-items .gris { color: var(--tinta-2); font-size: 14px; }
 .tag { padding: 2px 10px; border-radius: 999px; background: #F6ECD6; color: #6E5110; font-size: 13px; font-weight: 800; }
 .pedido-total { display: flex; justify-content: space-between; align-items: baseline; border-top: 1.5px dashed var(--linea); padding-top: 10px; }
 .pedido-total span:last-child { font-family: var(--serif); font-size: 24px; font-variant-numeric: tabular-nums; }
 .pedido-origen { font-size: 12px; color: var(--tinta-2); }
+.costos { border: 1.5px solid var(--hueso-2); border-radius: 14px; }
+.costos summary { cursor: pointer; padding: 10px 12px; font-weight: 800; font-size: 14px; display: flex; justify-content: space-between; gap: 8px; list-style: none; }
+.costos summary::-webkit-details-marker { display: none; }
+.costos summary .gan { font-variant-numeric: tabular-nums; }
+.costos-in { padding: 0 12px 12px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+.costos-in .fila { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-variant-numeric: tabular-nums; }
+.costos-in input, .costos-in select { width: 130px; min-height: 38px; padding: 0 10px; border-radius: 10px; border: 1.5px solid var(--campo); font: inherit; font-size: 14px; text-align: right; background: #FFFFFF; }
+.costos-in select { text-align: left; }
+.costos-in .total { border-top: 1px solid var(--hueso-2); padding-top: 8px; font-weight: 800; font-size: 15px; }
 .acciones { display: flex; flex-wrap: wrap; gap: 8px; }
 .acciones .btn { flex: 1 1 auto; }
-.pestanas { max-width: 1240px; margin: 10px auto 0; display: flex; gap: 6px; }
-.pestana { min-height: 44px; padding: 0 16px; border: 0; border-radius: 12px 12px 0 0; background: transparent; color: #CFC8BA; font: inherit; font-weight: 700; cursor: pointer; }
-.pestana[aria-selected="true"] { background: var(--hueso); color: var(--tinta); }
-.contador { display: inline-block; min-width: 20px; padding: 1px 7px; border-radius: 999px; background: var(--rosa); color: #FFFFFF; font-size: 12px; text-align: center; }
-.contador[hidden] { display: none; }
-.filtro-landing { min-height: 48px; padding: 0 36px 0 12px; border: 1.5px solid var(--campo); border-radius: 12px; font: inherit; font-size: 15px; background: #FFFFFF; color: var(--tinta); appearance: none; -webkit-appearance: none; background-repeat: no-repeat; background-position: right 12px center; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%232A231D' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); max-width: 46%; }
-.pedido-oferta { align-self: flex-start; padding: 2px 10px; border-radius: 999px; background: var(--hueso); color: var(--tinta-2); font-size: 12px; font-weight: 700; }
-.landing { background: #FFFFFF; border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 12px 30px -24px rgba(42,35,29,.5); }
-.landing-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
-.landing h2 { font-family: var(--serif); font-weight: 400; font-size: 22px; line-height: 1.15; }
-.insignia { flex: none; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; }
-.insignia--publica { background: #E6EADB; color: #3E4A2D; }
-.insignia--oculta { background: #F6ECD6; color: #6E5110; }
-.insignia--inactiva { background: #F3E1DC; color: #8A2E1E; }
-.landing-precios { display: flex; flex-wrap: wrap; gap: 6px; font-size: 14px; }
-.landing-precios span { padding: 2px 10px; border-radius: 999px; background: var(--hueso); font-variant-numeric: tabular-nums; }
+
+/* Productos */
+.prod-lista { display: flex; flex-direction: column; gap: 10px; }
+.prod-fila { background: #FFFFFF; border-radius: 16px; padding: 10px 12px; display: flex; align-items: center; gap: 12px; border: 2px solid transparent; }
+.prod-fila.abierto { border-color: var(--rosa); }
+.prod-fila.apagado { opacity: .65; }
+.prod-fila img { width: 52px; height: 52px; border-radius: 10px; object-fit: cover; flex: none; background: var(--hueso); }
+.prod-fila .info { flex: 1; min-width: 0; }
+.prod-fila .info strong { display: block; }
+.prod-fila .info span { font-size: 13px; color: var(--tinta-2); }
+.interruptor { flex: none; width: 48px; height: 28px; border-radius: 14px; border: 0; padding: 3px; background: var(--campo); cursor: pointer; display: flex; justify-content: flex-start; }
+.interruptor::after { content: ''; width: 22px; height: 22px; border-radius: 50%; background: #FFFFFF; }
+.interruptor[aria-checked="true"] { background: var(--salvia); justify-content: flex-end; }
+.editor { background: #FFFFFF; border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 16px; }
+.rejilla { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.tabla-variantes input, .tabla-variantes select { min-height: 38px; padding: 0 8px; border-radius: 10px; border: 1.5px solid var(--campo); font: inherit; font-size: 14px; background: #FFFFFF; color: var(--tinta); }
+.tabla-variantes input[type="number"] { width: 100px; text-align: right; }
+.tabla-variantes input.ancho { width: 150px; }
+.tabla-variantes input[type="checkbox"] { width: 20px; height: 20px; min-height: 0; accent-color: var(--salvia); }
+.link-copiar { display: flex; gap: 8px; align-items: center; background: var(--hueso); border-radius: 12px; padding: 6px 6px 6px 12px; }
+.link-copiar code { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+.link-copiar .btn-sec { min-height: 38px; }
+.form-linea { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+.form-linea .campo { flex: 1 1 160px; }
+.tarifas { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px 16px; }
+.tarifas label { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 14px; }
+.tarifas input { width: 110px; min-height: 38px; padding: 0 10px; border-radius: 10px; border: 1.5px solid var(--campo); font: inherit; font-size: 14px; text-align: right; }
+.nota { font-size: 13px; color: var(--tinta-2); }
+
+/* Reseñas */
 .landing-link { display: flex; gap: 8px; align-items: center; background: var(--hueso); border-radius: 12px; padding: 6px 6px 6px 12px; }
 .landing-link code { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
 .landing-link .btn-sec { min-height: 40px; }
-.cifras { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; text-align: center; }
-.cifras div { background: var(--hueso); border-radius: 12px; padding: 10px 6px; }
-.cifras strong { display: block; font-family: var(--serif); font-weight: 400; font-size: 22px; font-variant-numeric: tabular-nums; }
-.cifras span { font-size: 12px; color: var(--tinta-2); }
-.nota-landings { color: var(--tinta-2); font-size: 14px; }
-.aviso { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--negro); color: #F5F1E8; padding: 12px 18px; border-radius: 12px; font-weight: 600; font-size: 15px; z-index: 20; box-shadow: 0 16px 40px -20px rgba(0,0,0,.7); }
+
+.solo-imprimir { display: none; }
+@media print {
+  body { background: #FFFFFF; font-size: 12px; }
+  .cabecera, .aviso, #aviso-migracion, .no-imprimir, .pestanas, .meta-pie button { display: none !important; }
+  .solo-imprimir { display: block; font-family: var(--serif); font-size: 18px; margin-bottom: 8px; }
+  .contenido { padding: 0; max-width: none; }
+  .caja, .kpi, .meta { box-shadow: none; break-inside: avoid; }
+  .meta { background: #FFFFFF; color: var(--tinta); border: 1px solid var(--linea); }
+  .meta-lado, .meta-pie, .meta-top .cifra small { color: var(--tinta-2); }
+  .meta-lado strong { color: var(--tinta); }
+  .tabla-caja { overflow: visible; }
+}
+.aviso { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--negro); color: #F5F1E8; padding: 12px 18px; border-radius: 12px; font-weight: 600; font-size: 15px; z-index: 20; box-shadow: 0 16px 40px -20px rgba(0,0,0,.7); max-width: calc(100vw - 32px); }
 </style>
 </head>
 <body>
@@ -126,7 +240,7 @@ a:hover { color: var(--rosa-hover); }
 <section class="ingreso" id="vista-ingreso" hidden>
   <div class="ingreso-marca">
     <span class="medallon"><img src="../assets/img/logo.jpg" width="150" height="150" alt="Revoltosos"></span>
-    <h1>Panel de pedidos</h1>
+    <h1>Gestor Revoltosos</h1>
     <p>Solo para el equipo de Revoltosos.</p>
   </div>
 
@@ -163,39 +277,269 @@ a:hover { color: var(--rosa-hover); }
     <div class="cabecera-in">
       <span class="medallon"><img src="../assets/img/logo.jpg" width="150" height="150" alt=""></span>
       <div style="flex: 1 1 auto; min-width: 0">
-        <h1>Pedidos</h1>
+        <h1>Gestor</h1>
         <small id="p-correo"></small>
       </div>
+      <button type="button" class="btn-sec" id="p-recargar" aria-label="Actualizar datos">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>
+      </button>
       <button type="button" class="btn-sec" id="p-salir">Salir</button>
     </div>
-    <div class="pestanas" role="tablist" aria-label="Secciones del panel">
-      <button type="button" class="pestana" role="tab" id="t-pedidos" aria-controls="tab-pedidos" aria-selected="true">Pedidos</button>
-      <button type="button" class="pestana" role="tab" id="t-landings" aria-controls="tab-landings" aria-selected="false">Landings</button>
-      <button type="button" class="pestana" role="tab" id="t-resenas" aria-controls="tab-resenas" aria-selected="false">Reseñas <span class="contador" id="resenas-pendientes" hidden></span></button>
+    <div class="pestanas" role="tablist" aria-label="Secciones del gestor">
+      <button type="button" class="pestana" role="tab" data-tab="resumen" aria-selected="true">Resumen</button>
+      <button type="button" class="pestana" role="tab" data-tab="pedidos" aria-selected="false">Pedidos <span class="contador" id="nuevos" hidden></span></button>
+      <button type="button" class="pestana" role="tab" data-tab="productos" aria-selected="false">Productos</button>
+      <button type="button" class="pestana" role="tab" data-tab="inventario" aria-selected="false">Inventario <span class="contador" id="bajos" hidden></span></button>
+      <button type="button" class="pestana" role="tab" data-tab="pauta" aria-selected="false">Pauta</button>
+      <button type="button" class="pestana" role="tab" data-tab="cupones" aria-selected="false">Cupones</button>
+      <button type="button" class="pestana" role="tab" data-tab="ajustes" aria-selected="false">Ajustes</button>
+      <button type="button" class="pestana" role="tab" data-tab="resenas" aria-selected="false">Reseñas <span class="contador" id="resenas-pendientes" hidden></span></button>
     </div>
   </header>
 
-  <main class="contenido" id="tab-pedidos" role="tabpanel" aria-labelledby="t-pedidos">
+  <p class="aviso-migracion" id="aviso-migracion" hidden style="max-width: 1208px; margin: 16px auto 0">Falta correr <strong>supabase/migraciones/007-tienda.sql</strong> en Supabase (SQL Editor). Sin eso no aparecen productos, inventario, cupones ni costos.</p>
+
+  <!-- Resumen -->
+  <main class="contenido" id="tab-resumen" role="tabpanel">
+    <div class="cabeza-sec">
+      <div><p class="solo-imprimir">Revoltosos · Reporte del mes</p><h2>Resumen</h2><p>Ventas y ganancia cuentan solo los pedidos <strong>Entregados</strong>.</p></div>
+      <div style="display: flex; gap: 10px; align-items: flex-end">
+        <div class="campo" style="max-width: 220px">
+          <label for="r-mes">Mes</label>
+          <select id="r-mes"></select>
+        </div>
+        <button type="button" class="btn-sec no-imprimir" onclick="window.print()">Guardar PDF</button>
+      </div>
+    </div>
+    <section class="meta" id="r-meta" aria-label="Meta del mes"></section>
+    <section class="kpis" id="r-kpis" aria-label="Cifras del mes"></section>
+    <div class="fila-cajas">
+      <section class="caja ancha" aria-labelledby="t-grafica">
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px">
+          <div><h3 id="t-grafica" style="margin: 0">Ventas acumuladas</h3><p class="nota" id="r-grafica-sub"></p></div>
+          <div class="leyenda" aria-hidden="true">
+            <span><svg width="22" height="4"><line x1="0" y1="2" x2="22" y2="2" stroke="#C2185B" stroke-width="2.5"/></svg><span id="r-ley-1"></span></span>
+            <span><svg width="22" height="4"><line x1="0" y1="2" x2="22" y2="2" stroke="#8C8173" stroke-width="2" stroke-dasharray="4 3"/></svg><span id="r-ley-2"></span></span>
+          </div>
+        </div>
+        <div class="grafica-lectura" id="r-lectura" aria-live="polite"></div>
+        <div class="grafica">
+          <div class="grafica-y" id="r-eje" aria-hidden="true"></div>
+          <svg id="r-svg" viewBox="0 0 620 220" preserveAspectRatio="none" role="img"></svg>
+        </div>
+        <div class="grafica-x" id="r-eje-x" aria-hidden="true"></div>
+      </section>
+      <section class="caja" aria-labelledby="t-cascada">
+        <h3 id="t-cascada">De dónde sale la ganancia</h3>
+        <div class="cascada" id="r-cascada"></div>
+        <p class="nota" style="margin-top: 10px">El envío lo pagas tú aunque al cliente le salga gratis. Las devoluciones restan el flete de ida y de vuelta.</p>
+      </section>
+    </div>
+    <div class="fila-cajas">
+      <section class="caja ancha" aria-labelledby="t-top">
+        <h3 id="t-top">Qué se está vendiendo</h3>
+        <div class="tabla-caja"><table><thead><tr><th>Producto</th><th class="der">Unidades</th><th class="der">Ventas</th><th class="der">Ganancia bruta</th><th class="der">Margen</th></tr></thead><tbody id="r-top"></tbody></table></div>
+      </section>
+      <section class="caja" aria-labelledby="t-estados">
+        <h3 id="t-estados">Pedidos del mes</h3>
+        <div id="r-estados" style="display: flex; flex-wrap: wrap; gap: 8px"></div>
+        <div id="r-alertas" style="display: flex; flex-direction: column; gap: 8px; margin-top: 14px"></div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Pedidos -->
+  <main class="contenido" id="tab-pedidos" role="tabpanel" hidden>
+    <div class="fechas" role="group" aria-label="Filtrar por fecha">
+      <div class="rangos" id="rangos"></div>
+      <label>Desde<input type="date" id="f-desde"></label>
+      <label>Hasta<input type="date" id="f-hasta"></label>
+      <span class="total-rango" id="total-rango"></span>
+    </div>
     <div class="filtros" id="filtros" role="group" aria-label="Filtrar por estado"></div>
     <div class="barra-herr">
       <label for="p-buscar" class="oculto">Buscar pedido</label>
-      <input id="p-buscar" class="buscar" type="search" placeholder="Buscar por nombre, celular o pedido">
-      <label for="p-landing" class="oculto">Filtrar por landing</label>
-      <select id="p-landing" class="filtro-landing"><option value="">Todas las landings</option></select>
-      <button type="button" class="btn-sec" id="p-recargar" aria-label="Actualizar lista">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>
-      </button>
+      <input id="p-buscar" class="buscar" type="search" placeholder="Buscar por nombre, celular, cédula, guía o pedido">
+      <button type="button" class="btn-sec" id="p-rastrear" hidden>Actualizar rastreo</button>
     </div>
     <p class="estado-carga" id="p-estado" aria-live="polite">Cargando pedidos…</p>
     <div class="lista" id="lista"></div>
   </main>
 
-  <main class="contenido" id="tab-landings" role="tabpanel" aria-labelledby="t-landings" hidden>
-    <p class="nota-landings">Cada landing vende una oferta con su propio precio. Las <strong>ocultas</strong> no aparecen en ningún menú: solo entra quien tenga el link (sirven para pruebas de anuncios). Las cifras no cuentan pedidos cancelados ni devueltos.</p>
-    <div class="lista" id="landings"></div>
+  <!-- Productos -->
+  <main class="contenido" id="tab-productos" role="tabpanel" hidden>
+    <div class="cabeza-sec">
+      <div><h2>Productos</h2><p>El interruptor oculta un producto de la tienda sin borrarlo. Un producto sin precio no se muestra.</p></div>
+      <button type="button" class="btn" id="prod-nuevo">+ Nuevo producto</button>
+    </div>
+    <div class="fila-cajas">
+      <div class="prod-lista" id="prod-lista" style="flex: 1 1 300px"></div>
+      <div id="prod-editor" class="ancha"></div>
+    </div>
   </main>
 
-  <main class="contenido" id="tab-resenas" role="tabpanel" aria-labelledby="t-resenas" hidden>
+  <!-- Inventario -->
+  <main class="contenido" id="tab-inventario" role="tabpanel" hidden>
+    <div class="cabeza-sec">
+      <div><h2>Inventario</h2><p>Sale solo cuando un pedido pasa a <strong>Despachado</strong>. Vuelve a bodega si se cancela o se devuelve.</p></div>
+    </div>
+    <section class="kpis" id="inv-kpis"></section>
+    <section class="caja" aria-labelledby="t-mov-nuevo">
+      <h3 id="t-mov-nuevo">Registrar entrada o ajuste</h3>
+      <form class="form-linea" id="form-mov">
+        <div class="campo" style="flex: 2 1 240px"><label for="m-variante">Producto y tamaño</label><select id="m-variante" required></select></div>
+        <div class="campo"><label for="m-tipo">Tipo</label><select id="m-tipo"><option value="entrada">Entrada (producción o compra)</option><option value="salida">Salida (daño, regalo, consumo)</option><option value="conteo">Conteo: dejar el stock en…</option></select></div>
+        <div class="campo"><label for="m-cantidad">Cantidad</label><input id="m-cantidad" type="number" inputmode="numeric" min="0" step="1" required></div>
+        <div class="campo"><label for="m-costo">Costo por unidad <small style="font-weight: 500">(opcional)</small></label><input id="m-costo" type="number" inputmode="numeric" min="0" step="1"></div>
+        <div class="campo" style="flex: 2 1 220px"><label for="m-nota">Nota</label><input id="m-nota" type="text" maxlength="120" placeholder="Ej.: producción del 14 oct"></div>
+        <button type="submit" class="btn btn--oscuro">Guardar</button>
+      </form>
+    </section>
+    <div class="fila-cajas">
+      <section class="caja ancha" aria-labelledby="t-stock">
+        <h3 id="t-stock">Existencias</h3>
+        <div class="tabla-caja"><table><thead><tr><th>Producto</th><th class="der">En bodega</th><th class="der">Por despachar</th><th class="der">Disponible</th><th class="der">Mínimo</th><th>Estado</th></tr></thead><tbody id="inv-tabla"></tbody></table></div>
+      </section>
+      <section class="caja" aria-labelledby="t-movs">
+        <h3 id="t-movs">Últimos movimientos</h3>
+        <div id="inv-movs"></div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Pauta en Meta -->
+  <main class="contenido" id="tab-pauta" role="tabpanel" hidden>
+    <p class="solo-imprimir">Revoltosos · Reporte de pauta · <span id="pa-titulo-reporte"></span></p>
+    <div class="cabeza-sec">
+      <div><h2>Pauta en Meta</h2><p id="pa-estado">Cruza lo que gastas en cada anuncio con los pedidos que de verdad se entregan.</p></div>
+      <div class="no-imprimir" style="display: flex; flex-wrap: wrap; gap: 8px">
+        <button type="button" class="btn-sec" id="pa-sync">Actualizar desde Meta</button>
+        <button type="button" class="btn-sec" id="pa-csv">Descargar Excel</button>
+        <button type="button" class="btn-sec" id="pa-pdf">Guardar PDF</button>
+      </div>
+    </div>
+    <p class="aviso-migracion" id="pa-error" hidden></p>
+    <div class="fechas no-imprimir" role="group" aria-label="Periodo"><div class="rangos" id="pa-rangos"></div></div>
+    <section class="kpis" id="pa-kpis" aria-label="Pauta del periodo"></section>
+    <section class="caja" aria-labelledby="t-anuncios">
+      <h3 id="t-anuncios">¿Qué anuncios están funcionando?</h3>
+      <div class="tabla-caja"><table>
+        <thead><tr><th>Anuncio</th><th class="der">Gasto</th><th class="der">Clics</th><th class="der">Compras (Meta)</th><th class="der">Pedidos</th><th class="der">Entregados</th><th class="der">En camino</th><th class="der">Costo x entregado</th><th class="der">Ganancia neta</th><th>Sugerencia</th></tr></thead>
+        <tbody id="pa-tabla"></tbody>
+      </table></div>
+      <p class="nota" style="margin-top: 10px">«Compras (Meta)» es lo que reporta el Pixel. «Pedidos» y «Entregados» salen de tu gestor, por el anuncio de donde llegó el cliente. La ganancia neta resta el gasto del anuncio a la ganancia de sus pedidos entregados (y las devoluciones). La sugerencia es una guía: revísala antes de decidir.</p>
+    </section>
+    <section class="caja no-imprimir" aria-labelledby="t-marcar">
+      <h3 id="t-marcar">Para que cada pedido sepa de qué anuncio vino</h3>
+      <p style="font-size: 15px">En el Administrador de anuncios, en cada anuncio → <strong>Parámetros de URL</strong>, pega esto (una sola vez por anuncio):</p>
+      <div class="link-copiar" style="margin-top: 8px"><code id="pa-parametros">utm_source=facebook&amp;utm_medium=paid&amp;utm_campaign={{campaign.name}}&amp;utm_content={{ad.id}}&amp;utm_term={{adset.name}}</code><button type="button" class="btn-sec" id="pa-copiar">Copiar</button></div>
+      <p class="nota" style="margin-top: 8px">Meta reemplaza lo que está entre llaves por el nombre y el ID reales. Los pedidos que lleguen sin esto aparecen como «Sin anuncio identificado».</p>
+    </section>
+  </main>
+
+  <!-- Cupones -->
+  <main class="contenido" id="tab-cupones" role="tabpanel" hidden>
+    <div class="cabeza-sec"><div><h2>Cupones</h2><p>El cliente lo escribe en el carrito. El descuento se recalcula en el servidor.</p></div></div>
+    <section class="caja" aria-labelledby="t-cup-nuevo">
+      <h3 id="t-cup-nuevo">Crear cupón</h3>
+      <form class="form-linea" id="form-cupon">
+        <div class="campo"><label for="c-codigo">Código</label><input id="c-codigo" required maxlength="30" placeholder="REVOLTOSO10" style="text-transform: uppercase"></div>
+        <div class="campo"><label for="c-tipo">Tipo</label><select id="c-tipo"><option value="porcentaje">Porcentaje (%)</option><option value="valor">Valor fijo ($)</option></select></div>
+        <div class="campo"><label for="c-valor">Descuento</label><input id="c-valor" type="number" min="1" step="1" required placeholder="10"></div>
+        <div class="campo"><label for="c-minimo">Compra mínima</label><input id="c-minimo" type="number" min="0" step="1000" value="0"></div>
+        <div class="campo"><label for="c-producto">Aplica a</label><select id="c-producto"></select></div>
+        <div class="campo"><label for="c-vence">Vence <small style="font-weight: 500">(opcional)</small></label><input id="c-vence" type="date"></div>
+        <div class="campo"><label for="c-usos">Usos máximos <small style="font-weight: 500">(opcional)</small></label><input id="c-usos" type="number" min="1" step="1"></div>
+        <button type="submit" class="btn btn--oscuro">Crear</button>
+      </form>
+      <p class="mensaje error" id="c-msg" role="alert" style="margin-top: 8px"></p>
+    </section>
+    <section class="caja">
+      <div class="tabla-caja"><table><thead><tr><th>Código</th><th>Descuento</th><th>Aplica a</th><th>Vence</th><th class="der">Usos</th><th>Estado</th><th><span class="oculto">Acciones</span></th></tr></thead><tbody id="cup-tabla"></tbody></table></div>
+    </section>
+  </main>
+
+  <!-- Ajustes -->
+  <main class="contenido" id="tab-ajustes" role="tabpanel" hidden>
+    <div class="cabeza-sec"><div><h2>Ajustes</h2><p>Lo que cambies aquí se aplica de inmediato en la tienda y en los pedidos nuevos.</p></div></div>
+    <form id="form-ajustes" style="display: flex; flex-direction: column; gap: 16px">
+      <section class="caja">
+        <h3>Envío al cliente</h3>
+        <div class="rejilla">
+          <div class="campo"><label for="a-gratis">Envío gratis desde ($ en productos)</label><input id="a-gratis" type="number" min="0" step="1000" required></div>
+          <div class="campo"><label for="a-base">Tarifa de envío normal</label><input id="a-base" type="number" min="0" step="500" required></div>
+          <div class="campo"><label for="a-prio">Envío prioritario (+$)</label><input id="a-prio" type="number" min="0" step="500" required></div>
+        </div>
+        <details style="margin-top: 14px">
+          <summary style="cursor: pointer; font-weight: 800; min-height: 32px">Tarifa distinta por departamento (opcional)</summary>
+          <p class="nota" style="margin: 6px 0 10px">Déjalo vacío para usar la tarifa normal. Cuando conectemos Envía, esto se calcula solo.</p>
+          <div class="tarifas" id="a-tarifas"></div>
+        </details>
+        <details style="margin-top: 10px" id="a-ciudades-caja">
+          <summary style="cursor: pointer; font-weight: 800; min-height: 32px">Tarifa para ciudades puntuales (opcional)</summary>
+          <p class="nota" style="margin: 6px 0 10px">Gana sobre la del departamento. Úsala para las ciudades a las que más vendes o las que salen más caras (municipios lejanos).</p>
+          <div class="form-linea">
+            <div class="campo"><label for="c-dep">Departamento</label><select id="c-dep"><option value="">Elige</option></select></div>
+            <div class="campo"><label for="c-ciu">Ciudad</label><select id="c-ciu"><option value="">Primero el departamento</option></select></div>
+            <div class="campo"><label for="c-val">Tarifa ($)</label><input id="c-val" type="number" min="0" step="500"></div>
+            <button type="button" class="btn-sec" id="c-agregar">Agregar</button>
+          </div>
+          <div class="tarifas" id="a-ciudades" style="margin-top: 12px"></div>
+        </details>
+        <details style="margin-top: 10px">
+          <summary style="cursor: pointer; font-weight: 800; min-height: 32px">Cómo sacar las tarifas del cotizador de Envía</summary>
+          <ol class="nota" style="margin: 8px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; font-size: 14px">
+            <li>Entra a envia.com → <strong>Cotizar envío</strong> (no necesita cuenta).</li>
+            <li>Origen: tu ciudad. Destino: la capital de cada departamento (y las ciudades donde más vendes).</li>
+            <li>Paquete: la caja que usas con el peso de un pedido típico (por ejemplo 1 kg).</li>
+            <li>Activa <strong>pago contra entrega</strong> si la opción aparece, para que el precio incluya el recaudo.</li>
+            <li>Anota el precio de la transportadora que vas a usar (por ejemplo Interrapidísimo) y ponlo aquí. Si quieres, súmale un margen para cubrir variaciones.</li>
+          </ol>
+          <p class="nota" style="margin-top: 8px">Los precios cambian con el peso: si un pedido es mucho más pesado que el típico, revisa el valor antes de despachar.</p>
+        </details>
+      </section>
+      <section class="caja">
+        <h3>Costos internos (no los ve el cliente)</h3>
+        <div class="rejilla">
+          <div class="campo"><label for="a-costo-envio">Lo que te cobra la transportadora en promedio</label><input id="a-costo-envio" type="number" min="0" step="500" required></div>
+          <div class="campo"><label for="a-comision">Comisión por recaudo contraentrega (%)</label><input id="a-comision" type="number" min="0" max="30" step="0.1" required></div>
+        </div>
+        <p class="nota" style="margin-top: 8px">Se usa el promedio mientras no anotes el envío real de cada pedido. Si generas la guía con Envía, el envío real se anota solo (y ya incluye la comisión de recaudo: en ese caso deja la comisión en 0).</p>
+      </section>
+      <section class="caja" id="sec-envia" aria-labelledby="t-envia">
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; align-items: flex-start">
+          <div><h3 id="t-envia" style="margin-bottom: 2px">Envía: quién despacha</h3><p class="nota">Estos datos van en cada guía como remitente.</p></div>
+          <button type="button" class="btn-sec" id="a-probar-envia">Probar conexión con Envía</button>
+        </div>
+        <p class="mensaje" id="a-envia-msg" role="status" style="margin-top: 8px"></p>
+        <div class="rejilla" style="margin-top: 10px">
+          <div class="campo"><label for="e-nombre">Nombre de quien envía</label><input id="e-nombre" maxlength="80"></div>
+          <div class="campo"><label for="e-empresa">Empresa <small style="font-weight: 500">(opcional)</small></label><input id="e-empresa" maxlength="80" placeholder="Revoltosos"></div>
+          <div class="campo"><label for="e-documento">Cédula o NIT</label><input id="e-documento" maxlength="20" inputmode="numeric"></div>
+          <div class="campo"><label for="e-telefono">Celular</label><input id="e-telefono" maxlength="16" inputmode="tel"></div>
+          <div class="campo"><label for="e-email">Correo <small style="font-weight: 500">(opcional)</small></label><input id="e-email" type="email" maxlength="120"></div>
+          <div class="campo"><label for="e-direccion">Dirección de despacho</label><input id="e-direccion" maxlength="120"></div>
+          <div class="campo"><label for="e-barrio">Barrio</label><input id="e-barrio" maxlength="80"></div>
+          <div class="campo"><label for="e-departamento">Departamento</label><select id="e-departamento"><option value="">Elige</option></select></div>
+          <div class="campo"><label for="e-ciudad">Ciudad o municipio</label><select id="e-ciudad"><option value="">Primero el departamento</option></select></div>
+          <div class="campo"><label for="e-referencia">Referencia <small style="font-weight: 500">(opcional)</small></label><input id="e-referencia" maxlength="120" placeholder="Casa esquinera, portón negro"></div>
+        </div>
+        <h3 style="margin: 18px 0 2px">La caja que usas</h3>
+        <p class="nota">Medidas de la caja estándar. El peso sale de cada tamaño (Productos → columna Peso); si un tamaño no tiene peso se usa el de aquí.</p>
+        <div class="rejilla" style="margin-top: 10px">
+          <div class="campo"><label for="e-largo">Largo (cm)</label><input id="e-largo" type="number" min="1" step="1"></div>
+          <div class="campo"><label for="e-ancho">Ancho (cm)</label><input id="e-ancho" type="number" min="1" step="1"></div>
+          <div class="campo"><label for="e-alto">Alto (cm)</label><input id="e-alto" type="number" min="1" step="1"></div>
+          <div class="campo"><label for="e-peso">Peso por defecto por unidad (g)</label><input id="e-peso" type="number" min="10" step="10"></div>
+        </div>
+        <div class="campo" style="margin-top: 12px"><label for="e-transportadoras">Transportadoras a cotizar <small style="font-weight: 500">(opcional, separadas por coma; vacío = todas las que tengas activas en Envía)</small></label><input id="e-transportadoras" maxlength="200" placeholder="interrapidisimo, coordinadora"></div>
+      </section>
+      <div><button type="submit" class="btn btn--oscuro">Guardar ajustes</button></div>
+    </form>
+  </main>
+
+  <!-- Reseñas -->
+  <main class="contenido" id="tab-resenas" role="tabpanel" hidden>
     <div class="pedido">
       <strong>Pide reseñas a tus clientes</strong>
       <p style="margin: 0; font-size: 14px; color: var(--tinta-2)">Mándales este link cuando ya hayan recibido su pedido. En cada pedido marcado como <strong>Entregado</strong> también aparece el botón "Pedir reseña".</p>
@@ -215,28 +559,39 @@ const CONFIG = {
   SUPABASE_URL: 'https://jlvnrxmardcnarzspccs.supabase.co',
   SUPABASE_KEY: 'sb_publishable_Jca2aMrjHOFVBrDnZpMj-Q_lDK6BWLF'
 };
-const ESTADOS = ['Nuevo', 'Confirmado', 'Despachado', 'Entregado', 'Devuelto', 'Cancelado'];
+const SITIO = 'https://revoltosos.netlify.app';
+const ESTADOS = ['Nuevo', 'Confirmado', 'No confirmado', 'Despachado', 'En reparto', 'Entregado', 'Devuelto', 'Cancelado'];
+const SIN_VENTA = ['Nuevo', 'Confirmado', 'No confirmado', 'Cancelado'];
+const DEPARTAMENTOS = ['Amazonas', 'Antioquia', 'Arauca', 'Atlántico', 'Bogotá D.C.', 'Bolívar', 'Boyacá', 'Caldas', 'Caquetá', 'Casanare', 'Cauca', 'Cesar', 'Chocó', 'Córdoba', 'Cundinamarca', 'Guainía', 'Guaviare', 'Huila', 'La Guajira', 'Magdalena', 'Meta', 'Nariño', 'Norte de Santander', 'Putumayo', 'Quindío', 'Risaralda', 'San Andrés y Providencia', 'Santander', 'Sucre', 'Tolima', 'Valle del Cauca', 'Vaupés', 'Vichada'];
 
 const sb = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
-const $ = (s) => document.querySelector(s);
-const pesos = (n) => '$' + String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const pesos = (n) => (n < 0 ? '−' : '') + '$' + String(Math.round(Math.abs(n))).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fechaCorta = new Intl.DateTimeFormat('es-CO', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', timeZone: 'America/Bogota' });
+const diaCO = (d) => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota' }).format(new Date(d)); // AAAA-MM-DD
+const hoy = () => diaCO(new Date());
+const sumarDias = (dia, n) => { const d = new Date(dia + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+const nombreMes = (m) => new Intl.DateTimeFormat('es-CO', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(m + '-15T12:00:00Z'));
+const diasDelMes = (m) => new Date(Date.UTC(Number(m.slice(0, 4)), Number(m.slice(5, 7)), 0)).getUTCDate();
+const mesAnterior = (m) => { const d = new Date(m + '-15T12:00:00Z'); d.setUTCMonth(d.getUTCMonth() - 1); return d.toISOString().slice(0, 7); };
+const slug = (t) => String(t).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
 
-const SITIO = 'https://revoltosos.netlify.app';
-const PRODUCTO_POR_DEFECTO = 'Codornices deshidratadas 50 g';
-
-let pedidos = [];
-let ofertas = [];
-let filtro = 'Todos';
-let filtroLanding = '';
-let busqueda = '';
+const D = { pedidos: [], productos: [], variantes: [], cupones: [], movimientos: [], resenas: [], pauta: [], componentes: [], ajustes: null, tienda: false, pautaLista: false };
 
 function avisar(texto) {
   const a = $('#aviso');
   a.textContent = texto;
   a.hidden = false;
   clearTimeout(avisar.t);
-  avisar.t = setTimeout(() => { a.hidden = true; }, 2600);
+  avisar.t = setTimeout(() => { a.hidden = true; }, 3200);
+}
+function el(tag, clase, texto) {
+  const n = document.createElement(tag);
+  if (clase) n.className = clase;
+  if (texto != null) n.textContent = texto;
+  return n;
 }
 
 /* ---------- Sesión ---------- */
@@ -303,30 +658,1244 @@ $('#form-nueva').addEventListener('submit', async (e) => {
 
 $('#p-salir').addEventListener('click', () => sb.auth.signOut());
 
-/* ---------- Pedidos ---------- */
+/* ---------- Carga de datos ---------- */
+let cargando = false;
 async function cargar() {
-  $('#p-estado').hidden = false;
-  $('#p-estado').textContent = 'Cargando pedidos…';
-  const [rp, ro, rr] = await Promise.all([
-    sb.from('pedidos').select('*').order('creado_en', { ascending: false }).limit(1000),
-    sb.from('ofertas').select('*').order('orden'),
-    sb.from('resenas').select('*').order('creado_en', { ascending: false }).limit(300)
+  if (cargando) return;
+  cargando = true;
+  const [rp, rprod, rvar, rcup, raj, rmov, rr, rpa, rcomp] = await Promise.all([
+    sb.from('pedidos').select('*').order('creado_en', { ascending: false }).limit(3000),
+    sb.from('productos').select('*').order('orden'),
+    sb.from('variantes').select('*').order('orden'),
+    sb.from('cupones').select('*').order('creado_en', { ascending: false }),
+    sb.from('ajustes').select('*').eq('id', 1).maybeSingle(),
+    sb.from('movimientos').select('*').order('creado_en', { ascending: false }).limit(150),
+    sb.from('resenas').select('*').order('creado_en', { ascending: false }).limit(300),
+    sb.from('pauta_anuncios').select('*').gte('fecha', sumarDias(hoy(), -100)).order('fecha').limit(20000),
+    sb.from('variante_componentes').select('*')
   ]);
+  cargando = false;
   if (rp.error) {
     $('#p-estado').textContent = 'No pudimos cargar los pedidos. Revisa tu conexión y toca actualizar.';
     return;
   }
-  pedidos = rp.data;
-  ofertas = ro.error ? [] : ro.data;
-  resenas = rr.error ? null : rr.data;
-  pintarSelectorLanding();
-  pintar();
-  pintarLandings();
+  D.pedidos = rp.data;
+  D.tienda = !rprod.error && !raj.error && !!raj.data;
+  $('#aviso-migracion').hidden = D.tienda;
+  D.productos = rprod.error ? [] : rprod.data;
+  D.variantes = rvar.error ? [] : rvar.data;
+  D.cupones = rcup.error ? [] : rcup.data;
+  D.movimientos = rmov.error ? [] : rmov.data;
+  D.ajustes = raj.data || { envio_gratis_desde: 70000, envio_base: 12000, envio_departamentos: {}, prioritario: 5000, costo_envio_promedio: 12000, comision_recaudo: 0, metas: {} };
+  D.resenas = rr.error ? null : rr.data;
+  D.componentes = rcomp.error ? [] : rcomp.data;
+  D.pautaLista = !rpa.error;
+  D.pauta = rpa.error ? [] : rpa.data;
+  pintarTodo();
+  if (!$('#tab-pauta').hidden) sincronizarSiHaceFalta();
+  rastrearSiHaceFalta();
+}
+
+/* Rastreo de Envía: se actualiza solo si pasaron más de 2 horas, o con el botón. */
+let rastreando = false;
+async function rastrearTodo(manual) {
+  if (rastreando || !hayEnvia()) return;
+  rastreando = true;
+  $('#p-rastrear').disabled = true;
+  $('#p-rastrear').textContent = 'Consultando Envía…';
+  const r = await llamarEnvia({ accion: 'rastrear' });
+  rastreando = false;
+  $('#p-rastrear').disabled = false;
+  $('#p-rastrear').textContent = 'Actualizar rastreo';
+  if (!r.ok) { if (manual) avisar(r.error); return; }
+  if (r.cambios.length) {
+    const entregados = r.cambios.filter((c) => c.a === 'Entregado').length;
+    const novedades = r.cambios.filter((c) => c.novedad).length;
+    avisar(r.cambios.length + ' pedidos cambiaron' + (entregados ? ' · ' + entregados + ' entregados' : '') + (novedades ? ' · ' + novedades + ' con novedad' : ''));
+    await cargar();
+  } else if (manual) avisar('Rastreo al día (' + r.revisados + ' guías revisadas)');
+}
+function rastrearSiHaceFalta() {
+  $('#p-rastrear').hidden = !hayEnvia();
+  if (!hayEnvia()) return;
+  const pendientes = D.pedidos.some((p) => p.guia && ['Despachado', 'En reparto'].includes(p.estado));
+  const ultima = D.ajustes.envia_rastreado_en ? Date.parse(D.ajustes.envia_rastreado_en) : 0;
+  if (pendientes && Date.now() - ultima > 2 * 3600 * 1000) rastrearTodo(false);
+}
+$('#p-rastrear').addEventListener('click', () => rastrearTodo(true));
+
+function pintarTodo() {
+  const nuevos = D.pedidos.filter((p) => p.estado === 'Nuevo').length;
+  $('#nuevos').hidden = !nuevos;
+  $('#nuevos').textContent = nuevos;
+  const bajos = filasInventario().filter((f) => f.estado !== 'Bien').length;
+  $('#bajos').hidden = !bajos;
+  $('#bajos').textContent = bajos;
+  pintarResumen();
+  pintarPedidos();
+  pintarProductos();
+  pintarInventario();
+  pintarPauta();
+  pintarCupones();
+  pintarAjustes();
   pintarResenas();
 }
 
+/* ---------- Pestañas ---------- */
+function mostrarPestana(cual) {
+  $$('.pestana').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === cual)));
+  $$('main.contenido').forEach((m) => { m.hidden = m.id !== 'tab-' + cual; });
+  try { sessionStorage.setItem('rv-gestor-tab', cual); } catch (e) {}
+  if (cual === 'pauta' && typeof sincronizarSiHaceFalta === 'function') sincronizarSiHaceFalta();
+}
+$$('.pestana').forEach((b) => b.addEventListener('click', () => mostrarPestana(b.dataset.tab)));
+try { const t = sessionStorage.getItem('rv-gestor-tab'); if (t && $('#tab-' + t)) mostrarPestana(t); } catch (e) {}
+$('#p-recargar').addEventListener('click', () => { cargar(); avisar('Datos actualizados'); });
+setInterval(() => { if (!document.hidden && !$('#vista-panel').hidden && !document.activeElement.matches('input, select, textarea')) cargar(); }, 90000);
+
+/* ---------- Dinero de cada pedido ---------- */
+const productoDe = (id) => D.productos.find((p) => p.id === id);
+const varianteDe = (id) => D.variantes.find((v) => v.id === id);
+
+function cuentasPedido(p) {
+  const A = D.ajustes;
+  const envioReal = p.envio_real != null ? p.envio_real : A.costo_envio_promedio;
+  if (p.estado === 'Devuelto') {
+    const vuelta = p.devolucion_costo != null ? p.devolucion_costo : envioReal;
+    return { devuelto: true, envioReal, vuelta, ganancia: -(envioReal + vuelta) };
+  }
+  const costoProd = p.costo_productos || 0;
+  const comision = Math.round(p.total * (Number(A.comision_recaudo) || 0) / 100);
+  return { devuelto: false, costoProd, envioReal, comision, ganancia: p.total - costoProd - envioReal - comision };
+}
+const fechaVenta = (p) => p.entregado_en || p.creado_en;
+
+/* ---------- Resumen ---------- */
+let mesSel = hoy().slice(0, 7);
+
+function metasDe(mes) {
+  const m = (D.ajustes.metas || {})[mes];
+  if (typeof m === 'number') return { meta: m, pauta: 0 };
+  return { meta: (m && m.meta) || 0, pauta: (m && m.pauta) || 0 };
+}
+
+function datosMes(mes) {
+  const entregados = D.pedidos.filter((p) => p.estado === 'Entregado' && diaCO(fechaVenta(p)).slice(0, 7) === mes);
+  const devueltos = D.pedidos.filter((p) => p.estado === 'Devuelto' && diaCO(p.estado_cambiado_en || p.creado_en).slice(0, 7) === mes);
+  const ventas = entregados.reduce((s, p) => s + p.total, 0);
+  let costoProd = 0, envios = 0, comision = 0;
+  entregados.forEach((p) => { const c = cuentasPedido(p); costoProd += c.costoProd; envios += c.envioReal; comision += c.comision; });
+  const devol = devueltos.reduce((s, p) => s - cuentasPedido(p).ganancia, 0);
+  const bruta = ventas - costoProd - envios - comision - devol;
+  const { meta, pauta: pautaManual } = metasDe(mes);
+  // Si Meta ya trajo el gasto de ese mes se usa ese; si no, el que se anotó a mano.
+  const filasMeta = D.pauta.filter((r) => r.fecha.slice(0, 7) === mes);
+  const pautaMeta = filasMeta.length ? Math.round(filasMeta.reduce((s, r) => s + Number(r.gasto), 0)) : 0;
+  const pauta = filasMeta.length ? pautaMeta : pautaManual;
+  const pautaDeMeta = filasMeta.length > 0;
+  const porDia = new Array(diasDelMes(mes)).fill(0);
+  entregados.forEach((p) => { porDia[Number(diaCO(fechaVenta(p)).slice(8, 10)) - 1] += p.total; });
+  let acc = 0;
+  const acumulado = porDia.map((v) => (acc += v));
+  return { entregados, devueltos, ventas, costoProd, envios, comision, devol, bruta, neta: bruta - pauta, pauta, pautaDeMeta, meta, acumulado };
+}
+
+function pintarResumen() {
+  const sel = $('#r-mes');
+  const meses = [];
+  let m = hoy().slice(0, 7);
+  for (let i = 0; i < 12; i++) { meses.push(m); m = mesAnterior(m); }
+  sel.innerHTML = meses.map((x) => '<option value="' + x + '"' + (x === mesSel ? ' selected' : '') + '>' + esc(nombreMes(x)) + '</option>').join('');
+
+  const A = datosMes(mesSel);
+  const B = datosMes(mesAnterior(mesSel));
+  const esActual = mesSel === hoy().slice(0, 7);
+  const diaHoy = esActual ? Number(hoy().slice(8, 10)) : diasDelMes(mesSel);
+  const quedan = esActual ? diasDelMes(mesSel) - diaHoy : 0;
+  const bMismoDia = B.acumulado[Math.min(diaHoy, B.acumulado.length) - 1] || 0;
+  const pct = (a, b) => (b ? Math.round((a - b) / b * 100) : null);
+
+  // Meta
+  const metaPct = A.meta ? Math.min(100, Math.round(A.ventas / A.meta * 100)) : 0;
+  const marca = A.meta && B.ventas ? Math.min(100, B.ventas / A.meta * 100) : null;
+  const vsAyer = pct(A.ventas, bMismoDia);
+  $('#r-meta').innerHTML = '<div class="meta-top"><div><p class="antes">Meta de ' + esc(nombreMes(mesSel)) + '</p>' +
+    '<p class="cifra">' + pesos(A.ventas) + (A.meta ? ' <small>de ' + pesos(A.meta) + '</small>' : '') + '</p></div>' +
+    '<div class="meta-lado"><span style="display: block">Mes anterior completo: <strong>' + pesos(B.ventas) + '</strong></span>' +
+    (A.meta && esActual && A.ventas < A.meta ? '<span>Para llegar: <strong>' + pesos((A.meta - A.ventas) / Math.max(1, quedan + 1)) + ' por día</strong> en los ' + (quedan + 1) + ' días que quedan</span>' : '') + '</div></div>' +
+    (A.meta ? '<div class="meta-riel" role="progressbar" aria-label="Avance de la meta" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + metaPct + '"><span style="width:' + metaPct + '%"></span>' + (marca != null ? '<i style="left:' + marca + '%" title="Lo que vendiste el mes anterior"></i>' : '') + '</div>' : '') +
+    '<div class="meta-pie"><span>' + (A.meta ? metaPct + ' % de la meta' : 'Sin meta para este mes') +
+    (vsAyer != null && esActual ? ' · vas <strong style="color: #FFFFFF">' + (vsAyer >= 0 ? '+' : '') + vsAyer + ' %</strong> frente al mismo día del mes anterior' : '') + '</span>' +
+    '<span>' + (marca != null ? '▏ = lo vendido el mes anterior · ' : '') + '<button type="button" id="r-cambiar-meta">' + (A.meta ? 'Cambiar meta' : 'Poner meta') + '</button>' +
+    (A.pautaDeMeta ? '' : ' · <button type="button" id="r-cambiar-pauta">Gasto en pauta</button>') + '</span></div>';
+  $('#r-cambiar-meta').addEventListener('click', () => editarMeta('meta', A.meta, 'Meta de ventas de ' + nombreMes(mesSel) + ' (solo números):'));
+  if ($('#r-cambiar-pauta')) $('#r-cambiar-pauta').addEventListener('click', () => editarMeta('pauta', A.pauta, 'Lo que gastaste en pauta en ' + nombreMes(mesSel) + ' (solo números). Con Meta conectado se llena solo:'));
+
+  // Cifras
+  const flecha = (v) => (v == null ? '' : '<span class="' + (v >= 0 ? 'sube' : 'baja') + '">' + (v >= 0 ? '▲ +' : '▼ ') + v + ' %</span> vs. mes anterior');
+  const kpi = (nombre, valor, extra, destacado) => '<div class="kpi' + (destacado ? ' destacado' : '') + '"><span>' + nombre + '</span><strong>' + valor + '</strong><small>' + extra + '</small></div>';
+  const ticket = A.entregados.length ? A.ventas / A.entregados.length : 0;
+  const tasaDev = (A.entregados.length + A.devueltos.length) ? Math.round(A.devueltos.length / (A.entregados.length + A.devueltos.length) * 100) : 0;
+  $('#r-kpis').innerHTML =
+    kpi('Ventas entregadas', pesos(A.ventas), flecha(pct(A.ventas, B.ventas)) || (A.entregados.length + ' pedidos')) +
+    kpi('Pedidos entregados', String(A.entregados.length), 'Ticket promedio ' + pesos(ticket)) +
+    kpi('Ganancia bruta', pesos(A.bruta), flecha(pct(A.bruta, B.bruta)) || 'Ventas − costos − envíos') +
+    kpi('Devoluciones', String(A.devueltos.length), tasaDev + ' % de los pedidos · ' + pesos(A.devol)) +
+    kpi('Ganancia neta', pesos(A.neta), A.pauta ? 'Ya restada la pauta (' + pesos(A.pauta) + (A.pautaDeMeta ? ', desde Meta' : '') + ')' : 'Sin gasto en pauta registrado', true);
+
+  // Cascada
+  const filas = [
+    ['Ventas entregadas', A.ventas, '#2A231D'],
+    ['− Costo de producto', -A.costoProd],
+    ['− Envíos que pagamos', -A.envios],
+    ['− Comisión de recaudo', -A.comision],
+    ['− Devoluciones (' + A.devueltos.length + ')', -A.devol],
+    ['= Ganancia bruta', A.bruta, null, true],
+    ['− Pauta', -A.pauta],
+    ['= Ganancia neta', A.neta, null, true]
+  ];
+  const base = Math.max(1, A.ventas);
+  $('#r-cascada').innerHTML = filas.map(([n, v, color, total]) => '<div class="' + (total ? 'total' : '') + '"><div class="fila"><span>' + n + '</span><span>' + pesos(v) + '</span></div>' +
+    '<div class="barra"><span style="width:' + Math.min(100, Math.abs(v) / base * 100) + '%' + (color ? ';background:' + color : '') + '"></span></div></div>').join('');
+
+  pintarGrafica(A, B, esActual ? diaHoy : null);
+
+  // Qué se vende
+  const top = {};
+  A.entregados.forEach((p) => (p.items || []).forEach((i) => {
+    const t = top[i.nombre] || (top[i.nombre] = { u: 0, ventas: 0, costo: 0 });
+    t.u += i.cantidad; t.ventas += i.precio * i.cantidad; t.costo += (i.costo || 0) * i.cantidad;
+  }));
+  const lista = Object.entries(top).sort((a, b) => b[1].ventas - a[1].ventas).slice(0, 8);
+  $('#r-top').innerHTML = lista.length ? lista.map(([n, t]) => '<tr><td><strong>' + esc(n) + '</strong></td><td class="der">' + t.u + '</td><td class="der">' + pesos(t.ventas) + '</td><td class="der">' + pesos(t.ventas - t.costo) + '</td><td class="der"><strong>' + (t.costo ? Math.round((t.ventas - t.costo) / t.ventas * 100) + ' %' : '—') + '</strong></td></tr>').join('')
+    : '<tr><td colspan="5" class="nota">Aún no hay pedidos entregados con productos este mes.</td></tr>';
+
+  // Estados y alertas
+  const delMes = D.pedidos.filter((p) => diaCO(p.creado_en).slice(0, 7) === mesSel);
+  const enCamino = D.pedidos.filter((p) => p.estado === 'Despachado' || p.estado === 'En reparto');
+  $('#r-estados').innerHTML = ESTADOS.map((e) => { const n = delMes.filter((p) => p.estado === e).length; return n ? '<span class="estado" data-e="' + e + '" style="display: inline-flex; align-items: center; min-height: 32px; background-image: none; padding: 0 12px; cursor: default">' + e + ' ' + n + '</span>' : ''; }).join('') || '<span class="nota">Sin pedidos este mes.</span>';
+  const alertas = [];
+  const conNovedad = enCamino.filter((p) => p.novedad);
+  if (conNovedad.length) alertas.push('<div class="alerta" style="background: var(--error-claro)"><span><strong>' + conNovedad.length + (conNovedad.length === 1 ? ' pedido con novedad' : ' pedidos con novedad') + '</strong> en la transportadora (' + esc(conNovedad.map((p) => p.order_id).join(', ')) + '). Escríbeles desde Pedidos para evitar devoluciones.</span></div>');
+  if (enCamino.length) alertas.push('<div class="alerta" style="background: var(--salvia-claro)"><span>Hay <strong>' + pesos(enCamino.reduce((s, p) => s + p.total, 0)) + '</strong> en camino (' + enCamino.length + ' pedidos): se suman cuando se entreguen.</span></div>');
+  filasInventario().filter((f) => f.estado !== 'Bien').slice(0, 4).forEach((f) => alertas.push('<div class="alerta"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l10 18H2zM12 10v5M12 18h.01"/></svg><span><strong>' + (f.estado === 'Agotado' ? 'Agotado' : 'Inventario bajo') + ':</strong> ' + esc(f.nombre) + ' (' + f.disponible + ' disponibles)</span></div>'));
+  const sinCosto = D.variantes.filter((v) => v.precio && !v.costo).length;
+  if (sinCosto && D.tienda) alertas.push('<div class="alerta"><span>Hay ' + sinCosto + ' tamaños con precio pero sin costo: la ganancia sale más alta de lo real. Llénalos en <strong>Productos</strong>.</span></div>');
+  $('#r-alertas').innerHTML = alertas.join('');
+}
+
+async function editarMeta(campo, actual, pregunta) {
+  const r = prompt(pregunta, actual ? String(actual) : '');
+  if (r == null) return;
+  const n = Math.max(0, Math.round(Number(String(r).replace(/[^\d]/g, '')) || 0));
+  const metas = Object.assign({}, D.ajustes.metas || {});
+  const previo = metasDe(mesSel);
+  previo[campo] = n;
+  metas[mesSel] = previo;
+  const { error } = await sb.from('ajustes').update({ metas, actualizado_en: new Date().toISOString() }).eq('id', 1);
+  if (error) { avisar('No se pudo guardar'); return; }
+  D.ajustes.metas = metas;
+  pintarResumen();
+  avisar('Guardado');
+}
+$('#r-mes').addEventListener('change', (e) => { mesSel = e.target.value; pintarResumen(); });
+
+function pintarGrafica(A, B, hastaDia) {
+  const W = 620, H = 220;
+  const dias = Math.max(A.acumulado.length, B.acumulado.length);
+  const actual = hastaDia ? A.acumulado.slice(0, hastaDia) : A.acumulado;
+  const max = Math.max(1, ...actual, ...B.acumulado);
+  const tope = Math.ceil(max / 100000) * 100000 || 100000;
+  const x = (i) => (dias > 1 ? i / (dias - 1) * W : 0);
+  const y = (v) => H - v / tope * H;
+  const linea = (arr) => arr.map((v, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(v).toFixed(1)).join(' ');
+  const svg = $('#r-svg');
+  const corto = (n) => n >= 1000000 ? '$' + (n / 1000000).toFixed(1).replace('.', ',') + ' M' : '$' + Math.round(n / 1000) + ' mil';
+  svg.setAttribute('aria-label', 'Ventas acumuladas: ' + nombreMes(mesSel) + ' ' + pesos(A.ventas) + '; mes anterior ' + pesos(B.ventas));
+  svg.innerHTML = '<line x1="0" y1="0" x2="' + W + '" y2="0" stroke="#EDE6D8" vector-effect="non-scaling-stroke"/>' +
+    '<line x1="0" y1="' + H / 2 + '" x2="' + W + '" y2="' + H / 2 + '" stroke="#EDE6D8" vector-effect="non-scaling-stroke"/>' +
+    '<line x1="0" y1="' + H + '" x2="' + W + '" y2="' + H + '" stroke="#D6CCBA" vector-effect="non-scaling-stroke"/>' +
+    '<line id="r-guia" x1="0" y1="0" x2="0" y2="' + H + '" stroke="#2A231D" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/>' +
+    '<path d="' + linea(B.acumulado) + '" fill="none" stroke="#8C8173" stroke-width="2" stroke-dasharray="5 4" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>' +
+    '<path d="' + linea(actual) + '" fill="none" stroke="#C2185B" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>' +
+    '<rect id="r-zona" x="0" y="0" width="' + W + '" height="' + H + '" fill="transparent"/>';
+  $('#r-eje').innerHTML = '<span>' + corto(tope) + '</span><span>' + corto(tope / 2) + '</span><span>$0</span>';
+  $('#r-eje-x').innerHTML = '<span>1</span><span>' + Math.round(dias / 2) + '</span><span>' + dias + '</span>';
+  $('#r-ley-1').textContent = nombreMes(mesSel).split(' ')[0];
+  $('#r-ley-2').textContent = nombreMes(mesAnterior(mesSel)).split(' ')[0];
+  $('#r-grafica-sub').textContent = 'Día a día, contra el mes anterior';
+  const leer = (i) => {
+    $('#r-guia').setAttribute('x1', x(i)); $('#r-guia').setAttribute('x2', x(i));
+    $('#r-lectura').innerHTML = '<strong>Día ' + (i + 1) + '</strong><span>' + esc($('#r-ley-1').textContent) + ': <strong>' + (i < actual.length ? pesos(actual[i]) : 'aún no') + '</strong></span>' +
+      '<span style="color: var(--tinta-2)">' + esc($('#r-ley-2').textContent) + ': <strong>' + pesos(B.acumulado[Math.min(i, B.acumulado.length - 1)] || 0) + '</strong></span>';
+  };
+  leer(Math.max(0, actual.length - 1));
+  $('#r-zona').addEventListener('mousemove', (e) => {
+    const r = svg.getBoundingClientRect();
+    leer(Math.max(0, Math.min(dias - 1, Math.round((e.clientX - r.left) / r.width * (dias - 1)))));
+  });
+}
+
+/* ---------- Pedidos ---------- */
+let filtro = 'Todos';
+let busqueda = '';
+let rango = 'Este mes';
+const RANGOS = ['Hoy', 'Ayer', '7 días', 'Este mes', 'Mes anterior', 'Todo'];
+
+function limitesRango() {
+  const h = hoy();
+  if (rango === 'Hoy') return [h, h];
+  if (rango === 'Ayer') return [sumarDias(h, -1), sumarDias(h, -1)];
+  if (rango === '7 días') return [sumarDias(h, -6), h];
+  if (rango === 'Este mes') return [h.slice(0, 7) + '-01', h];
+  if (rango === 'Mes anterior') { const m = mesAnterior(h.slice(0, 7)); return [m + '-01', m + '-' + String(diasDelMes(m)).padStart(2, '0')]; }
+  if (rango === 'Personalizado') return [$('#f-desde').value || '2000-01-01', $('#f-hasta').value || '2999-12-31'];
+  return ['2000-01-01', '2999-12-31'];
+}
+
+function pintarFechas() {
+  $('#rangos').innerHTML = RANGOS.map((r) => '<button type="button" data-rango="' + r + '" aria-pressed="' + (r === rango) + '">' + r + '</button>').join('');
+  const [d, h] = limitesRango();
+  if (rango !== 'Personalizado') {
+    $('#f-desde').value = rango === 'Todo' ? '' : d;
+    $('#f-hasta').value = rango === 'Todo' ? '' : h;
+  }
+}
+$('#rangos').addEventListener('click', (e) => { const b = e.target.closest('[data-rango]'); if (b) { rango = b.dataset.rango; pintarPedidos(); } });
+['#f-desde', '#f-hasta'].forEach((s) => $(s).addEventListener('change', () => { rango = 'Personalizado'; pintarPedidos(); }));
+
+function enRango(p) {
+  const [d, h] = limitesRango();
+  const dia = diaCO(p.creado_en);
+  return dia >= d && dia <= h;
+}
+
+function pintarFiltros(base) {
+  const caja = $('#filtros');
+  caja.textContent = '';
+  ['Todos'].concat(ESTADOS).forEach((nombre) => {
+    const n = nombre === 'Todos' ? base.length : base.filter((p) => p.estado === nombre).length;
+    if (!n && nombre !== 'Todos' && filtro !== nombre) return;
+    const b = el('button', 'filtro', nombre + ' ');
+    b.type = 'button';
+    b.setAttribute('aria-pressed', String(filtro === nombre));
+    b.append(el('span', null, String(n)));
+    b.addEventListener('click', () => { filtro = nombre; pintarPedidos(); });
+    caja.append(b);
+  });
+}
+
+function pintarPedidos() {
+  pintarFechas();
+  const base = D.pedidos.filter(enRango);
+  pintarFiltros(base);
+  const q = busqueda.toLowerCase();
+  const visibles = base.filter((p) =>
+    (filtro === 'Todos' || p.estado === filtro) &&
+    (!q || [p.nombre, p.celular, p.order_id, p.cedula, p.guia].join(' ').toLowerCase().includes(q))
+  );
+  const vendidos = visibles.filter((p) => !SIN_VENTA.includes(p.estado) && p.estado !== 'Devuelto');
+  $('#total-rango').innerHTML = '<strong>' + visibles.length + ' pedidos</strong> · ' + pesos(visibles.reduce((s, p) => s + p.total, 0)) + (vendidos.length !== visibles.length ? ' · despachados o entregados: ' + pesos(vendidos.reduce((s, p) => s + p.total, 0)) : '');
+  const lista = $('#lista');
+  lista.textContent = '';
+  visibles.slice(0, 300).forEach((p) => lista.append(tarjeta(p)));
+  const estado = $('#p-estado');
+  estado.hidden = visibles.length > 0;
+  estado.textContent = D.pedidos.length ? 'No hay pedidos con ese filtro.' : 'Todavía no hay pedidos. Aparecerán aquí apenas alguien compre.';
+}
+$('#p-buscar').addEventListener('input', (e) => { busqueda = e.target.value.trim(); pintarPedidos(); });
+
+function lineasPedido(p) {
+  if (Array.isArray(p.items) && p.items.length) return p.items.map((i) => ({ txt: i.cantidad + ' × ' + i.nombre, valor: i.precio * i.cantidad }));
+  return [{ txt: p.cantidad + ' × ' + (p.producto || 'Codornices'), valor: p.subtotal || p.total }];
+}
+
+function mensajeWhatsApp(p) {
+  const primerNombre = p.nombre.split(/\s+/)[0];
+  return [
+    '¡Hola ' + primerNombre + '! 🐾 Somos Revoltosos.',
+    'Recibimos tu pedido #' + p.order_id + ':',
+    ...lineasPedido(p).map((l) => '• ' + l.txt),
+    p.descuento ? '• Cupón ' + (p.cupon || '') + ': −' + pesos(p.descuento) : '',
+    '• Envío: ' + (p.envio_cobrado ? pesos(p.envio_cobrado) : 'GRATIS') + (p.prioritario ? ' + prioritario' : ''),
+    '• Total a pagar al recibir: ' + pesos(p.total),
+    '📍 ' + p.direccion + ', ' + p.barrio + ', ' + p.ciudad + ' - ' + p.departamento,
+    p.indicaciones || '',
+    '¿Nos confirmas que los datos están correctos para despacharlo? ✅'
+  ].filter(Boolean).join('\n');
+}
+
+function mensajeResena(p) {
+  const primerNombre = p.nombre.split(/\s+/)[0];
+  const cajita = JSON.stringify(p.items || p.oferta || '').toLowerCase().includes('cajita');
+  const link = SITIO + '/opina/?n=' + encodeURIComponent(primerNombre) + (cajita ? '&p=cajita' : '');
+  return '¡Hola ' + primerNombre + '! 🐾 Somos Revoltosos. ¿Qué le pareció ' + (cajita ? 'la cajita' : 'su snack') + ' a tu peludo? Nos ayudaría mucho que nos contaras aquí, y si quieres, con una foto 👉 ' + link;
+}
+
+async function guardarPedido(p, cambios, texto) {
+  const { data, error } = await sb.from('pedidos').update(cambios).eq('id', p.id).select().single();
+  if (error) { avisar('No se pudo guardar'); return false; }
+  Object.assign(p, data);
+  if (texto) avisar(texto);
+  return true;
+}
+
+function tarjeta(p) {
+  const art = el('article', 'pedido');
+
+  const top = el('div', 'pedido-top');
+  const ids = el('div');
+  ids.append(el('div', 'pedido-id', p.order_id), el('div', 'pedido-fecha', fechaCorta.format(new Date(p.creado_en))));
+  const lab = el('label');
+  lab.append(el('span', 'oculto', 'Estado del pedido ' + p.order_id));
+  const sel = el('select', 'estado');
+  ESTADOS.forEach((e) => { const o = el('option', null, e); o.value = e; sel.append(o); });
+  sel.value = p.estado;
+  sel.dataset.e = p.estado;
+  sel.addEventListener('change', async () => {
+    const anterior = p.estado;
+    sel.dataset.e = sel.value;
+    const nuevo = sel.value;
+    const ok = await guardarPedido(p, { estado: nuevo });
+    if (!ok) { sel.value = anterior; sel.dataset.e = anterior; return; }
+    avisar(nuevo === 'Entregado' ? p.order_id + ' entregado: +' + pesos(p.total) + ' a las ventas del mes' : 'Pedido ' + p.order_id + ': ' + nuevo);
+    if (D.tienda) {
+      const [rv, rm] = await Promise.all([sb.from('variantes').select('*').order('orden'), sb.from('movimientos').select('*').order('creado_en', { ascending: false }).limit(150)]);
+      if (!rv.error) D.variantes = rv.data;
+      if (!rm.error) D.movimientos = rm.data;
+    }
+    pintarTodo();
+  });
+  lab.append(sel);
+  top.append(ids, lab);
+
+  const quien = el('div');
+  const tel = el('a', 'pedido-tel', p.celular.slice(2).replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'));
+  tel.href = 'tel:+' + p.celular;
+  quien.append(el('div', 'pedido-nombre', p.nombre));
+  if (p.cedula) quien.append(el('div', 'pedido-fecha', 'C.C. ' + p.cedula));
+  quien.append(tel);
+
+  const dir = el('div', 'pedido-dir');
+  dir.append(document.createTextNode(p.direccion + ', ' + p.barrio), el('strong', null, p.ciudad + ' · ' + p.departamento));
+  if (p.indicaciones) dir.append(el('span', null, p.indicaciones));
+
+  const items = el('div', 'pedido-items');
+  lineasPedido(p).forEach((l) => { const f = el('div'); f.append(el('span', null, l.txt), el('span', null, pesos(l.valor))); items.append(f); });
+  if (p.descuento) { const f = el('div', 'gris'); f.append(el('span', null, 'Cupón ' + (p.cupon || '')), el('span', null, '−' + pesos(p.descuento))); items.append(f); }
+  if (p.items) { const f = el('div', 'gris'); f.append(el('span', null, 'Envío cobrado' + (p.prioritario ? ' + prioritario' : '')), el('span', null, p.total - (p.subtotal - p.descuento) ? pesos(p.total - (p.subtotal - p.descuento)) : 'Gratis')); items.append(f); }
+  const extra = el('div', 'pedido-fecha');
+  if (p.prioritario) { const t = el('span', 'tag', 'Prioritario'); t.style.marginRight = '6px'; extra.append(t); }
+  if (p.para_quien && p.para_quien.length) extra.append(p.para_quien.join(', '));
+
+  const tot = el('div', 'pedido-total');
+  tot.append(el('span', null, 'Cobrar al entregar'), el('span', null, pesos(p.total)));
+  tot.firstChild.style.fontWeight = '700';
+
+  // Costos internos y ganancia
+  const c = cuentasPedido(p);
+  const costos = el('details', 'costos');
+  const resumen = el('summary');
+  const gan = el('span', 'gan', (SIN_VENTA.includes(p.estado) ? 'Ganancia estimada ' : 'Ganancia ') + pesos(c.ganancia));
+  gan.style.color = c.ganancia < 0 ? 'var(--error)' : 'var(--verde)';
+  resumen.append(el('span', null, 'Costos y guía'), gan);
+  const cin = el('div', 'costos-in');
+  const fila = (texto, nodo) => { const f = el('div', 'fila'); f.append(el('span', null, texto), typeof nodo === 'string' ? el('span', null, nodo) : nodo); cin.append(f); };
+  const campo = (valor, tipo, alGuardar, opciones) => {
+    let n;
+    if (opciones) { n = el('select'); opciones.forEach((o) => { const op = el('option', null, o || '—'); op.value = o; n.append(op); }); n.value = valor || ''; }
+    else { n = el('input'); n.type = tipo; if (tipo === 'number') { n.min = '0'; n.step = '100'; n.inputMode = 'numeric'; } n.value = valor == null ? '' : valor; }
+    n.addEventListener('change', () => alGuardar(n.value));
+    return n;
+  };
+  const numero = (v) => (v === '' ? null : Math.max(0, Math.round(Number(v) || 0)));
+  if (!c.devuelto) fila('Costo de producto', '−' + pesos(c.costoProd));
+  const envioIn = campo(p.envio_real, 'number', async (v) => { if (await guardarPedido(p, { envio_real: numero(v) }, 'Envío real guardado')) pintarTodo(); });
+  envioIn.placeholder = String(D.ajustes.costo_envio_promedio);
+  envioIn.setAttribute('aria-label', 'Envío real que cobró la transportadora');
+  fila('Envío real (ida)', envioIn);
+  if (c.devuelto) {
+    const vuelta = campo(p.devolucion_costo, 'number', async (v) => { if (await guardarPedido(p, { devolucion_costo: numero(v) }, 'Costo de devolución guardado')) pintarTodo(); });
+    vuelta.placeholder = String(c.envioReal);
+    vuelta.setAttribute('aria-label', 'Flete de la devolución');
+    fila('Flete de vuelta', vuelta);
+  } else fila('Comisión de recaudo', '−' + pesos(c.comision));
+  const transp = campo(p.transportadora, null, (v) => guardarPedido(p, { transportadora: v || null }, 'Transportadora guardada'), ['', 'Envía', 'Interrapidísimo', 'Otra']);
+  transp.setAttribute('aria-label', 'Transportadora');
+  fila('Transportadora', transp);
+  const guia = campo(p.guia, 'text', (v) => guardarPedido(p, { guia: v.trim() || null }, 'Guía guardada'));
+  guia.setAttribute('aria-label', 'Número de guía');
+  guia.style.textAlign = 'left';
+  fila('Guía', guia);
+  const tf = el('div', 'fila total');
+  tf.append(el('span', null, c.devuelto ? 'Pérdida por devolución' : 'Ganancia bruta'), el('span', null, pesos(c.ganancia)));
+  cin.append(tf);
+  if (!p.items) cin.append(el('p', 'nota', 'Pedido de antes de la tienda: no tiene costo de producto guardado.'));
+  costos.append(resumen, cin);
+
+  const acc = el('div', 'acciones');
+  const wa = el('a', 'btn');
+  wa.href = 'https://wa.me/' + p.celular + '?text=' + encodeURIComponent(mensajeWhatsApp(p));
+  wa.target = '_blank';
+  wa.rel = 'noopener';
+  wa.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"/></svg>';
+  wa.append('Confirmar por WhatsApp');
+  const copiar = el('button', 'btn-sec', 'Copiar');
+  copiar.type = 'button';
+  copiar.setAttribute('aria-label', 'Copiar datos de envío de ' + p.nombre);
+  copiar.addEventListener('click', async () => {
+    const t = [p.nombre, p.cedula ? 'C.C. ' + p.cedula : '', p.celular.slice(2), p.direccion + ', ' + p.barrio, p.ciudad + ' - ' + p.departamento, p.indicaciones || '', lineasPedido(p).map((l) => l.txt).join(' + '), 'Cobrar: ' + pesos(p.total)].filter(Boolean).join('\n');
+    try { await navigator.clipboard.writeText(t); avisar('Datos copiados'); } catch (e) { avisar('No se pudo copiar'); }
+  });
+  acc.append(wa, copiar);
+  if (p.estado === 'Entregado') {
+    const pedir = el('a', 'btn-sec', 'Pedir reseña');
+    pedir.href = 'https://wa.me/' + p.celular + '?text=' + encodeURIComponent(mensajeResena(p));
+    pedir.target = '_blank';
+    pedir.rel = 'noopener';
+    acc.append(pedir);
+  }
+
+  art.append(top, quien, dir, items);
+  if (extra.childNodes.length) art.append(extra);
+  art.append(tot, costos);
+  const envioBloque = bloqueEnvia(p);
+  if (envioBloque) art.append(envioBloque);
+  art.append(acc);
+  const anuncio = p.utm_content && D.pauta.find((r) => r.ad_id === p.utm_content);
+  if (p.utm_source || p.utm_campaign || p.utm_content) art.append(el('div', 'pedido-origen', 'Origen: ' + [p.utm_source, p.utm_campaign, anuncio ? 'anuncio «' + anuncio.ad_nombre + '»' : p.utm_content].filter(Boolean).join(' · ')));
+  return art;
+}
+
+/* ---------- Envía en cada pedido ---------- */
+const hayEnvia = () => !!D.ajustes && 'envia_remitente' in D.ajustes;
+const primerNombre = (p) => p.nombre.split(/\s+/)[0];
+const waCliente = (p, texto) => 'https://wa.me/' + p.celular + '?text=' + encodeURIComponent(texto);
+
+function mensajeGuia(p) {
+  return '¡Hola ' + primerNombre(p) + '! 🐾 Tu pedido Revoltosos #' + p.order_id + ' ya va en camino con ' + (p.transportadora || 'la transportadora') + '.\n' +
+    '📦 Guía: ' + p.guia + (p.rastreo_url ? '\n🔎 Síguelo aquí: ' + p.rastreo_url : '') + '\n' +
+    '💵 Pagas al recibir: ' + pesos(p.total) + '. Ten el valor listo para que la entrega sea rápida. ¡Gracias por tu compra!';
+}
+function mensajeReparto(p) {
+  return '¡Hola ' + primerNombre(p) + '! 🐾 Tu pedido Revoltosos #' + p.order_id + ' sale hoy a reparto 🚚.\n' +
+    'Ten listos ' + pesos(p.total) + ' para pagarle al mensajero. Si no vas a estar, avísanos por aquí para coordinar. ¡Gracias!';
+}
+function mensajeNovedad(p) {
+  return '¡Hola ' + primerNombre(p) + '! Somos Revoltosos. La transportadora reporta una novedad con tu pedido #' + p.order_id + ' (' + p.novedad + ').\n' +
+    '¿Nos confirmas la dirección (' + p.direccion + ', ' + p.barrio + ', ' + p.ciudad + ') y a qué hora te podemos entregar? Así evitamos que se devuelva 🙏';
+}
+
+function bloqueEnvia(p) {
+  if (!hayEnvia() && !p.guia) return null;
+  const caja = el('div', 'costos');
+  caja.style.padding = '10px 12px';
+  caja.style.display = 'flex';
+  caja.style.flexDirection = 'column';
+  caja.style.gap = '8px';
+  const titulo = el('div', 'fila');
+  titulo.style.cssText = 'display: flex; justify-content: space-between; gap: 8px; align-items: center; font-size: 14px';
+  const boton = (texto, clase, alHacer) => { const b = el('button', clase || 'btn-sec', texto); b.type = 'button'; b.style.minHeight = '40px'; b.addEventListener('click', () => alHacer(b)); return b; };
+  const enlace = (texto, href) => { const a = el('a', 'btn-sec', texto); a.href = href; a.target = '_blank'; a.rel = 'noopener'; a.style.minHeight = '40px'; return a; };
+  const fila = el('div', 'acciones');
+
+  if (p.guia) {
+    const izq = el('span');
+    izq.append(el('strong', null, 'Guía ' + p.guia), ' · ' + (p.transportadora || ''));
+    titulo.append(izq);
+    if (p.envia_estado) titulo.append(el('span', 'chip gris', p.envia_estado));
+    caja.append(titulo);
+    if (p.novedad) {
+      const n = el('div', 'alerta');
+      n.style.background = 'var(--error-claro)';
+      n.append(el('span', null, 'Novedad: ' + p.novedad + '. Escríbele al cliente para evitar la devolución.'));
+      caja.append(n);
+      fila.append(enlace('Escribir por la novedad', waCliente(p, mensajeNovedad(p))));
+    }
+    if (p.guia_url) fila.append(enlace('Descargar guía', p.guia_url));
+    fila.append(enlace(p.estado === 'En reparto' ? 'Avisar que llega hoy' : 'Enviar guía por WhatsApp', waCliente(p, p.estado === 'En reparto' ? mensajeReparto(p) : mensajeGuia(p))));
+    if (p.rastreo_url) fila.append(enlace('Ver rastreo', p.rastreo_url));
+    if (hayEnvia() && p.envia_envio_id !== undefined) {
+      fila.append(boton('Actualizar rastreo', null, async (b) => {
+        b.disabled = true; b.textContent = 'Consultando…';
+        const r = await llamarEnvia({ accion: 'rastrear', pedido_id: p.id });
+        if (!r.ok) { avisar(r.error); b.disabled = false; b.textContent = 'Actualizar rastreo'; return; }
+        await cargar();
+        avisar(r.cambios.length ? p.order_id + ': ' + (r.cambios[0].a || 'actualizado') : 'Sin cambios en el rastreo');
+      }));
+      if (['Despachado', 'En reparto'].includes(p.estado) && p.envia_envio_id) {
+        fila.append(boton('Anular guía', 'btn-sec btn-peligro', async (b) => {
+          if (!confirm('¿Anular la guía ' + p.guia + '? El pedido vuelve a Confirmado y el producto vuelve a bodega.')) return;
+          b.disabled = true;
+          const r = await llamarEnvia({ accion: 'cancelar', pedido_id: p.id });
+          if (!r.ok) { avisar(r.error); b.disabled = false; return; }
+          await cargar();
+          avisar('Guía anulada');
+        }));
+      }
+    }
+    caja.append(fila);
+    return caja;
+  }
+
+  if (!['Nuevo', 'Confirmado'].includes(p.estado)) return null;
+  titulo.append(el('strong', null, 'Envío con Envía'));
+  caja.append(titulo);
+  const zona = el('div');
+  zona.style.cssText = 'display: flex; flex-direction: column; gap: 8px';
+  caja.append(zona);
+  fila.append(boton('Generar guía con Envía', 'btn btn--oscuro', async (b) => {
+    b.disabled = true; b.textContent = 'Cotizando…';
+    const r = await llamarEnvia({ accion: 'cotizar', pedido_id: p.id });
+    b.disabled = false; b.textContent = 'Volver a cotizar';
+    zona.textContent = '';
+    if (!r.ok) { const m = el('p', 'mensaje error', r.error); zona.append(m); return; }
+    if (r.entorno !== 'produccion') zona.append(el('p', 'nota', 'Modo pruebas: la guía no es real ni se cobra.'));
+    if (!r.opciones.length) {
+      zona.append(el('p', 'mensaje error', 'Ninguna transportadora devolvió precio para este pedido.' + (r.errores.length ? ' ' + r.errores.map((x) => x.carrier + ': ' + x.error).join(' · ') : '')));
+      return;
+    }
+    const nombre = 'op-' + p.id;
+    r.opciones.forEach((o, i) => {
+      const l = el('label');
+      l.style.cssText = 'display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1.5px solid var(--linea); border-radius: 12px; cursor: pointer; font-size: 14px';
+      const radio = el('input');
+      radio.type = 'radio'; radio.name = nombre; radio.value = i; radio.checked = i === 0;
+      radio.style.cssText = 'width: 20px; height: 20px; accent-color: var(--rosa)';
+      const txt = el('span');
+      txt.style.flex = '1';
+      txt.append(el('strong', null, o.nombre), ' · ' + (o.servicio || o.service) + (o.entrega ? ' · ' + o.entrega : ''));
+      l.append(radio, txt, el('strong', null, pesos(o.precio)));
+      zona.append(l);
+    });
+    zona.append(el('p', 'nota', 'Incluye el recaudo contraentrega de ' + pesos(p.total) + '. Peso: ' + r.peso_kg + ' kg.' + (r.errores.length ? ' Sin respuesta de: ' + r.errores.map((x) => x.carrier).join(', ') + '.' : '')));
+    zona.append(boton('Generar guía', 'btn', async (g) => {
+      const o = r.opciones[Number((zona.querySelector('input[name="' + nombre + '"]:checked') || {}).value || 0)];
+      if (!confirm('¿Generar la guía con ' + o.nombre + ' por ' + pesos(o.precio) + '?' + (r.entorno === 'produccion' ? ' Es una guía real y Envía la cobra.' : ''))) return;
+      g.disabled = true; g.textContent = 'Generando…';
+      const res = await llamarEnvia({ accion: 'generar', pedido_id: p.id, carrier: o.carrier, service: o.service });
+      if (!res.ok) { g.disabled = false; g.textContent = 'Generar guía'; zona.append(el('p', 'mensaje error', res.error)); return; }
+      Object.assign(p, res.pedido);
+      await cargar();
+      avisar('Guía ' + res.pedido.guia + ' creada · pedido despachado');
+      if (res.pedido.guia_url) window.open(res.pedido.guia_url, '_blank', 'noopener');
+    }));
+  }));
+  caja.append(fila);
+  return caja;
+}
+
+/* ---------- Productos ---------- */
+let abierto = null;
+
+function pintarProductos() {
+  const caja = $('#prod-lista');
+  caja.textContent = '';
+  if (!D.tienda) { caja.append(el('p', 'nota', 'Corre la migración 007 para ver los productos.')); $('#prod-editor').textContent = ''; return; }
+  D.productos.forEach((p) => {
+    const vs = D.variantes.filter((v) => v.producto_id === p.id);
+    const conPrecio = vs.filter((v) => v.precio && v.visible);
+    const stock = vs.filter((v) => !v.descuenta_de).reduce((s, v) => s + v.stock, 0);
+    const f = el('div', 'prod-fila' + (abierto === p.id ? ' abierto' : '') + (p.visible ? '' : ' apagado'));
+    const img = el('img');
+    img.src = p.imagen ? '..' + p.imagen : '../assets/img/logo.jpg';
+    img.alt = '';
+    const info = el('button');
+    info.type = 'button';
+    info.className = 'info';
+    info.style.cssText = 'text-align: left; border: 0; background: transparent; padding: 0; font: inherit; color: inherit; cursor: pointer';
+    info.append(el('strong', null, p.nombre), el('span', null, (p.visible ? '' : 'Oculto · ') + vs.length + (vs.length === 1 ? ' tamaño' : ' tamaños') + ' · ' + stock + ' und.' + (!conPrecio.length ? ' · sin precio' : '')));
+    info.addEventListener('click', () => { abierto = p.id; pintarProductos(); });
+    const sw = el('button', 'interruptor');
+    sw.type = 'button';
+    sw.setAttribute('role', 'switch');
+    sw.setAttribute('aria-checked', String(p.visible));
+    sw.setAttribute('aria-label', 'Mostrar ' + p.nombre + ' en la tienda');
+    sw.addEventListener('click', async () => {
+      const { error } = await sb.from('productos').update({ visible: !p.visible }).eq('id', p.id);
+      if (error) { avisar('No se pudo cambiar'); return; }
+      p.visible = !p.visible;
+      avisar(p.nombre + (p.visible ? ' visible en la tienda' : ' oculto de la tienda'));
+      pintarProductos();
+    });
+    f.append(img, info, sw);
+    caja.append(f);
+  });
+  pintarEditor();
+}
+
+function pintarEditor() {
+  const caja = $('#prod-editor');
+  const p = abierto === '__nuevo' ? { id: '', nombre: '', categoria: 'Codorniz', descripcion: '', imagen: '', ruta: '', visible: false, orden: D.productos.length + 1, nuevo: true } : productoDe(abierto);
+  if (!p) { caja.innerHTML = '<div class="editor"><p class="nota">Elige un producto de la lista para cambiar sus precios, tamaños y costos.</p></div>'; return; }
+  const vs = p.nuevo ? [] : D.variantes.filter((v) => v.producto_id === p.id);
+  const url = SITIO + (p.ruta || '/producto/?p=' + p.id);
+  const cats = Array.from(new Set(['Codorniz', 'Masticables', 'Huesos y fémur', 'Cajitas', 'Otros'].concat(D.productos.map((x) => x.categoria))));
+  const otrasVariantes = D.variantes.filter((v) => !v.descuenta_de);
+  const conPeso = !D.variantes.length || 'peso_g' in D.variantes[0];
+  const conFoto = !D.variantes.length || 'imagen' in D.variantes[0];
+  // Link de cada tamaño para pautar: abre la landing con ese tamaño ya elegido.
+  const alias = (v) => v.id.indexOf(p.id + '-') === 0 ? v.id.slice(p.id.length + 1) : v.id;
+  const linksTamanos = vs.length > 1 && !p.nuevo ? '<div><h3 style="margin-bottom: 4px">Links para pautar cada tamaño</h3><p class="nota" style="margin-bottom: 8px">Úsalo como URL del anuncio: la landing abre con ese tamaño ya seleccionado.</p>' +
+    vs.map((v) => { const u = url + (url.indexOf('?') >= 0 ? '&' : '?') + 't=' + encodeURIComponent(alias(v)); return '<div class="link-copiar" style="margin-bottom: 6px"><code>' + esc(v.nombre) + ' → ' + esc(u.replace('https://', '')) + '</code><button type="button" class="btn-sec" data-copiar="' + esc(u) + '">Copiar</button></div>'; }).join('') + '</div>' : '';
+  const filaVar = (v) => '<tr data-var="' + esc(v.id || '') + '">' +
+    '<td><input class="ancho" name="nombre" value="' + esc(v.nombre) + '" aria-label="Nombre del tamaño" required></td>' +
+    '<td><input class="ancho" name="detalle" value="' + esc(v.detalle || '') + '" aria-label="Detalle" placeholder="Opcional"></td>' +
+    '<td><input type="number" name="precio_antes" min="0" step="100" value="' + (v.precio_antes || '') + '" aria-label="Precio normal (tachado)" placeholder="—"></td>' +
+    '<td><input type="number" name="precio" min="0" step="100" value="' + (v.precio || '') + '" aria-label="Precio de venta" style="border-color: var(--rosa); font-weight: 700"></td>' +
+    '<td><input type="number" name="costo" min="0" step="100" value="' + (v.costo || 0) + '" aria-label="Costo"></td>' +
+    '<td class="der"><strong>' + (v.precio && v.costo ? Math.round((v.precio - v.costo) / v.precio * 100) + ' %' : '—') + '</strong></td>' +
+    '<td><input type="number" name="stock_minimo" min="0" step="1" value="' + (v.stock_minimo != null ? v.stock_minimo : 5) + '" aria-label="Stock mínimo" style="width: 70px"></td>' +
+    (conPeso ? '<td><input type="number" name="peso_g" min="1" step="10" value="' + (v.peso_g || '') + '" aria-label="Peso empacado en gramos" placeholder="—" style="width: 80px"></td>' : '') +
+    (conFoto ? '<td><input class="ancho" name="imagen" maxlength="200" value="' + esc(v.imagen || '') + '" aria-label="Foto propia de este tamaño" placeholder="La del producto"></td>' : '') +
+    (v.id && componentesDe(v.id).length
+      ? '<td style="font-size: 13px; min-width: 200px">Combo: descuenta ' + esc(componentesDe(v.id).map((c) => c.cantidad + ' × ' + nombreVariante(c.componente_id)).join(', ')) +
+        '<input type="hidden" name="descuenta_de" value=""><input type="hidden" name="descuenta_cantidad" value="1"></td>'
+      : '<td><select name="descuenta_de" aria-label="Descuenta inventario de"><option value="">Su propio stock</option>' +
+        otrasVariantes.filter((o) => o.id !== v.id).map((o) => '<option value="' + esc(o.id) + '"' + (v.descuenta_de === o.id ? ' selected' : '') + '>' + esc((productoDe(o.producto_id) || {}).nombre + ' · ' + o.nombre) + '</option>').join('') + '</select>' +
+        ' × <input type="number" name="descuenta_cantidad" min="1" max="20" step="1" value="' + (v.descuenta_cantidad || 1) + '" aria-label="Cuántas unidades descuenta" style="width: 60px"></td>') +
+    '<td style="text-align: center"><input type="checkbox" name="visible"' + (v.visible !== false ? ' checked' : '') + ' aria-label="Visible"></td>' +
+    '<td><button type="button" class="btn-sec btn-peligro" data-quitar-var aria-label="Quitar tamaño" style="min-height: 36px; padding: 0 10px">Quitar</button></td></tr>';
+  caja.innerHTML = '<form class="editor" id="form-producto">' +
+    '<div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center"><h3 style="flex: 1; font-family: var(--serif); font-weight: 400; font-size: 24px; margin: 0">' + esc(p.nuevo ? 'Nuevo producto' : p.nombre) + '</h3>' +
+    (p.nuevo ? '' : '<span class="chip ' + (p.visible ? 'bien' : 'gris') + '">' + (p.visible ? 'Visible en la tienda' : 'Oculto') + '</span>') + '</div>' +
+    (p.nuevo ? '' : '<div class="link-copiar"><code>' + esc(url.replace('https://', '')) + '</code><button type="button" class="btn-sec" data-copiar="' + esc(url) + '">Copiar link</button><a class="btn-sec" href="' + esc(url) + '" target="_blank" rel="noopener">Abrir</a></div>') +
+    linksTamanos +
+    '<div class="rejilla">' +
+    '<div class="campo"><label for="pe-nombre">Nombre</label><input id="pe-nombre" name="nombre" required maxlength="80" value="' + esc(p.nombre) + '"></div>' +
+    '<div class="campo"><label for="pe-cat">Categoría</label><input id="pe-cat" name="categoria" list="pe-cats" maxlength="40" value="' + esc(p.categoria) + '"><datalist id="pe-cats">' + cats.map((c) => '<option value="' + esc(c) + '">').join('') + '</datalist></div>' +
+    '<div class="campo"><label for="pe-orden">Orden en la tienda</label><input id="pe-orden" name="orden" type="number" step="1" value="' + (p.orden || 0) + '"></div>' +
+    '<div class="campo"><label for="pe-img">Foto (ruta)</label><input id="pe-img" name="imagen" maxlength="200" value="' + esc(p.imagen || '') + '" placeholder="/assets/img/productos/…jpg"></div>' +
+    ('etiqueta' in p || p.nuevo ? '<div class="campo"><label for="pe-etiqueta">Etiqueta con fueguito <small style="font-weight: 500">(opcional)</small></label><input id="pe-etiqueta" name="etiqueta" maxlength="30" value="' + esc(p.etiqueta || '') + '" placeholder="El más vendido"></div>' : '') +
+    '<div class="campo"><label for="pe-ruta">Landing propia</label><input id="pe-ruta" name="ruta" maxlength="120" value="' + esc(p.ruta || '') + '" placeholder="Vacío = página genérica"></div>' +
+    '</div>' +
+    '<div class="campo"><label for="pe-desc">Descripción corta</label><textarea id="pe-desc" name="descripcion" maxlength="400">' + esc(p.descripcion || '') + '</textarea></div>' +
+    '<div><h3 style="margin-bottom: 4px">Tamaños y precios</h3><p class="nota" style="margin-bottom: 8px">Precio normal = el tachado. Precio de venta = lo que se cobra. Un combo («2 frascos») puede descontar del inventario de otro tamaño.</p>' +
+    '<div class="tabla-caja tabla-variantes"><table><thead><tr><th>Tamaño</th><th>Detalle</th><th>Precio normal</th><th>Precio venta</th><th>Costo</th><th class="der">Margen</th><th>Mínimo</th>' + (conPeso ? '<th>Peso (g)</th>' : '') + (conFoto ? '<th>Foto (ruta)</th>' : '') + '<th>Inventario</th><th>Visible</th><th></th></tr></thead><tbody id="pe-variantes">' +
+    vs.map(filaVar).join('') + '</tbody></table></div>' +
+    '<button type="button" class="btn-sec" id="pe-agregar-var" style="margin-top: 10px">+ Agregar tamaño</button></div>' +
+    '<p class="mensaje error" id="pe-msg" role="alert"></p>' +
+    '<div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; border-top: 1px solid var(--hueso-2); padding-top: 14px">' +
+    (p.nuevo ? '' : '<button type="button" class="btn-sec btn-peligro" id="pe-borrar">Borrar producto</button>') +
+    '<button type="submit" class="btn btn--oscuro">Guardar cambios</button></div></form>';
+
+  $('#pe-agregar-var').addEventListener('click', () => {
+    $('#pe-variantes').insertAdjacentHTML('beforeend', filaVar({ id: '', nombre: '', detalle: '', precio: null, precio_antes: null, costo: 0, stock_minimo: 5, visible: true }));
+  });
+  $('#pe-variantes').addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-quitar-var]');
+    if (!b) return;
+    const tr = b.closest('tr');
+    const id = tr.dataset.var;
+    if (id) {
+      if (!confirm('¿Quitar este tamaño? Si ya tiene pedidos, mejor desmarca «Visible».')) return;
+      const { error } = await sb.from('variantes').delete().eq('id', id);
+      if (error) { avisar('No se pudo quitar: desmárcalo como visible.'); return; }
+      D.variantes = D.variantes.filter((v) => v.id !== id);
+      avisar('Tamaño quitado');
+    }
+    tr.remove();
+  });
+  $$('[data-copiar]', caja).forEach((copiar) => copiar.addEventListener('click', async () => { try { await navigator.clipboard.writeText(copiar.dataset.copiar); avisar('Link copiado'); } catch (e) { avisar('No se pudo copiar'); } }));
+  const borrar = $('#pe-borrar');
+  if (borrar) borrar.addEventListener('click', async () => {
+    if (!confirm('¿Borrar «' + p.nombre + '» y todos sus tamaños? Para dejar de venderlo basta con ocultarlo.')) return;
+    const { error } = await sb.from('productos').delete().eq('id', p.id);
+    if (error) { avisar('No se pudo borrar: ocúltalo en su lugar.'); return; }
+    abierto = null;
+    await cargar();
+    avisar('Producto borrado');
+  });
+  $('#form-producto').addEventListener('submit', (e) => { e.preventDefault(); guardarProducto(p); });
+}
+
+async function guardarProducto(p) {
+  const form = $('#form-producto');
+  const msg = $('#pe-msg');
+  msg.textContent = '';
+  const datos = {
+    nombre: form.nombre.value.trim(),
+    categoria: form.categoria.value.trim() || 'Otros',
+    orden: Number(form.orden.value) || 0,
+    imagen: form.imagen.value.trim() || null,
+    ruta: form.ruta.value.trim() || null,
+    descripcion: form.descripcion.value.trim() || null
+  };
+  if (form.etiqueta && D.productos.length && 'etiqueta' in D.productos[0]) datos.etiqueta = form.etiqueta.value.trim() || null;
+  if (datos.nombre.length < 2) { msg.textContent = 'Escribe el nombre del producto.'; return; }
+  let id = p.id;
+  if (p.nuevo) {
+    id = slug(datos.nombre);
+    if (D.productos.some((x) => x.id === id)) id = id + '-' + Date.now().toString(36).slice(-3);
+    const { error } = await sb.from('productos').insert(Object.assign({ id, visible: false }, datos));
+    if (error) { msg.textContent = 'No se pudo crear: ' + error.message; return; }
+  } else {
+    const { error } = await sb.from('productos').update(datos).eq('id', id);
+    if (error) { msg.textContent = 'No se pudo guardar: ' + error.message; return; }
+  }
+  const num = (v) => (v === '' || v == null ? null : Math.round(Number(v)));
+  const filas = $$('#pe-variantes tr');
+  for (let i = 0; i < filas.length; i++) {
+    const tr = filas[i];
+    const g = (n) => tr.querySelector('[name="' + n + '"]');
+    const v = {
+      producto_id: id,
+      nombre: g('nombre').value.trim(),
+      detalle: g('detalle').value.trim() || null,
+      precio: num(g('precio').value) || null,
+      precio_antes: num(g('precio_antes').value) || null,
+      costo: num(g('costo').value) || 0,
+      stock_minimo: num(g('stock_minimo').value) || 0,
+      descuenta_de: g('descuenta_de').value || null,
+      descuenta_cantidad: Math.max(1, num(g('descuenta_cantidad').value) || 1),
+      visible: g('visible').checked,
+      orden: i + 1
+    };
+    if (g('peso_g')) v.peso_g = num(g('peso_g').value) || null;
+    if (g('imagen')) v.imagen = g('imagen').value.trim() || null;
+    if (!v.nombre) { msg.textContent = 'Cada tamaño necesita un nombre.'; return; }
+    if (v.precio_antes && v.precio && v.precio_antes <= v.precio) { msg.textContent = 'En «' + v.nombre + '» el precio normal debe ser mayor que el de venta (o déjalo vacío).'; return; }
+    let r;
+    if (tr.dataset.var) r = await sb.from('variantes').update(v).eq('id', tr.dataset.var);
+    else {
+      let vid = id + '-' + slug(v.nombre);
+      if (D.variantes.some((x) => x.id === vid)) vid += '-' + Date.now().toString(36).slice(-3);
+      r = await sb.from('variantes').insert(Object.assign({ id: vid }, v));
+    }
+    if (r.error) { msg.textContent = 'No se pudo guardar «' + v.nombre + '»: ' + r.error.message; return; }
+  }
+  abierto = id;
+  await cargar();
+  avisar('Producto guardado');
+}
+$('#prod-nuevo').addEventListener('click', () => { abierto = '__nuevo'; pintarProductos(); $('#prod-editor').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+
+/* ---------- Inventario ---------- */
+const componentesDe = (id) => D.componentes.filter((c) => c.combo_id === id);
+const nombreVariante = (id) => { const v = varianteDe(id); return v ? ((productoDe(v.producto_id) || {}).nombre + ' · ' + v.nombre) : id; };
+
+function filasInventario() {
+  // Unidades que saldrán cuando se despachen los pedidos que aún no salen de bodega.
+  const porDespachar = {};
+  D.pedidos.filter((p) => (p.estado === 'Nuevo' || p.estado === 'Confirmado') && Array.isArray(p.items)).forEach((p) => p.items.forEach((i) => {
+    const comps = componentesDe(i.variante_id);
+    // Un combo descuenta cada producto que trae.
+    if (comps.length) { comps.forEach((c) => { porDespachar[c.componente_id] = (porDespachar[c.componente_id] || 0) + i.cantidad * c.cantidad; }); return; }
+    const v = varianteDe(i.variante_id);
+    if (!v) return;
+    const destino = v.descuenta_de || v.id;
+    porDespachar[destino] = (porDespachar[destino] || 0) + i.cantidad * (v.descuenta_de ? v.descuenta_cantidad : 1);
+  }));
+  return D.variantes.filter((v) => !v.descuenta_de && !componentesDe(v.id).length).map((v) => {
+    const prod = productoDe(v.producto_id) || {};
+    const reservado = porDespachar[v.id] || 0;
+    const disponible = v.stock - reservado;
+    const estado = v.stock <= 0 ? 'Agotado' : (disponible < v.stock_minimo ? 'Bajo' : 'Bien');
+    return { v, nombre: prod.nombre + ' · ' + v.nombre, reservado, disponible, estado, oculto: !prod.visible || !v.visible || !v.precio };
+  });
+}
+
+function pintarInventario() {
+  if (!D.tienda) { $('#inv-tabla').innerHTML = '<tr><td colspan="6" class="nota">Corre la migración 007 para usar el inventario.</td></tr>'; return; }
+  const filas = filasInventario();
+  const unidades = filas.reduce((s, f) => s + Math.max(0, f.v.stock), 0);
+  const valor = filas.reduce((s, f) => s + Math.max(0, f.v.stock) * (f.v.costo || 0), 0);
+  const reservado = filas.reduce((s, f) => s + f.reservado, 0);
+  const bajos = filas.filter((f) => f.estado !== 'Bien' && !f.oculto).length;
+  $('#inv-kpis').innerHTML = '<div class="kpi"><span>Unidades en bodega</span><strong>' + unidades + '</strong></div>' +
+    '<div class="kpi"><span>Por despachar (pedidos sin salir)</span><strong>' + reservado + '</strong></div>' +
+    '<div class="kpi"><span>Valor del inventario a costo</span><strong>' + pesos(valor) + '</strong></div>' +
+    '<div class="kpi"' + (bajos ? ' style="background: var(--ambar-claro)"' : '') + '><span>Por debajo del mínimo</span><strong>' + bajos + '</strong></div>';
+  const icono = { Bien: 'M5 12l5 5 9-10', Bajo: 'M12 3l10 18H2zM12 10v5M12 18h.01', Agotado: 'M6 6l12 12M18 6L6 18' };
+  const clase = { Bien: 'bien', Bajo: 'bajo', Agotado: 'cero' };
+  $('#inv-tabla').innerHTML = filas.map((f) => '<tr' + (f.oculto ? ' style="opacity: .6"' : '') + '><td><strong>' + esc(f.nombre) + '</strong>' + (f.oculto ? ' <span class="nota">(no se vende)</span>' : '') + '</td>' +
+    '<td class="der">' + f.v.stock + '</td><td class="der">' + f.reservado + '</td><td class="der"><strong>' + f.disponible + '</strong></td><td class="der">' + f.v.stock_minimo + '</td>' +
+    '<td><span class="chip ' + clase[f.estado] + '"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + icono[f.estado] + '"/></svg>' + f.estado + '</span></td></tr>').join('');
+  const sel = $('#m-variante');
+  const actual = sel.value;
+  sel.innerHTML = filas.map((f) => '<option value="' + esc(f.v.id) + '">' + esc(f.nombre) + ' (hay ' + f.v.stock + ')</option>').join('');
+  if (actual) sel.value = actual;
+  const nombreVar = (id) => { const v = varianteDe(id); return v ? ((productoDe(v.producto_id) || {}).nombre + ' · ' + v.nombre) : id; };
+  $('#inv-movs').innerHTML = D.movimientos.length ? D.movimientos.slice(0, 25).map((m) => '<div style="display: flex; gap: 10px; align-items: flex-start; padding: 9px 0; border-top: 1px solid var(--hueso-2)">' +
+    '<span class="chip ' + (m.cantidad > 0 ? 'bien' : 'cero') + '" style="min-width: 50px; justify-content: center">' + (m.cantidad > 0 ? '+' : '−') + Math.abs(m.cantidad) + '</span>' +
+    '<span style="font-size: 14px; line-height: 1.35"><strong>' + esc(nombreVar(m.variante_id)) + '</strong><span style="display: block; color: var(--tinta-2); font-size: 13px">' + esc(m.motivo) + ' · ' + fechaCorta.format(new Date(m.creado_en)) + '</span></span></div>').join('')
+    : '<p class="nota">Todavía no hay movimientos. Registra la primera entrada arriba.</p>';
+}
+
+$('#form-mov').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = $('#m-variante').value;
+  const tipo = $('#m-tipo').value;
+  const n = Math.round(Number($('#m-cantidad').value));
+  const v = varianteDe(id);
+  if (!v || !(n >= 0)) return;
+  const cantidad = tipo === 'entrada' ? n : tipo === 'salida' ? -n : n - v.stock;
+  if (!cantidad) { avisar('No hay nada que cambiar'); return; }
+  const nota = $('#m-nota').value.trim();
+  const motivo = (tipo === 'entrada' ? 'Entrada' : tipo === 'salida' ? 'Salida' : 'Conteo') + (nota ? ': ' + nota : '');
+  const costo = $('#m-costo').value ? Math.round(Number($('#m-costo').value)) : null;
+  const { error } = await sb.from('movimientos').insert({ variante_id: id, cantidad, motivo, costo_unitario: costo });
+  if (error) { avisar('No se pudo registrar'); return; }
+  if (costo && tipo === 'entrada') await sb.from('variantes').update({ costo }).eq('id', id);
+  e.target.reset();
+  await cargar();
+  avisar('Inventario actualizado');
+});
+
+/* ---------- Pauta en Meta ---------- */
+let rangoPauta = 'Este mes';
+const RANGOS_PAUTA = ['7 días', '30 días', 'Este mes', 'Mes anterior'];
+let sincronizando = false;
+
+function limitesPauta() {
+  const h = hoy();
+  if (rangoPauta === '7 días') return [sumarDias(h, -6), h];
+  if (rangoPauta === '30 días') return [sumarDias(h, -29), h];
+  if (rangoPauta === 'Mes anterior') { const m = mesAnterior(h.slice(0, 7)); return [m + '-01', m + '-' + String(diasDelMes(m)).padStart(2, '0')]; }
+  return [h.slice(0, 7) + '-01', h];
+}
+
+// Une gasto de Meta (por anuncio) con los pedidos que llegaron de ese anuncio (utm_content = id del anuncio).
+function analisisPauta() {
+  const [d, h] = limitesPauta();
+  const anuncios = {};
+  const fila = (id) => anuncios[id] || (anuncios[id] = { id, nombre: '', campana: '', gasto: 0, impresiones: 0, clics: 0, comprasMeta: 0, pedidos: 0, entregados: 0, devueltos: 0, enCamino: 0, ventas: 0, gananciaPedidos: 0 });
+  D.pauta.filter((r) => r.fecha >= d && r.fecha <= h).forEach((r) => {
+    const a = fila(r.ad_id);
+    a.nombre = r.ad_nombre || a.nombre;
+    a.campana = r.campana_nombre || a.campana;
+    a.gasto += Number(r.gasto) || 0;
+    a.impresiones += r.impresiones;
+    a.clics += r.clics;
+    a.comprasMeta += r.compras_meta;
+  });
+  const sinAnuncio = '__sin';
+  D.pedidos.filter((p) => { const dia = diaCO(p.creado_en); return dia >= d && dia <= h && !['Cancelado', 'No confirmado'].includes(p.estado); }).forEach((p) => {
+    const deMeta = p.utm_content && anuncios[p.utm_content];
+    const vinoDeAnuncio = p.utm_content || /facebook|instagram|fb|ig|meta/i.test(p.utm_source || '') || p.fbclid;
+    if (!deMeta && !vinoDeAnuncio) return; // orgánico
+    const a = deMeta ? anuncios[p.utm_content] : fila(p.utm_content || sinAnuncio);
+    if (!deMeta && !a.nombre) a.nombre = p.utm_content ? 'Anuncio ' + p.utm_content : 'Sin anuncio identificado';
+    a.pedidos++;
+    if (p.estado === 'Entregado') { a.entregados++; a.ventas += p.total; a.gananciaPedidos += cuentasPedido(p).ganancia; }
+    else if (p.estado === 'Devuelto') { a.devueltos++; a.gananciaPedidos += cuentasPedido(p).ganancia; }
+    else if (p.estado === 'Despachado' || p.estado === 'En reparto') a.enCamino++;
+  });
+  const lista = Object.values(anuncios).map((a) => {
+    const neta = a.gananciaPedidos - a.gasto;
+    let sug;
+    if (a.id === sinAnuncio || !a.gasto) sug = ['gris', 'Sin gasto en Meta'];
+    else if (!a.pedidos && a.gasto < 20000) sug = ['gris', 'Muy pronto para saber'];
+    else if (neta > 0 && a.entregados >= 2) sug = ['bien', 'Subir presupuesto'];
+    else if (neta < 0 && a.enCamino) sug = ['bajo', 'Esperar entregas'];
+    else if (neta < 0 && (!a.entregados || neta < -a.gasto * 0.5)) sug = ['cero', 'Apagar o cambiar'];
+    else sug = ['bajo', 'Mantener'];
+    return Object.assign(a, { neta, costoEntregado: a.entregados ? a.gasto / a.entregados : null, sug });
+  }).sort((x, y) => y.neta - x.neta);
+  const tot = lista.reduce((t, a) => {
+    t.gasto += a.gasto; t.clics += a.clics; t.comprasMeta += a.comprasMeta; t.pedidos += a.pedidos;
+    t.entregados += a.entregados; t.ventas += a.ventas; t.ganancia += a.gananciaPedidos; return t;
+  }, { gasto: 0, clics: 0, comprasMeta: 0, pedidos: 0, entregados: 0, ventas: 0, ganancia: 0 });
+  return { d, h, lista, tot };
+}
+
+function pintarPauta() {
+  $('#pa-rangos').innerHTML = RANGOS_PAUTA.map((r) => '<button type="button" data-rango-pauta="' + r + '" aria-pressed="' + (r === rangoPauta) + '">' + r + '</button>').join('');
+  const A = D.ajustes || {};
+  const err = $('#pa-error');
+  if (!D.pautaLista) {
+    err.hidden = false;
+    err.innerHTML = 'Falta correr <strong>supabase/migraciones/009-pauta-meta.sql</strong> y desplegar la función <strong>sincronizar-pauta</strong>.';
+  } else if (A.meta_error) {
+    err.hidden = false;
+    err.textContent = 'No se pudo traer la pauta: ' + A.meta_error;
+  } else if (A.meta_moneda && A.meta_moneda !== 'COP') {
+    err.hidden = false;
+    err.textContent = 'Tu cuenta publicitaria está en ' + A.meta_moneda + ': los gastos se muestran en esa moneda y no se pueden restar bien de la ganancia en pesos.';
+  } else err.hidden = true;
+  $('#pa-estado').textContent = sincronizando ? 'Trayendo datos de Meta…'
+    : (A.meta_sincronizado_en ? 'Actualizado desde Meta ' + fechaCorta.format(new Date(A.meta_sincronizado_en)) + '.' : 'Todavía no se ha traído información de Meta.');
+
+  const { d, h, lista, tot } = analisisPauta();
+  $('#pa-titulo-reporte').textContent = d + ' a ' + h;
+  const roas = tot.gasto ? (tot.ventas / tot.gasto).toFixed(2).replace('.', ',') : '—';
+  $('#pa-kpis').innerHTML =
+    '<div class="kpi"><span>Gastado en Meta</span><strong>' + pesos(tot.gasto) + '</strong><small>' + tot.clics.toLocaleString('es-CO') + ' clics</small></div>' +
+    '<div class="kpi"><span>Compras según Meta</span><strong>' + tot.comprasMeta + '</strong><small>Lo que reporta el Pixel</small></div>' +
+    '<div class="kpi"><span>Pedidos de anuncios</span><strong>' + tot.pedidos + '</strong><small>' + tot.entregados + ' entregados</small></div>' +
+    '<div class="kpi"><span>Costo por pedido entregado</span><strong>' + (tot.entregados ? pesos(tot.gasto / tot.entregados) : '—') + '</strong><small>Gasto ÷ entregados</small></div>' +
+    '<div class="kpi"><span>Retorno real (ROAS)</span><strong>' + roas + '</strong><small>Ventas entregadas ÷ gasto</small></div>' +
+    '<div class="kpi destacado"><span>Ganancia neta de la pauta</span><strong>' + pesos(tot.ganancia - tot.gasto) + '</strong><small>Ganancia de sus pedidos − gasto</small></div>';
+  $('#pa-tabla').innerHTML = lista.length ? lista.map((a) => '<tr>' +
+    '<td><strong>' + esc(a.nombre || a.id) + '</strong>' + (a.campana ? '<span class="nota" style="display: block">' + esc(a.campana) + '</span>' : '') + '</td>' +
+    '<td class="der">' + pesos(a.gasto) + '</td>' +
+    '<td class="der">' + a.clics.toLocaleString('es-CO') + (a.impresiones ? '<span class="nota" style="display: block">CTR ' + (a.clics / a.impresiones * 100).toFixed(1).replace('.', ',') + ' %</span>' : '') + '</td>' +
+    '<td class="der">' + a.comprasMeta + '</td><td class="der">' + a.pedidos + '</td><td class="der"><strong>' + a.entregados + '</strong></td><td class="der">' + a.enCamino + '</td>' +
+    '<td class="der">' + (a.costoEntregado != null ? pesos(a.costoEntregado) : '—') + '</td>' +
+    '<td class="der"><strong style="color: ' + (a.neta < 0 ? 'var(--error)' : 'var(--verde)') + '">' + pesos(a.neta) + '</strong></td>' +
+    '<td><span class="chip ' + a.sug[0] + '">' + a.sug[1] + '</span></td></tr>').join('')
+    : '<tr><td colspan="10" class="nota">' + (D.pauta.length ? 'No hay gasto ni pedidos de anuncios en este periodo.' : 'Toca «Actualizar desde Meta» para traer tus anuncios.') + '</td></tr>';
+}
+
+async function sincronizarPauta(manual) {
+  if (sincronizando || !D.pautaLista) return;
+  sincronizando = true;
+  pintarPauta();
+  const { data, error } = await sb.functions.invoke('sincronizar-pauta', { body: {} });
+  sincronizando = false;
+  let msg = '';
+  if (error) {
+    try { msg = (await error.context.json()).error; } catch (e) { msg = 'No se pudo conectar con la función sincronizar-pauta. ¿Ya está desplegada?'; }
+  }
+  const [ra, rpa] = await Promise.all([
+    sb.from('ajustes').select('*').eq('id', 1).maybeSingle(),
+    sb.from('pauta_anuncios').select('*').gte('fecha', sumarDias(hoy(), -100)).order('fecha').limit(20000)
+  ]);
+  if (ra.data) D.ajustes = ra.data;
+  if (!rpa.error) D.pauta = rpa.data;
+  if (msg && D.ajustes && !D.ajustes.meta_error) D.ajustes.meta_error = msg;
+  pintarResumen();
+  pintarPauta();
+  if (manual) avisar(msg ? 'No se pudo actualizar la pauta' : 'Pauta actualizada (' + (data && data.filas) + ' registros)');
+}
+
+function sincronizarSiHaceFalta() {
+  const A = D.ajustes;
+  if (!A || !D.pautaLista || sincronizando) return;
+  const ultima = A.meta_sincronizado_en ? Date.parse(A.meta_sincronizado_en) : 0;
+  if (Date.now() - ultima > 3 * 3600 * 1000) sincronizarPauta(false);
+}
+
+$('#pa-rangos').addEventListener('click', (e) => { const b = e.target.closest('[data-rango-pauta]'); if (b) { rangoPauta = b.dataset.rangoPauta; pintarPauta(); } });
+$('#pa-sync').addEventListener('click', () => sincronizarPauta(true));
+$('#pa-pdf').addEventListener('click', () => window.print());
+$('#pa-copiar').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText($('#pa-parametros').textContent); avisar('Parámetros copiados'); } catch (e) { avisar('No se pudo copiar'); }
+});
+$('#pa-csv').addEventListener('click', () => {
+  const { d, h, lista, tot } = analisisPauta();
+  const celda = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+  const filas = [
+    ['Revoltosos · Reporte de pauta', d + ' a ' + h],
+    [],
+    ['Anuncio', 'Campaña', 'ID anuncio', 'Gasto', 'Impresiones', 'Clics', 'Compras (Meta)', 'Pedidos', 'Entregados', 'Devueltos', 'En camino', 'Ventas entregadas', 'Costo por entregado', 'Ganancia neta', 'Sugerencia']
+  ].concat(lista.map((a) => [a.nombre, a.campana, a.id === '__sin' ? '' : a.id, Math.round(a.gasto), a.impresiones, a.clics, a.comprasMeta, a.pedidos, a.entregados, a.devueltos, a.enCamino, a.ventas, a.costoEntregado != null ? Math.round(a.costoEntregado) : '', Math.round(a.neta), a.sug[1]]))
+    .concat([[], ['Total', '', '', Math.round(tot.gasto), '', tot.clics, tot.comprasMeta, tot.pedidos, tot.entregados, '', '', tot.ventas, tot.entregados ? Math.round(tot.gasto / tot.entregados) : '', Math.round(tot.ganancia - tot.gasto), '']]);
+  // Punto y coma: así lo abre bien Excel en español.
+  const csv = '﻿' + filas.map((f) => f.map(celda).join(';')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = 'revoltosos-pauta-' + d + '-a-' + h + '.csv';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+});
+
+/* ---------- Cupones ---------- */
+function pintarCupones() {
+  const sel = $('#c-producto');
+  sel.innerHTML = '<option value="">Toda la tienda</option>' + D.productos.map((p) => '<option value="' + esc(p.id) + '">' + esc(p.nombre) + '</option>').join('');
+  const tabla = $('#cup-tabla');
+  if (!D.tienda) { tabla.innerHTML = '<tr><td colspan="7" class="nota">Corre la migración 007 para usar cupones.</td></tr>'; return; }
+  const h = hoy();
+  tabla.innerHTML = D.cupones.length ? D.cupones.map((c) => {
+    const vencido = c.vence && c.vence < h;
+    const agotado = c.usos_max && c.usos >= c.usos_max;
+    const estado = !c.activo ? ['gris', 'Pausado'] : vencido ? ['gris', 'Vencido'] : agotado ? ['gris', 'Agotado'] : ['bien', 'Activo'];
+    return '<tr><td><strong style="letter-spacing: .04em">' + esc(c.codigo) + '</strong></td>' +
+      '<td>' + (c.tipo === 'porcentaje' ? c.valor + ' %' : pesos(c.valor)) + (c.minimo ? ' desde ' + pesos(c.minimo) : '') + '</td>' +
+      '<td>' + esc(c.producto_id ? ((productoDe(c.producto_id) || {}).nombre || c.producto_id) : 'Toda la tienda') + '</td>' +
+      '<td>' + (c.vence ? esc(c.vence) : 'Sin fecha') + '</td>' +
+      '<td class="der">' + c.usos + (c.usos_max ? ' / ' + c.usos_max : '') + '</td>' +
+      '<td><span class="chip ' + estado[0] + '">' + estado[1] + '</span></td>' +
+      '<td style="white-space: nowrap"><button type="button" class="btn-sec" data-cup-pausar="' + esc(c.codigo) + '" style="min-height: 36px">' + (c.activo ? 'Pausar' : 'Activar') + '</button> ' +
+      '<button type="button" class="btn-sec btn-peligro" data-cup-borrar="' + esc(c.codigo) + '" style="min-height: 36px">Borrar</button></td></tr>';
+  }).join('') : '<tr><td colspan="7" class="nota">Todavía no hay cupones.</td></tr>';
+}
+$('#cup-tabla').addEventListener('click', async (e) => {
+  const pausar = e.target.closest('[data-cup-pausar]');
+  const borrar = e.target.closest('[data-cup-borrar]');
+  if (pausar) {
+    const c = D.cupones.find((x) => x.codigo === pausar.dataset.cupPausar);
+    const { error } = await sb.from('cupones').update({ activo: !c.activo }).eq('codigo', c.codigo);
+    if (error) { avisar('No se pudo cambiar'); return; }
+    c.activo = !c.activo;
+    pintarCupones();
+    avisar('Cupón ' + c.codigo + (c.activo ? ' activo' : ' pausado'));
+  }
+  if (borrar && confirm('¿Borrar el cupón ' + borrar.dataset.cupBorrar + '?')) {
+    const { error } = await sb.from('cupones').delete().eq('codigo', borrar.dataset.cupBorrar);
+    if (error) { avisar('No se pudo borrar'); return; }
+    D.cupones = D.cupones.filter((x) => x.codigo !== borrar.dataset.cupBorrar);
+    pintarCupones();
+    avisar('Cupón borrado');
+  }
+});
+$('#form-cupon').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const msg = $('#c-msg');
+  msg.textContent = '';
+  const codigo = $('#c-codigo').value.trim().toUpperCase().replace(/\s+/g, '');
+  const tipo = $('#c-tipo').value;
+  const valor = Math.round(Number($('#c-valor').value));
+  if (!/^[A-Z0-9-]{3,30}$/.test(codigo)) { msg.textContent = 'El código lleva de 3 a 30 letras, números o guiones, sin espacios ni tildes.'; return; }
+  if (!(valor > 0) || (tipo === 'porcentaje' && valor > 100)) { msg.textContent = 'Revisa el valor del descuento.'; return; }
+  const fila = {
+    codigo, tipo, valor,
+    minimo: Math.max(0, Math.round(Number($('#c-minimo').value) || 0)),
+    producto_id: $('#c-producto').value || null,
+    vence: $('#c-vence').value || null,
+    usos_max: $('#c-usos').value ? Math.round(Number($('#c-usos').value)) : null
+  };
+  const { error } = await sb.from('cupones').insert(fila);
+  if (error) { msg.textContent = error.code === '23505' ? 'Ya existe un cupón con ese código.' : 'No se pudo crear: ' + error.message; return; }
+  e.target.reset();
+  $('#c-minimo').value = '0';
+  await cargar();
+  avisar('Cupón ' + codigo + ' creado');
+});
+
+/* ---------- Ajustes ---------- */
+function pintarAjustes() {
+  const A = D.ajustes;
+  if (document.activeElement && document.activeElement.closest('#form-ajustes')) return;
+  $('#a-gratis').value = A.envio_gratis_desde;
+  $('#a-base').value = A.envio_base;
+  $('#a-prio').value = A.prioritario;
+  $('#a-costo-envio').value = A.costo_envio_promedio;
+  $('#a-comision').value = A.comision_recaudo;
+  const t = A.envio_departamentos || {};
+  $('#a-tarifas').innerHTML = DEPARTAMENTOS.map((d) => '<label>' + esc(d) + '<input type="number" min="0" step="500" data-dep="' + esc(d) + '" value="' + (t[d] != null ? t[d] : '') + '" placeholder="' + A.envio_base + '"></label>').join('');
+  $$('#form-ajustes input, #form-ajustes button').forEach((n) => { n.disabled = !D.tienda; });
+
+  // Tarifas por ciudad (migración 011)
+  const hayCiudades = 'envio_ciudades' in A;
+  $('#a-ciudades-caja').hidden = !hayCiudades;
+  if (hayCiudades) {
+    const cdep = $('#c-dep');
+    if (cdep.options.length < 2) DEPARTAMENTOS.forEach((d) => cdep.add(new Option(d, d)));
+    pintarTarifasCiudad(A.envio_ciudades || {});
+  }
+
+  // Envía (migración 010)
+  const hayEnvia = 'envia_remitente' in A;
+  const r = A.envia_remitente || {};
+  const caja = A.envia_caja || {};
+  ['nombre', 'empresa', 'documento', 'telefono', 'email', 'direccion', 'barrio', 'referencia'].forEach((k) => { $('#e-' + k).value = r[k] || ''; });
+  $('#e-largo').value = caja.largo || 20;
+  $('#e-ancho').value = caja.ancho || 15;
+  $('#e-alto').value = caja.alto || 12;
+  $('#e-peso').value = caja.peso_g || 500;
+  $('#e-transportadoras').value = A.envia_transportadoras || '';
+  const dep = $('#e-departamento');
+  if (dep.options.length < 2) DEPARTAMENTOS.forEach((d) => dep.add(new Option(d, d)));
+  dep.value = r.departamento || '';
+  llenarCiudades(r.departamento || '', r.ciudad || '');
+  $$('#sec-envia input, #sec-envia select, #sec-envia button').forEach((n) => { n.disabled = !hayEnvia; });
+  if (!hayEnvia) { $('#a-envia-msg').className = 'mensaje error'; $('#a-envia-msg').textContent = 'Falta correr supabase/migraciones/010-envia.sql para usar Envía.'; }
+}
+
+let municipiosJSON = null;
+async function llenarCiudades(dep, actual, selector) {
+  const sel = $(selector || '#e-ciudad');
+  if (!municipiosJSON) {
+    try { municipiosJSON = await (await fetch('/assets/data/municipios.json?v=1')).json(); } catch (e) { municipiosJSON = {}; }
+  }
+  const lista = municipiosJSON[dep] || [];
+  sel.innerHTML = '';
+  sel.add(new Option(lista.length ? 'Elige la ciudad' : 'Primero el departamento', ''));
+  lista.forEach((m) => sel.add(new Option(m, m)));
+  sel.value = actual && lista.includes(actual) ? actual : '';
+}
+$('#e-departamento').addEventListener('change', (e) => llenarCiudades(e.target.value, ''));
+
+/* Tarifas por ciudad (migración 011): "Departamento|Ciudad" → valor */
+function pintarTarifasCiudad(lista) {
+  const caja = $('#a-ciudades');
+  const claves = Object.keys(lista).sort();
+  caja.innerHTML = claves.length ? claves.map((k) => '<label>' + esc(k.split('|')[1] + ' (' + k.split('|')[0] + ')') +
+    '<span style="display: flex; gap: 6px; align-items: center"><input type="number" min="0" step="500" data-ciudad="' + esc(k) + '" value="' + lista[k] + '">' +
+    '<button type="button" class="btn-sec btn-peligro" data-quitar-ciudad="' + esc(k) + '" aria-label="Quitar ' + esc(k) + '" style="min-height: 36px; padding: 0 10px">×</button></span></label>').join('')
+    : '<p class="nota">Todavía no hay ciudades con tarifa propia.</p>';
+}
+const tarifasCiudadEnPantalla = () => {
+  const r = {};
+  $$('#a-ciudades [data-ciudad]').forEach((i) => { if (i.value !== '') r[i.dataset.ciudad] = Math.max(0, Math.round(Number(i.value))); });
+  return r;
+};
+$('#c-dep').addEventListener('change', (e) => llenarCiudades(e.target.value, '', '#c-ciu'));
+$('#c-agregar').addEventListener('click', () => {
+  const dep = $('#c-dep').value, ciu = $('#c-ciu').value, val = $('#c-val').value;
+  if (!dep || !ciu || val === '') { avisar('Elige departamento, ciudad y tarifa'); return; }
+  const lista = tarifasCiudadEnPantalla();
+  lista[dep + '|' + ciu] = Math.max(0, Math.round(Number(val)));
+  pintarTarifasCiudad(lista);
+  $('#c-val').value = '';
+  avisar('Agregada. Toca «Guardar ajustes» para aplicarla.');
+});
+$('#a-ciudades').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-quitar-ciudad]');
+  if (!b) return;
+  const lista = tarifasCiudadEnPantalla();
+  delete lista[b.dataset.quitarCiudad];
+  pintarTarifasCiudad(lista);
+});
+
+// Llama a la Edge Function "envia" y devuelve { ok, ... } con el mensaje de error ya leído.
+async function llamarEnvia(cuerpo) {
+  const { data, error } = await sb.functions.invoke('envia', { body: cuerpo });
+  if (!error) return data;
+  let r = null;
+  try { r = await error.context.json(); } catch (e) { /* sin cuerpo */ }
+  return r || { ok: false, error: 'No se pudo conectar con la función envia. ¿Ya está desplegada?' };
+}
+
+$('#a-probar-envia').addEventListener('click', async () => {
+  const msg = $('#a-envia-msg');
+  msg.className = 'mensaje';
+  msg.textContent = 'Probando…';
+  const r = await llamarEnvia({ accion: 'diagnostico' });
+  if (!r.ok) { msg.className = 'mensaje error'; msg.textContent = r.error; return; }
+  msg.className = 'mensaje ok';
+  msg.textContent = 'Conectado a Envía (' + (r.entorno === 'produccion' ? 'producción: guías reales' : 'pruebas: guías de mentira') + '). Transportadoras: ' + (r.transportadoras.join(', ') || 'ninguna') + '.' +
+    (r.remitente_completo ? '' : ' Falta llenar y guardar: ' + r.faltan.join(', ') + '.');
+});
+$('#form-ajustes').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const tarifas = {};
+  $$('#a-tarifas [data-dep]').forEach((i) => { if (i.value !== '') tarifas[i.dataset.dep] = Math.max(0, Math.round(Number(i.value))); });
+  const cambios = {
+    envio_gratis_desde: Math.round(Number($('#a-gratis').value)),
+    envio_base: Math.round(Number($('#a-base').value)),
+    prioritario: Math.round(Number($('#a-prio').value)),
+    costo_envio_promedio: Math.round(Number($('#a-costo-envio').value)),
+    comision_recaudo: Number($('#a-comision').value),
+    envio_departamentos: tarifas,
+    actualizado_en: new Date().toISOString()
+  };
+  if ('envio_ciudades' in D.ajustes) cambios.envio_ciudades = tarifasCiudadEnPantalla();
+  if ('envia_remitente' in D.ajustes) {
+    const r = {};
+    ['nombre', 'empresa', 'documento', 'telefono', 'email', 'direccion', 'barrio', 'referencia'].forEach((k) => { const v = $('#e-' + k).value.trim(); if (v) r[k] = v; });
+    if ($('#e-departamento').value) r.departamento = $('#e-departamento').value;
+    if ($('#e-ciudad').value) r.ciudad = $('#e-ciudad').value;
+    cambios.envia_remitente = r;
+    cambios.envia_caja = {
+      largo: Math.max(1, Math.round(Number($('#e-largo').value) || 20)),
+      ancho: Math.max(1, Math.round(Number($('#e-ancho').value) || 15)),
+      alto: Math.max(1, Math.round(Number($('#e-alto').value) || 12)),
+      peso_g: Math.max(10, Math.round(Number($('#e-peso').value) || 500))
+    };
+    cambios.envia_transportadoras = $('#e-transportadoras').value.trim().toLowerCase() || null;
+  }
+  const { error } = await sb.from('ajustes').update(cambios).eq('id', 1);
+  if (error) { avisar('No se pudo guardar: ' + error.message); return; }
+  Object.assign(D.ajustes, cambios);
+  document.activeElement.blur();
+  pintarTodo();
+  avisar('Ajustes guardados');
+});
+
 /* ---------- Reseñas ---------- */
-let resenas = [];
 let filtroResena = 'Pendiente';
 const ETIQUETA_RESENA = { Pendiente: 'Pendientes', Publicada: 'Publicadas', Oculta: 'Ocultas' };
 
@@ -336,6 +1905,7 @@ function pintarResenas() {
   const filtros = $('#filtros-resenas');
   lista.textContent = '';
   filtros.textContent = '';
+  const resenas = D.resenas;
   if (resenas === null) {
     estado.hidden = false;
     estado.textContent = 'No se encontró la tabla de reseñas. Ejecuta supabase/migraciones/004-resenas.sql en Supabase.';
@@ -382,8 +1952,8 @@ function pintarResenas() {
     quien.style.fontSize = '14px';
     quien.append(el('strong', null, r.nombre), ' · ' + r.ciudad + (r.mascota ? ' · con ' + r.mascota : '') + ' · ' + r.producto);
     const acc = el('div', 'acciones');
-    const accion = (texto, nuevo, primario) => {
-      const b = el('button', primario ? 'btn' : 'btn-sec', texto);
+    const accion = (txt, nuevo, primario) => {
+      const b = el('button', primario ? 'btn' : 'btn-sec', txt);
       b.type = 'button';
       if (primario) b.style.background = 'var(--salvia)';
       b.addEventListener('click', async () => {
@@ -403,226 +1973,9 @@ function pintarResenas() {
   });
 }
 $('#r-copiar').addEventListener('click', async () => {
-  try { await navigator.clipboard.writeText('https://revoltosos.netlify.app/opina/'); avisar('Link copiado'); } catch (e) { avisar('No se pudo copiar'); }
+  try { await navigator.clipboard.writeText(SITIO + '/opina/'); avisar('Link copiado'); } catch (e) { avisar('No se pudo copiar'); }
 });
 
-function mensajeResena(p) {
-  const primerNombre = p.nombre.split(/\s+/)[0];
-  const cajita = (p.oferta || '').startsWith('cajita');
-  const link = 'https://revoltosos.netlify.app/opina/?n=' + encodeURIComponent(primerNombre) + (cajita ? '&p=cajita' : '');
-  return '¡Hola ' + primerNombre + '! 🐾 Somos Revoltosos. ¿Qué le ' + (cajita ? 'pareció la cajita' : 'parecieron las codornices') + ' a tu peludo? Nos ayudaría mucho que nos contaras aquí, y si quieres, con una foto 👉 ' + link;
-}
-
-const nombreOferta = (slug) => (ofertas.find((o) => o.slug === slug) || {}).nombre || slug || 'Codornices · Promo 2 frascos';
-
-function mensajeWhatsApp(p) {
-  const primerNombre = p.nombre.split(/\s+/)[0];
-  return [
-    '¡Hola ' + primerNombre + '! 🐾 Somos Revoltosos.',
-    'Recibimos tu pedido #' + p.order_id + ':',
-    '• ' + p.cantidad + ' x ' + (p.producto || PRODUCTO_POR_DEFECTO),
-    '• Envío: GRATIS' + (p.prioritario ? ' + Prioritario $5.000' : ''),
-    '• Total a pagar al recibir: ' + pesos(p.total),
-    '📍 ' + p.direccion + ', ' + p.barrio + ', ' + p.ciudad + ' - ' + p.departamento,
-    p.indicaciones || '',
-    '¿Nos confirmas que los datos están correctos para despacharlo? ✅'
-  ].filter(Boolean).join('\n');
-}
-
-function el(tag, clase, texto) {
-  const n = document.createElement(tag);
-  if (clase) n.className = clase;
-  if (texto != null) n.textContent = texto;
-  return n;
-}
-
-function tarjeta(p) {
-  const art = el('article', 'pedido');
-
-  const top = el('div', 'pedido-top');
-  const ids = el('div');
-  ids.append(el('div', 'pedido-id', p.order_id), el('div', 'pedido-fecha', fechaCorta.format(new Date(p.creado_en))));
-  const lab = el('label');
-  lab.append(el('span', 'oculto', 'Estado del pedido ' + p.order_id));
-  const sel = el('select', 'estado');
-  ESTADOS.forEach((e) => { const o = el('option', null, e); o.value = e; sel.append(o); });
-  sel.value = p.estado;
-  sel.dataset.e = p.estado;
-  sel.addEventListener('change', async () => {
-    const anterior = p.estado;
-    sel.dataset.e = sel.value;
-    const { error } = await sb.from('pedidos').update({ estado: sel.value }).eq('id', p.id);
-    if (error) { sel.value = anterior; sel.dataset.e = anterior; avisar('No se pudo cambiar el estado'); return; }
-    p.estado = sel.value;
-    avisar('Pedido ' + p.order_id + ': ' + p.estado);
-    pintarFiltros();
-  });
-  lab.append(sel);
-  top.append(ids, lab);
-
-  const quien = el('div');
-  const tel = el('a', 'pedido-tel', p.celular.slice(2).replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'));
-  tel.href = 'tel:+' + p.celular;
-  quien.append(el('div', 'pedido-nombre', p.nombre));
-  if (p.cedula) quien.append(el('div', 'pedido-fecha', 'C.C. ' + p.cedula));
-  quien.append(tel);
-
-  const dir = el('div', 'pedido-dir');
-  dir.append(document.createTextNode(p.direccion + ', ' + p.barrio), el('strong', null, p.ciudad + ' · ' + p.departamento));
-  if (p.indicaciones) dir.append(el('span', null, p.indicaciones));
-
-  const prod = el('div', 'pedido-prod');
-  prod.append(el('b', null, p.cantidad + ' × ' + (p.producto || PRODUCTO_POR_DEFECTO)));
-  if (p.prioritario) prod.append(el('span', 'tag', 'Prioritario'));
-  if (p.para_quien && p.para_quien.length) prod.append(el('span', null, '· ' + p.para_quien.join(', ')));
-
-  const tot = el('div', 'pedido-total');
-  tot.append(el('span', null, 'Cobrar al entregar'), el('span', null, pesos(p.total)));
-  tot.firstChild.style.fontWeight = '700';
-
-  const acc = el('div', 'acciones');
-  const wa = el('a', 'btn');
-  wa.href = 'https://wa.me/' + p.celular + '?text=' + encodeURIComponent(mensajeWhatsApp(p));
-  wa.target = '_blank';
-  wa.rel = 'noopener';
-  wa.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"/></svg>';
-  wa.append('Confirmar por WhatsApp');
-  const copiar = el('button', 'btn-sec', 'Copiar');
-  copiar.type = 'button';
-  copiar.setAttribute('aria-label', 'Copiar datos de envío de ' + p.nombre);
-  copiar.addEventListener('click', async () => {
-    const t = [p.nombre, p.cedula ? 'C.C. ' + p.cedula : '', p.celular.slice(2), p.direccion + ', ' + p.barrio, p.ciudad + ' - ' + p.departamento, p.indicaciones || '', 'Cobrar: ' + pesos(p.total)].filter(Boolean).join('\n');
-    try { await navigator.clipboard.writeText(t); avisar('Datos copiados'); } catch (e) { avisar('No se pudo copiar'); }
-  });
-  acc.append(wa, copiar);
-  if (p.estado === 'Entregado') {
-    const pedir = el('a', 'btn-sec', 'Pedir reseña');
-    pedir.href = 'https://wa.me/' + p.celular + '?text=' + encodeURIComponent(mensajeResena(p));
-    pedir.target = '_blank';
-    pedir.rel = 'noopener';
-    pedir.style.cssText = 'display: inline-flex; align-items: center; text-decoration: none';
-    acc.append(pedir);
-  }
-
-  art.append(top, el('span', 'pedido-oferta', nombreOferta(p.oferta)), quien, dir, prod, tot, acc);
-  if (p.utm_source || p.utm_campaign) art.append(el('div', 'pedido-origen', 'Origen: ' + [p.utm_source, p.utm_campaign].filter(Boolean).join(' · ')));
-  return art;
-}
-
-const delaLanding = (p) => !filtroLanding || (p.oferta || 'codornices-promo') === filtroLanding;
-
-function pintarFiltros() {
-  const caja = $('#filtros');
-  caja.textContent = '';
-  const base = pedidos.filter(delaLanding);
-  ['Todos'].concat(ESTADOS).forEach((nombre) => {
-    const n = nombre === 'Todos' ? base.length : base.filter((p) => p.estado === nombre).length;
-    const b = el('button', 'filtro', nombre + ' ');
-    b.type = 'button';
-    b.setAttribute('aria-pressed', String(filtro === nombre));
-    b.append(el('span', null, String(n)));
-    b.addEventListener('click', () => { filtro = nombre; pintar(); });
-    caja.append(b);
-  });
-}
-
-function pintar() {
-  pintarFiltros();
-  const q = busqueda.toLowerCase();
-  const visibles = pedidos.filter((p) =>
-    delaLanding(p) &&
-    (filtro === 'Todos' || p.estado === filtro) &&
-    (!q || (p.nombre + ' ' + p.celular + ' ' + p.order_id).toLowerCase().includes(q))
-  );
-  const lista = $('#lista');
-  lista.textContent = '';
-  visibles.forEach((p) => lista.append(tarjeta(p)));
-  const estado = $('#p-estado');
-  estado.hidden = visibles.length > 0;
-  estado.textContent = pedidos.length ? 'No hay pedidos con ese filtro.' : 'Todavía no hay pedidos. Aparecerán aquí apenas alguien compre.';
-}
-
-/* ---------- Landings ---------- */
-function pintarSelectorLanding() {
-  const sel = $('#p-landing');
-  const actual = sel.value;
-  sel.length = 1;
-  ofertas.forEach((o) => { const op = el('option', null, o.nombre); op.value = o.slug; sel.append(op); });
-  sel.value = ofertas.some((o) => o.slug === actual) ? actual : '';
-}
-
-function pintarLandings() {
-  const caja = $('#landings');
-  caja.textContent = '';
-  if (!ofertas.length) {
-    caja.append(el('p', 'nota-landings', 'No se encontró la tabla de ofertas. Ejecuta supabase/migraciones/002-ofertas.sql en Supabase.'));
-    return;
-  }
-  ofertas.forEach((o) => {
-    const suyos = pedidos.filter((p) => (p.oferta || 'codornices-promo') === o.slug && !['Cancelado', 'Devuelto'].includes(p.estado));
-    const entregados = suyos.filter((p) => p.estado === 'Entregado').length;
-    const ventas = suyos.reduce((s, p) => s + p.total, 0);
-    const url = SITIO + o.ruta;
-
-    const card = el('article', 'landing');
-    const top = el('div', 'landing-top');
-    const tit = el('div');
-    tit.append(el('h2', null, o.nombre), el('span', 'pedido-fecha', o.producto_nombre));
-    const tipo = !o.activa ? ['inactiva', 'Inactiva'] : o.oculta ? ['oculta', 'Oculta'] : ['publica', 'Pública'];
-    top.append(tit, el('span', 'insignia insignia--' + tipo[0], tipo[1]));
-
-    const precios = el('div', 'landing-precios');
-    Object.entries(o.precios).forEach(([cant, precio]) => precios.append(el('span', null, cant + ' → ' + pesos(precio))));
-    if (o.prioritario) precios.append(el('span', null, 'Prioritario +$5.000'));
-
-    const link = el('div', 'landing-link');
-    const code = el('code', null, url.replace('https://', ''));
-    const copiar = el('button', 'btn-sec', 'Copiar');
-    copiar.type = 'button';
-    copiar.setAttribute('aria-label', 'Copiar link de ' + o.nombre);
-    copiar.addEventListener('click', async () => {
-      try { await navigator.clipboard.writeText(url); avisar('Link copiado'); } catch (e) { avisar('No se pudo copiar'); }
-    });
-    const abrir = el('a', 'btn-sec', 'Abrir');
-    abrir.href = url;
-    abrir.target = '_blank';
-    abrir.rel = 'noopener';
-    abrir.style.display = 'inline-flex';
-    abrir.style.alignItems = 'center';
-    abrir.style.textDecoration = 'none';
-    link.append(code, copiar, abrir);
-
-    const cifras = el('div', 'cifras');
-    [[suyos.length, 'pedidos'], [entregados, 'entregados'], [pesos(ventas), 'en ventas']].forEach(([v, t]) => {
-      const d = el('div');
-      d.append(el('strong', null, String(v)), el('span', null, t));
-      cifras.append(d);
-    });
-
-    const ver = el('button', 'btn-sec', 'Ver sus pedidos');
-    ver.type = 'button';
-    ver.addEventListener('click', () => { filtroLanding = o.slug; $('#p-landing').value = o.slug; mostrarPestana('pedidos'); pintar(); });
-
-    card.append(top, precios, link, cifras, ver);
-    caja.append(card);
-  });
-}
-
-function mostrarPestana(cual) {
-  ['pedidos', 'landings', 'resenas'].forEach((t) => {
-    $('#t-' + t).setAttribute('aria-selected', String(t === cual));
-    $('#tab-' + t).hidden = t !== cual;
-  });
-}
-$('#t-pedidos').addEventListener('click', () => mostrarPestana('pedidos'));
-$('#t-landings').addEventListener('click', () => mostrarPestana('landings'));
-$('#t-resenas').addEventListener('click', () => mostrarPestana('resenas'));
-$('#p-landing').addEventListener('change', (e) => { filtroLanding = e.target.value; pintar(); });
-
-$('#p-buscar').addEventListener('input', (e) => { busqueda = e.target.value.trim(); pintar(); });
-$('#p-recargar').addEventListener('click', () => { cargar(); });
-// Se actualiza solo cada minuto mientras la pestaña está abierta.
-setInterval(() => { if (!document.hidden && !$('#vista-panel').hidden) cargar(); }, 60000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden && !$('#vista-panel').hidden) cargar(); });
 </script>
 </body>

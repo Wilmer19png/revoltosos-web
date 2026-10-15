@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-Static HTML + CSS + vanilla JS in a single `index.html` (product data in a `PRODUCT = {...}` object). Orders go to **Supabase** (decided 2026-10-13, replaces the Google Sheets + Apps Script plan): a `pedidos` table with RLS (only admins read/update; orders are inserted by the `crear-pedido` Edge Function, which also recalculates the price server-side), Supabase Auth email+password for the owner, a private `/pedidos` panel, and an Edge Function for the Meta Conversions API. Must stay easy to migrate later to Shopify / WooCommerce / Next.js. Deploy target: Netlify, Vercel or Hostinger. Repo: GitHub Wilmer19png/revoltosos-web (private).
+Static HTML + CSS + vanilla JS (no build). Since 2026-10-14 it is a store: home `/`, one landing per product (`/codornices/`, `/cajita/`, generic `/producto/?p=id`), shared `assets/js/tienda.js` (catalog from Supabase, cart in localStorage, coupons, free-shipping bar, order modal). Catalog, prices, costs, stock, coupons and settings live in Supabase (migration 007) and are edited in the `/pedidos` gestor. Orders go to **Supabase** (decided 2026-10-13, replaces the Google Sheets + Apps Script plan): a `pedidos` table with RLS (only admins read/update; orders are inserted by the `crear-pedido` Edge Function, which also recalculates the price server-side), Supabase Auth email+password for the owner, a private `/pedidos` panel, and an Edge Function for the Meta Conversions API. Must stay easy to migrate later to Shopify / WooCommerce / Next.js. Deploy target: Netlify, Vercel or Hostinger. Repo: GitHub Wilmer19png/revoltosos-web (private).
 
 ## Users
 
@@ -16,18 +16,19 @@ Colombian pet owners (dogs mostly, also cats) arriving from Meta ads on their ph
 
 ## Product Purpose
 
-Sell one product, Codornices deshidratadas, 50 g jar (≈ 30 pieces): 1 jar $14.900 COP, promo 2 jars $26.900 (prices changed again 2026-10-14; was 20.900/29.900). No 3-jar option (price change 2026-10-13). Success = the visitor fills the order form and taps "Pagar al recibir". The order lands in Supabase, the owner confirms on WhatsApp, and the Purchase event reaches Meta (Pixel + Conversions API, deduplicated).
+Sell a catalog of natural dog snacks (codornices, Cajita para perros, patas, oreja, fémur…). The quail jar is **100 g** (there is no 50 g jar); there is also a **50 g bag** (price pending). Known prices: frasco 100 g $14.900, 2 frascos $26.900 (normal $29.800), Cajita $72.900. "Entre más pides, más ahorras": show normal vs. promo price and the total saved. Success = the visitor fills the order form and taps "Pagar al recibir". The order lands in Supabase, the owner confirms on WhatsApp, and the Purchase event reaches Meta (Pixel + Conversions API, deduplicated).
 
 ## Positioning
 
-Single-ingredient whole quail, slowly dehydrated, with nothing added (no preservatives, salt or colorants). Made in Colombia. Free shipping to all of Colombia and cash on delivery.
+Single-ingredient whole quail, slowly dehydrated, with nothing added (no preservatives, salt or colorants). Made in Colombia. Free shipping from $70.000 in products (otherwise a per-department fee) and cash on delivery.
 
 ## Capabilities and Constraints
 
-- Prices in COP, formatted `$20.900`. Free shipping always. Optional priority shipping +$5.000.
-- Bundles: 1 jar $14.900, 2 jars $26.900 (promo). Catalog lists only 50 g ($14.900) and 100 g ($26.900, same as 2×50 g). Keep configurable in `PRODUCT`. The product render image has the old price 14.900 printed on it; it needs a new render or crop.
+- Prices in COP, formatted `$20.900`. Free shipping from `ajustes.envio_gratis_desde` ($70.000); below that, `envio_base` or the department fee. Optional priority shipping +$5.000. Envía + Interrapidísimo are the carriers (API integration planned).
+- Prices, sizes, costs and stock are edited in the gestor, never hard-coded. The jar render still says "50 GR" on the label; it needs a new photo or crop.
 - Phone: 10 digits starting with 3, stored as `573XXXXXXXXX`.
-- No navigation menu and no links out of the page, except Instagram/WhatsApp/legal links in the footer.
+- Store navigation: header with Tienda / product landings, cart, floating WhatsApp button. Each product landing must stand alone for ads.
+- Recent-purchase notices use only real orders (first name + city). Never invent buyers, counters or stock urgency.
 - Data-processing consent under Colombian Ley 1581 de 2012.
 - Shipping time and how long an opened jar lasts are **unconfirmed**; don't invent them.
 - Minipigs and other species stay out until the owner confirms with a vet.
@@ -48,8 +49,8 @@ Single-ingredient whole quail, slowly dehydrated, with nothing added (no preserv
 
 ## Product Principles
 
-1. One action per page: the order form. Everything else supports it.
-2. Free shipping and cash on delivery are visible at every decision point.
+1. Every page leads to the cart or "Hacer mi pedido ahora"; the order form opens on top of the page.
+2. Cash on delivery and the free-shipping threshold are visible at every decision point.
 3. Show the real product. AI imagery only for ambience, never for the product itself.
 4. Placeholders stay clearly marked until real content arrives.
 

@@ -21,7 +21,8 @@
     Cache-Control = "public, max-age=604800"
 
 # CSS y JS: el celular pregunta siempre si hay versión nueva (si no cambió, no se descarga de nuevo).
-# Además, al cambiarlos hay que subir el número ?v= en index.html y cajita/index.html.
+# Además, al cambiarlos hay que subir el número ?v= en las páginas que los cargan
+# (index.html, codornices/, cajita/ y producto/).
 [[headers]]
   for = "/assets/css/*"
   [headers.values]
@@ -32,20 +33,10 @@
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
 
-# Variante oculta de prueba (1 frasco a $14.900): usa la misma página que la principal.
-[[headers]]
-  for = "/codornices/unidad/*"
-  [headers.values]
-    X-Robots-Tag = "noindex, nofollow"
-
+# La vieja prueba de "1 frasco" ahora es la landing de codornices.
 [[redirects]]
   from = "/codornices/unidad/*"
-  to = "/index.html"
-  status = 200
-
-[[redirects]]
-  from = "/codornices/*"
-  to = "/"
+  to = "/codornices/"
   status = 301
 
 # Material interno que no hace falta servir.
@@ -63,6 +54,12 @@
 
 [[redirects]]
   from = "/supabase/*"
+  to = "/"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/herramientas/*"
   to = "/"
   status = 404
   force = true

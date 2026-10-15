@@ -1,8 +1,12 @@
 // Revoltosos · Edge Function "crear-pedido"
 //
-// Recibe el formulario de la landing, valida los datos, calcula el total en el
-// servidor, guarda el pedido en la tabla `pedidos` y envía el evento Purchase a
-// la API de Conversiones de Meta con el mismo event_id del Pixel (deduplicación).
+// Recibe el carrito y los datos de envío de la tienda, valida todo, calcula en el
+// servidor precios, cupón y envío (tablas `variantes`, `cupones` y `ajustes`,
+// migración 007), guarda el pedido en `pedidos` y envía el evento Purchase a la
+// API de Conversiones de Meta con el mismo event_id del Pixel (deduplicación).
+//
+// Lo que diga el navegador sobre precios se ignora: solo se usan los ids de los
+// tamaños y las cantidades.
 //
 // Secrets que usa (Supabase › Edge Functions › Secrets):
 //   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY  → Supabase los pone solos
@@ -13,11 +17,17 @@
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
-// Los precios de cada landing viven en la tabla `ofertas` (supabase/migraciones/002-ofertas.sql).
-const PRIORITARIO = 5000;
-const OFERTA_POR_DEFECTO = 'codornices-promo';
 // Una misma conexión (IP) solo puede hacer un pedido cada 72 horas (migración 005).
 const HORAS_ENTRE_PEDIDOS = 72;
+const MAX_POR_PRODUCTO = 20;
+const MAX_UNIDADES = 60;
+
+// Páginas viejas que aún manden el formato anterior (oferta + cantidad).
+const OFERTAS_VIEJAS: Record<string, Record<string, string>> = {
+  'codornices-promo': { '1': 'codornices-frasco-100g' },
+  'codornices-unidad': { '1': 'codornices-frasco-100g' },
+  'cajita-perros': { '1': 'cajita-perros' },
+};
 
 const DEPARTAMENTOS = new Set([
   'Amazonas', 'Antioquia', 'Arauca', 'Atlántico', 'Bogotá D.C.', 'Bolívar', 'Boyacá', 'Caldas', 'Caquetá',
@@ -26,6 +36,16 @@ const DEPARTAMENTOS = new Set([
   'San Andrés y Providencia', 'Santander', 'Sucre', 'Tolima', 'Valle del Cauca', 'Vaupés', 'Vichada',
 ]);
 const MASCOTAS = new Set(['Perro pequeño', 'Perro mediano', 'Perro grande', 'Gato']);
+
+type Variante = {
+  id: string; producto_id: string; nombre: string; precio: number | null; costo: number; visible: boolean;
+  productos: { nombre: string; visible: boolean } | null;
+};
+type Cupon = {
+  codigo: string; tipo: 'porcentaje' | 'valor'; valor: number; minimo: number; producto_id: string | null;
+  vence: string | null; usos_max: number | null; usos: number; activo: boolean;
+};
+type Item = { variante_id: string; producto_id: string; nombre: string; cantidad: number; precio: number; costo: number };
 
 const origen = Deno.env.get('ALLOWED_ORIGIN') ?? '*';
 const CORS = {
@@ -39,6 +59,18 @@ const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...CORS, 'Content-Type': 'application/json' } });
 
 const texto = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+const redondear100 = (n: number) => Math.round(n / 100) * 100;
+const hoyColombia = () => new Date(Date.now() - 5 * 3600 * 1000).toISOString().slice(0, 10);
+
+// Mismo cálculo que assets/js/tienda.js (descuentoCupon).
+function descuentoCupon(c: Cupon, items: Item[], subtotal: number): number {
+  if (subtotal < c.minimo) return 0;
+  const base = c.producto_id
+    ? items.filter((i) => i.producto_id === c.producto_id).reduce((s, i) => s + i.precio * i.cantidad, 0)
+    : subtotal;
+  if (!base) return 0;
+  return Math.min(base, c.tipo === 'porcentaje' ? redondear100((base * Math.min(c.valor, 100)) / 100) : c.valor);
+}
 
 async function sha256(valor: string): Promise<string> {
   const datos = new TextEncoder().encode(valor.trim().toLowerCase());
@@ -67,6 +99,7 @@ async function enviarAMeta(pedido: Record<string, unknown>, extra: { fbp: string
 
   const version = Deno.env.get('META_API_VERSION') ?? 'v23.0';
   const [nombre, ...apellidos] = String(pedido.nombre).split(/\s+/);
+  const items = pedido.items as Item[];
 
   const user_data: Record<string, unknown> = {
     ph: [await sha256(String(pedido.celular))],
@@ -93,7 +126,8 @@ async function enviarAMeta(pedido: Record<string, unknown>, extra: { fbp: string
       custom_data: {
         value: pedido.total,
         currency: 'COP',
-        content_ids: [pedido.producto_id],
+        content_ids: items.map((i) => i.variante_id),
+        contents: items.map((i) => ({ id: i.variante_id, quantity: i.cantidad, item_price: i.precio })),
         content_type: 'product',
         num_items: pedido.cantidad,
         order_id: pedido.order_id,
@@ -111,6 +145,24 @@ async function enviarAMeta(pedido: Record<string, unknown>, extra: { fbp: string
   const respuesta = await res.text();
   if (!res.ok) console.error('Meta CAPI error', res.status, respuesta);
   else console.log(`Meta CAPI ok ${pedido.order_id} (pixel ${pixel}${prueba ? ', prueba ' + prueba : ''}): ${respuesta}`);
+}
+
+// Lee el carrito del navegador: [{ variante_id, cantidad }] (o el formato viejo oferta + cantidad).
+function leerCarrito(b: Record<string, unknown>): Map<string, number> {
+  const carrito = new Map<string, number>();
+  const sumar = (id: string, n: number) => {
+    if (!/^[a-z0-9-]{2,80}$/.test(id) || !Number.isInteger(n) || n < 1) return;
+    carrito.set(id, Math.min(MAX_POR_PRODUCTO, (carrito.get(id) ?? 0) + n));
+  };
+  if (Array.isArray(b.items)) {
+    for (const it of b.items.slice(0, 30)) {
+      if (it && typeof it === 'object') sumar(texto((it as Record<string, unknown>).variante_id, 80), Number((it as Record<string, unknown>).cantidad));
+    }
+  } else if (typeof b.oferta === 'string') {
+    const id = OFERTAS_VIEJAS[b.oferta]?.[String(b.cantidad)];
+    if (id) sumar(id, 1);
+  }
+  return carrito;
 }
 
 Deno.serve(async (req) => {
@@ -136,25 +188,42 @@ Deno.serve(async (req) => {
   const ciudad = texto(b.ciudad, 80);
   const departamento = texto(b.departamento, 40);
   const indicaciones = texto(b.indicaciones, 300);
-  const cantidad = Number(b.cantidad);
   const prioritario = b.prioritario === true;
+  const codigoCupon = texto(b.cupon, 30).toUpperCase();
   const paraQuien = Array.isArray(b.para_quien) ? b.para_quien.filter((m) => MASCOTAS.has(String(m))).map(String) : [];
 
   const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, {
     auth: { persistSession: false },
   });
 
-  // La oferta define el precio: lo que diga el navegador sobre precios se ignora.
-  const slug = texto(b.oferta, 60) || OFERTA_POR_DEFECTO;
-  const { data: oferta } = await supabase
-    .from('ofertas')
-    .select('slug, producto_id, producto_nombre, precios, prioritario, activa')
-    .eq('slug', slug)
-    .maybeSingle();
-  const precio = oferta?.activa ? Number((oferta.precios as Record<string, number>)[String(cantidad)]) : NaN;
+  // Precios, costos y ajustes salen de la base de datos.
+  const carrito = leerCarrito(b);
+  const ids = Array.from(carrito.keys());
+  const [{ data: variantes }, { data: ajustes }] = await Promise.all([
+    ids.length
+      ? supabase.from('variantes').select('id, producto_id, nombre, precio, costo, visible, productos(nombre, visible)').in('id', ids)
+      : Promise.resolve({ data: [] as Variante[] }),
+    supabase.from('ajustes').select('*').eq('id', 1).maybeSingle(),
+  ]);
+
+  const items: Item[] = [];
+  for (const v of (variantes ?? []) as unknown as Variante[]) {
+    if (!v.visible || !v.precio || !v.productos?.visible) continue;
+    items.push({
+      variante_id: v.id,
+      producto_id: v.producto_id,
+      nombre: `${v.productos.nombre} · ${v.nombre}`,
+      cantidad: carrito.get(v.id)!,
+      precio: v.precio,
+      costo: v.costo ?? 0,
+    });
+  }
+  const unidades = items.reduce((s, i) => s + i.cantidad, 0);
 
   const errores: string[] = [];
-  if (!oferta || !oferta.activa) errores.push('oferta');
+  if (!items.length || items.length !== ids.length) errores.push('productos');
+  if (unidades > MAX_UNIDADES) errores.push('cantidad');
+  if (!ajustes) errores.push('ajustes');
   if (!/^[0-9a-f-]{16,64}$/i.test(eventId)) errores.push('event_id');
   if (nombre.length < 3) errores.push('nombre');
   if (!/^\d{6,10}$/.test(cedula)) errores.push('cedula');
@@ -163,11 +232,33 @@ Deno.serve(async (req) => {
   if (barrio.length < 2) errores.push('barrio');
   if (ciudad.length < 2) errores.push('ciudad');
   if (!DEPARTAMENTOS.has(departamento)) errores.push('departamento');
-  if (!(precio > 0)) errores.push('cantidad');
   if (errores.length) return json({ ok: false, error: 'Revisa: ' + errores.join(', ') }, 422);
 
-  const conPrioritario = prioritario && oferta!.prioritario;
-  const total = precio + (conPrioritario ? PRIORITARIO : 0);
+  const subtotal = items.reduce((s, i) => s + i.precio * i.cantidad, 0);
+  const costoProductos = items.reduce((s, i) => s + i.costo * i.cantidad, 0);
+
+  // Cupón: si no sirve se avisa, para que el cliente no pague algo distinto a lo que vio.
+  let descuento = 0;
+  let cupon: Cupon | null = null;
+  if (codigoCupon) {
+    const { data } = await supabase.from('cupones').select('*').eq('codigo', codigoCupon).maybeSingle();
+    cupon = data as Cupon | null;
+    const vigente = cupon && cupon.activo
+      && (!cupon.vence || cupon.vence >= hoyColombia())
+      && (cupon.usos_max == null || cupon.usos < cupon.usos_max);
+    descuento = vigente ? descuentoCupon(cupon!, items, subtotal) : 0;
+    if (!descuento) return json({ ok: false, error: 'El cupón ya no es válido para este pedido', campo: 'cupon' }, 422);
+  }
+
+  // Envío: gratis desde el mínimo (en productos, ya con descuento); si no, la tarifa de la ciudad,
+  // la del departamento o la normal (mismo orden que tarifaEnvio en assets/js/tienda.js).
+  const a = ajustes!;
+  const porCiudad = ((a.envio_ciudades ?? {}) as Record<string, number>)[departamento + '|' + ciudad];
+  const porDepartamento = ((a.envio_departamentos ?? {}) as Record<string, number>)[departamento];
+  const productosNeto = subtotal - descuento;
+  const envio = productosNeto >= a.envio_gratis_desde ? 0 : Number(porCiudad ?? porDepartamento ?? a.envio_base);
+  const valorPrioritario = prioritario ? a.prioritario : 0;
+  const total = productosNeto + envio + valorPrioritario;
 
   // Idempotencia: si el mismo event_id ya llegó (doble clic o reintento), se devuelve ese pedido.
   const { data: existente } = await supabase.from('pedidos').select('order_id, total').eq('event_id', eventId).maybeSingle();
@@ -187,25 +278,43 @@ Deno.serve(async (req) => {
     }
   }
 
+  const resumen = items.map((i) => `${i.cantidad} × ${i.nombre}`).join(' + ');
   const fila = {
     ip_hash: ipHash,
     event_id: eventId,
     nombre, cedula, celular, direccion, barrio, ciudad, departamento,
     indicaciones: indicaciones || null,
-    cantidad, prioritario: conPrioritario, total,
-    oferta: oferta!.slug,
-    producto: oferta!.producto_nombre,
+    cantidad: unidades,
+    prioritario: prioritario,
+    items,
+    subtotal,
+    descuento,
+    cupon: descuento ? cupon!.codigo : null,
+    envio_cobrado: envio,
+    costo_productos: costoProductos,
+    total,
+    producto: resumen.slice(0, 300),
     para_quien: paraQuien,
     utm_source: texto(b.utm_source, 120) || null,
+    utm_medium: texto(b.utm_medium, 120) || null,
     utm_campaign: texto(b.utm_campaign, 200) || null,
+    utm_content: texto(b.utm_content, 120) || null,
+    utm_term: texto(b.utm_term, 200) || null,
     fbclid: texto(b.fbclid, 500) || null,
   };
 
   let orderId = '';
-  for (let intento = 0; intento < 4 && !orderId; intento++) {
+  let filaFinal: Record<string, unknown> = fila;
+  for (let intento = 0; intento < 5 && !orderId; intento++) {
     const candidato = generarOrderId();
-    const { error } = await supabase.from('pedidos').insert({ ...fila, order_id: candidato });
+    const { error } = await supabase.from('pedidos').insert({ ...filaFinal, order_id: candidato });
     if (!error) orderId = candidato;
+    else if (error.code === 'PGRST204') {
+      // Falta una columna (migración 009 sin correr): se guarda el pedido sin los datos del anuncio.
+      console.warn('pedidos sin columnas utm nuevas', error.message);
+      const { utm_medium: _m, utm_content: _c, utm_term: _t, ...resto } = fila;
+      filaFinal = resto;
+    }
     else if (error.code === '23505' && String(error.message).includes('event_id')) {
       const { data } = await supabase.from('pedidos').select('order_id, total').eq('event_id', eventId).single();
       return json({ ok: true, order_id: data?.order_id, total: data?.total });
@@ -216,6 +325,11 @@ Deno.serve(async (req) => {
   }
   if (!orderId) return json({ ok: false, error: 'No pudimos generar el número de pedido' }, 500);
 
+  if (descuento) {
+    const { error } = await supabase.from('cupones').update({ usos: cupon!.usos + 1 }).eq('codigo', cupon!.codigo);
+    if (error) console.error('cupon usos', error);
+  }
+
   const extra = {
     fbp: texto(b.fbp, 200),
     fbc: texto(b.fbc, 600),
@@ -224,9 +338,18 @@ Deno.serve(async (req) => {
     url: texto(b.event_source_url, 500),
   };
   // Meta no debe frenar la respuesta al cliente si tarda o falla.
-  const meta = enviarAMeta({ ...fila, order_id: orderId, producto_id: oferta!.producto_id }, extra).catch((e) => console.error('Meta', e));
+  const meta = enviarAMeta({ ...fila, order_id: orderId }, extra).catch((e) => console.error('Meta', e));
   // @ts-ignore EdgeRuntime existe en Supabase
   if (typeof EdgeRuntime !== 'undefined') EdgeRuntime.waitUntil(meta); else await meta;
 
-  return json({ ok: true, order_id: orderId, total, producto: oferta!.producto_nombre });
+  return json({
+    ok: true,
+    order_id: orderId,
+    total,
+    subtotal,
+    descuento,
+    envio,
+    prioritario: valorPrioritario,
+    items: items.map(({ costo: _costo, ...i }) => i),
+  });
 });

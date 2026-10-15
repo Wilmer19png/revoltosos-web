@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Codornices deshidratadas para perros y gatos · Revoltosos</title>
-<meta name="description" content="Snacks de codorniz 100 % natural, deshidratada lentamente. Sin conservantes, sin sal, sin colorantes. Envío gratis a toda Colombia y pagas al recibir.">
+<title>Revoltosos · Snacks 100 % naturales para perros y gatos</title>
+<meta name="description" content="Codornices, patas, orejas y fémur deshidratados. Un solo ingrediente: sin sal, sin conservantes, sin colorantes. Envío gratis desde $70.000 y pagas al recibir.">
 <meta name="theme-color" content="#C2185B">
 <link rel="icon" href="/assets/img/logo.jpg">
 <link rel="apple-touch-icon" href="/assets/img/logo.jpg">
 <link rel="canonical" href="https://revoltosos.netlify.app/">
 
-<meta property="og:type" content="product">
+<meta property="og:type" content="website">
 <meta property="og:locale" content="es_CO">
 <meta property="og:site_name" content="Revoltosos">
 <meta property="og:url" content="https://revoltosos.netlify.app/">
-<meta property="og:title" content="Codornices deshidratadas · Revoltosos">
-<meta property="og:description" content="100 % codorniz, sin conservantes. Envío gratis a toda Colombia y pagas al recibir.">
+<meta property="og:title" content="Revoltosos · Snacks 100 % naturales">
+<meta property="og:description" content="Un solo ingrediente. Envío gratis desde $70.000 y pagas al recibir.">
 <meta property="og:image" content="https://revoltosos.netlify.app/assets/img/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -24,44 +24,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700;800&display=swap">
-<link rel="preload" as="image" href="/assets/img/frascos2-600.jpg?v=2" imagesrcset="/assets/img/frascos2-600.jpg?v=2 600w, /assets/img/frascos2-1000.jpg?v=2 1000w" imagesizes="(min-width: 860px) 520px, 90vw">
+<link rel="preload" as="image" href="/assets/img/productos/codornices-frasco-100g-600.jpg" imagesrcset="/assets/img/productos/codornices-frasco-100g-600.jpg 600w, /assets/img/productos/codornices-frasco-100g.jpg 1000w" imagesizes="(min-width: 860px) 520px, 90vw">
 <link rel="stylesheet" href="/assets/css/landing.css?v=6">
+<link rel="stylesheet" href="/assets/css/tienda.css?v=6">
 
 <script>
-  // Variantes de esta landing. La dirección decide cuál se muestra:
-  //   /                      → codornices-promo  (1 frasco o promo de 2)
-  //   /codornices/unidad/    → codornices-unidad (solo 1 frasco, oculta, para pruebas)
-  // Los precios deben coincidir con la tabla `ofertas` de Supabase.
-  (function () {
-    var q = new URLSearchParams(location.search).get('oferta');
-    var unidad = /^\/codornices\/unidad/.test(location.pathname) || q === 'unidad';
-    var comun = {
-      productoId: 'codorniz-50g',
-      producto: 'Codornices deshidratadas 50 g',
-      unidad: ['frasco', 'frascos'],
-      reviews: [
-        // { nombre: 'Laura', ciudad: 'Manizales', texto: '...', foto: '/assets/img/resenas/laura.jpg' }
-      ],
-      videos: [
-        { src: '/assets/video/cliente-1.mp4', alt: 'Perro de un cliente comiendo codorniz Revoltosos' },
-        { src: '/assets/video/cliente-2.mp4', alt: 'Perro de un cliente comiendo codorniz Revoltosos' },
-        { src: '/assets/video/cliente-3.mp4', alt: 'Perro de un cliente comiendo codorniz Revoltosos' }
-      ]
-    };
-    window.PAGINA = Object.assign(comun, unidad ? {
-      oferta: 'codornices-unidad',
-      precios: { 1: 14900 },
-      cantidadInicial: 1,
-      cinta: ['Envío GRATIS a toda Colombia', 'Pagas al recibir', '100 % natural', 'Hecho en Colombia']
-    } : {
-      oferta: 'codornices-promo',
-      precios: { 1: 14900, 2: 26900 },
-      cantidadInicial: 2,
-      cinta: ['Envío GRATIS a toda Colombia', 'Pagas al recibir', '100 % natural', 'Hecho en Colombia', 'Promo: 2 frascos por $26.900']
-    });
-    document.documentElement.setAttribute('data-oferta', window.PAGINA.oferta);
-    try { if (sessionStorage.getItem('rv-visto')) document.documentElement.classList.add('sin-carga'); } catch (e) {}
-  })();
+  window.PAGINA = { tipo: 'inicio' };
+  try { if (sessionStorage.getItem('rv-visto')) document.documentElement.classList.add('sin-carga'); } catch (e) {}
 </script>
 <noscript><style>#cargando{display:none}</style></noscript>
 </head>
@@ -103,483 +72,243 @@
 
 <!-- Íconos reutilizables -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="i-frasco" viewBox="0 0 34 44"><g fill="none" stroke="#2A231D" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="22" height="7" rx="2" fill="#F2C230"/><path d="M9 9.5v3M25 9.5v3"/><path d="M5 16c0-2 1.5-3.5 3.5-3.5h17c2 0 3.5 1.5 3.5 3.5v21.5c0 2.5-2 4-4.5 4h-15C7 41.5 5 40 5 37.5z" fill="#FFFFFF"/><rect x="8.5" y="21" width="17" height="11" rx="1.5" fill="#12110F" stroke="none"/><path d="M10 36.5c3-1.5 5 1 7.5-.5s4.5 1 6.5-.5" stroke="#8B4A1F"/></g></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="i-camion" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v9H3z"/><path d="M14 9h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></g></symbol>
-  <symbol id="i-billete" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6.5 9.5v5M17.5 9.5v5"/></g></symbol>
-  <symbol id="i-hoja" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14z"/><path d="M5 19l8-8"/></g></symbol>
+  <symbol id="i-camion" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/></g></symbol>
+  <symbol id="i-casa" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></g></symbol>
+  <symbol id="i-hoja" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14z"/><path d="M5 19l8-8"/></g></symbol>
+  <symbol id="i-bolsa" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 11.1a2 2 0 0 1-2 1.9H8.2a2 2 0 0 1-2-1.9z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></g></symbol>
   <symbol id="i-whatsapp" viewBox="0 0 24 24"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></symbol>
-  <symbol id="i-estrella" viewBox="0 0 10 10"><path d="M5 0l1.2 3.8L10 5 6.2 6.2 5 10 3.8 6.2 0 5l3.8-1.2z" fill="currentColor"/></symbol>
+  <symbol id="i-wa-lleno" viewBox="0 0 24 24"><path d="M4 20l1.3-3.8A8 8 0 1 1 8 19z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.5 9.5c.3 1.8 2.2 3.8 4 4.2l1.2-1.1 1.8.8-.4 1.6c-3.5.3-7.4-3.4-7.3-7l1.6-.4.8 1.8z" fill="currentColor"/></symbol>
+  <symbol id="i-flecha" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-mas" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="#C2185B" stroke-width="2" stroke-linecap="round"/></symbol>
   <symbol id="i-ant" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-sig" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="i-mas" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="#C2185B" stroke-width="2" stroke-linecap="round"/></symbol>
 </svg>
 
-<div id="landing">
+<div class="anuncio">Envío <b>GRATIS</b> desde <span data-envio-gratis-desde>$70.000</span> · Pagas al recibir en casa</div>
 
-  <div class="cinta">
-    <p class="oculto">Envío gratis a toda Colombia. Pagas al recibir. 100 % natural. Hecho en Colombia.</p>
-    <div class="cinta-pista" aria-hidden="true" id="cinta"></div>
-  </div>
-
-  <main>
-    <!-- Hero -->
-    <section class="hero" id="inicio">
-      <div class="contenedor">
-        <div class="hero-logo"><img src="/assets/img/logo.jpg" width="150" height="150" alt="Revoltosos — proteína 100 % natural"></div>
-        <div class="hero-grid">
-          <div class="hero-foto">
-            <img id="hero-img" src="/assets/img/frascos2-600.jpg?v=2" srcset="/assets/img/frascos2-600.jpg?v=2 600w, /assets/img/frascos2-1000.jpg?v=2 1000w" sizes="(min-width: 860px) 520px, 90vw" width="1000" height="1000" fetchpriority="high" alt="Dos frascos de codornices deshidratadas Revoltosos de 50 g, uno abierto con codornices saltando">
-            <script>
-              // La variante de 1 frasco muestra la foto de un solo frasco.
-              if (document.documentElement.getAttribute('data-oferta') === 'codornices-unidad') {
-                var h = document.getElementById('hero-img');
-                h.srcset = '/assets/img/frasco-600.jpg?v=2 600w, /assets/img/frasco-1000.jpg?v=2 1000w';
-                h.src = '/assets/img/frasco-600.jpg?v=2';
-                h.alt = 'Frasco abierto de codornices deshidratadas Revoltosos de 50 g, con codornices saltando';
-              }
-            </script>
-          </div>
-          <div class="hero-texto">
-            <h1>Codornices deshidratadas</h1>
-            <p class="hero-frase">El premio que tu perro va a pedir todos los días.</p>
-            <p class="hero-desc">Codorniz 100 % natural, deshidratada lentamente. Sin conservantes, sin sal, sin colorantes. Solo codorniz.</p>
-
-            <div class="etiqueta">
-              <div class="etiqueta-fila">
-                <span class="etiqueta-producto"><svg width="24" height="31" aria-hidden="true"><use href="#i-frasco"/></svg>1 frasco de 50 g</span>
-                <span class="etiqueta-precio" data-precio="1">$14.900</span>
-              </div>
-              <p class="etiqueta-nota">Aprox. 30 unidades por frasco</p>
-              <div class="promo solo-promo">
-                <span class="promo-izq">
-                  <span class="frascos" aria-hidden="true"><svg width="26" height="34"><use href="#i-frasco"/></svg><svg width="26" height="34"><use href="#i-frasco"/></svg></span>
-                  <span class="promo-texto"><strong>PROMO</strong><span>Lleva 2 frascos</span></span>
-                </span>
-                <span class="promo-der"><span data-precio="2">$26.900</span><span>Ahorras <span data-ahorro>$2.900</span></span></span>
-              </div>
-              <hr class="perforado">
-              <div class="etiqueta-envio">
-                <div>
-                  <span>Envío: <s class="tachado">$12.000</s> <strong class="gratis">GRATIS</strong></span>
-                  <span>Pagas: <strong>al recibir en tu casa</strong></span>
-                </div>
-                <div class="sello" aria-hidden="true">PAGO<br>CONTRA<br>ENTREGA</div>
-              </div>
-            </div>
-
-            <a href="#pedido" class="btn" data-cta="hero">Pedir ahora — Pagar al recibir</a>
-
-            <div class="sellos">
-              <span><svg width="18" height="18" aria-hidden="true"><use href="#i-camion"/></svg>Envío gratis</span>
-              <span><svg width="18" height="18" aria-hidden="true"><use href="#i-billete"/></svg>Contraentrega</span>
-              <span><svg width="18" height="18" aria-hidden="true"><use href="#i-hoja"/></svg>100 % natural</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Envío gratis, bien grande -->
-    <section class="envio" aria-labelledby="t-envio">
-      <div class="contenedor envio-grid">
-        <svg class="envio-icono" width="64" height="64" aria-hidden="true"><use href="#i-camion"/></svg>
-        <div>
-          <h2 id="t-envio" class="envio-titulo">Envío GRATIS a toda Colombia</h2>
-          <p class="envio-texto">Desde 1 frasco, sin mínimo de compra. Llega a tu puerta y pagas cuando lo recibes.</p>
-        </div>
-        <ul class="envio-puntos">
-          <li><svg width="22" height="22" aria-hidden="true"><use href="#i-check"/></svg>Cualquier ciudad o municipio</li>
-          <li><svg width="22" height="22" aria-hidden="true"><use href="#i-check"/></svg>$0 de envío</li>
-          <li><svg width="22" height="22" aria-hidden="true"><use href="#i-check"/></svg>Pago contraentrega</li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- Anatomía del snack -->
-    <section class="seccion" aria-labelledby="t-anatomia">
-      <div class="contenedor anatomia-grid">
-        <div class="anatomia-foto">
-          <img src="/assets/img/anatomia.jpg" width="900" height="900" loading="lazy" alt="Una codorniz deshidratada Revoltosos sobre papel artesanal: se ven la carne, la piel y las patas con el hueso">
-          <span class="punto" style="left: 50%; top: 47%" aria-hidden="true">1</span>
-          <span class="punto" style="left: 39%; top: 62%" aria-hidden="true">2</span>
-          <span class="punto" style="left: 66%; top: 36%" aria-hidden="true">3</span>
-        </div>
-        <div>
-          <h2 class="titulo" id="t-anatomia">Anatomía del snack</h2>
-          <p class="bajada" style="margin: 8px 0 22px">Así luce una codorniz Revoltosos de cerca. Lo que ves es todo lo que tiene.</p>
-          <ol class="lista-num">
-            <li><span class="num">1</span><div><strong>Carne magra</strong><span>Proteína de verdad, sin rellenos ni harinas.</span></div></li>
-            <li><span class="num">2</span><div><strong>Hueso deshidratado</strong><span>Aporta calcio, fósforo y zinc de forma natural.</span></div></li>
-            <li><span class="num">3</span><div><strong>Piel</strong><span>El sabor y el olor que los vuelve locos.</span></div></li>
-            <li><span class="num">4</span><div><strong>Tamaño</strong><span>Aprox. 30 unidades por frasco de 50 g.</span></div></li>
-          </ol>
-          <a href="#pedido" class="btn btn--ancho" style="margin-top: 22px" data-cta="anatomia">Pedir ahora — Pagar al recibir</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Sí, son feítas (voz de la marca, no es una reseña) -->
-    <section class="seccion feitas" aria-labelledby="t-feitas">
-      <div class="contenedor">
-        <h2 class="feitas-frase" id="t-feitas">Sí, son feítas.<br><span>A tu perro no le importa.</span></h2>
-        <p>Son codornices de verdad, deshidratadas enteras y sin colorantes que las hagan ver bonitas. Por eso se ven así, y por eso les encantan.</p>
-      </div>
-    </section>
-
-    <!-- Videos de clientes -->
-    <section class="seccion" id="videos" aria-labelledby="t-videos" hidden style="background: var(--hueso-2)">
-      <div class="contenedor">
-        <h2 class="titulo" id="t-videos">Míralos tú mismo</h2>
-        <p class="bajada" style="margin: 6px 0 22px">Perritos de nuestros clientes probando la codorniz.</p>
-        <div class="pista" id="videos-lista"></div>
-        <div class="carrusel-nav" data-para="videos-lista" hidden>
-          <button type="button" class="carrusel-btn" aria-label="Video anterior"><svg width="20" height="20" aria-hidden="true"><use href="#i-ant"/></svg></button>
-          <div class="carrusel-puntos" aria-hidden="true"></div>
-          <button type="button" class="carrusel-btn" aria-label="Siguiente video"><svg width="20" height="20" aria-hidden="true"><use href="#i-sig"/></svg></button>
-        </div>
-        <a href="#pedido" class="btn btn--ancho" style="margin-top: 18px" data-cta="videos">Pedir ahora — Pagar al recibir</a>
-      </div>
-    </section>
-
-    <!-- Así llega a tu casa -->
-    <section class="seccion" aria-labelledby="t-llega">
-      <div class="contenedor">
-        <h2 class="titulo" id="t-llega">Así llega a tu casa</h2>
-        <p class="bajada" style="margin: 6px 0 20px">Bien sellado, con su etiqueta y listo para premiar.</p>
-        <div class="pista pista--foto" id="pista-llega">
-          <figure><img src="/assets/img/productos/codornices-empaque-frascos.jpg" width="750" height="1000" loading="lazy" alt="Dos frascos de codornices Revoltosos con tapa amarilla sobre una mesa de madera"><figcaption>Frasco de 50 g</figcaption></figure>
-          <figure><video data-src="/assets/video/llegan-video-1.mp4" aria-label="Video de un pedido Revoltosos recién llegado"></video><figcaption>Recién llegado</figcaption></figure>
-          <figure><img src="/assets/img/productos/frasco-100g-y-bolsas.jpg" width="600" height="800" loading="lazy" alt="Mano sosteniendo un frasco Revoltosos, con bolsas kraft de codornices detrás"><figcaption>Frasco y bolsa</figcaption></figure>
-          <figure><video data-src="/assets/video/llegan-video-2.mp4" aria-label="Video mostrando los empaques de codornices Revoltosos"></video><figcaption>Míralo de cerca</figcaption></figure>
-          <figure><img src="/assets/img/productos/codornicitas-producto.jpg" width="1000" height="1000" loading="lazy" alt="Codornicitas deshidratadas sueltas"><figcaption>Así son por dentro</figcaption></figure>
-        </div>
-        <div class="carrusel-nav" data-para="pista-llega" hidden>
-          <button type="button" class="carrusel-btn" aria-label="Foto anterior"><svg width="20" height="20" aria-hidden="true"><use href="#i-ant"/></svg></button>
-          <div class="carrusel-puntos" aria-hidden="true"></div>
-          <button type="button" class="carrusel-btn" aria-label="Siguiente foto"><svg width="20" height="20" aria-hidden="true"><use href="#i-sig"/></svg></button>
-        </div>
-        <div class="sellos-llega">
-          <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Bien sellado</span>
-          <span><svg width="18" height="18" aria-hidden="true"><use href="#i-camion"/></svg>Envío gratis</span>
-          <span><svg width="18" height="18" aria-hidden="true"><use href="#i-billete"/></svg>Pagas al recibir</span>
-        </div>
-
-        <div class="disfrutan">
-          <h3>Y así lo disfrutan</h3>
-          <p class="bajada" style="margin: 6px 0 18px">Los peludos de nuestros clientes con sus snacks Revoltosos.</p>
-          <div class="pista pista--duenos" id="pista-duenos">
-            <figure><img src="/assets/img/productos/cliente-golden-bolsa.jpg" width="600" height="800" loading="lazy" alt="Golden retriever con una bolsa de codorniz Revoltosos en la boca"></figure>
-            <figure><img src="/assets/img/productos/cliente-perro-blanco-bolsas.jpg" width="600" height="800" loading="lazy" alt="Perro blanco sonriendo junto a dos bolsas de codorniz Revoltosos"></figure>
-            <figure><img src="/assets/img/productos/cliente-bulldog-bolsas.jpg" width="450" height="800" loading="lazy" alt="Bulldog francés blanco junto a sus bolsas de snacks Revoltosos"></figure>
-          </div>
-          <div class="carrusel-nav" data-para="pista-duenos" hidden>
-            <button type="button" class="carrusel-btn" aria-label="Foto anterior"><svg width="20" height="20" aria-hidden="true"><use href="#i-ant"/></svg></button>
-            <div class="carrusel-puntos" aria-hidden="true"></div>
-            <button type="button" class="carrusel-btn" aria-label="Siguiente foto"><svg width="20" height="20" aria-hidden="true"><use href="#i-sig"/></svg></button>
-          </div>
-        </div>
-        <a href="#pedido" class="btn btn--ancho" style="margin-top: 24px" data-cta="llega">Pedir el mío — Pagar al recibir</a>
-      </div>
-    </section>
-
-    <!-- Beneficios -->
-    <section class="seccion beneficios" aria-labelledby="t-beneficios">
-      <div class="contenedor">
-        <h2 class="titulo" id="t-beneficios" style="font-size: clamp(32px, 4.4vw, 54px); max-width: 15em">Un solo ingrediente. Todo lo que necesita.</h2>
-        <p class="bajada">Codorniz entera, con carne y hueso, deshidratada despacio para que conserve lo bueno.</p>
-        <div class="beneficios-grid">
-          <div class="beneficio"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.5 3.5a5 5 0 0 1 0 7.1l-2.8 2.8-4.1-4.1 2.8-2.8a5 5 0 0 1 4.1-3z"/><path d="M8.6 9.3L5 12.9a1.6 1.6 0 1 0 2.3 2.3 1.6 1.6 0 1 0 2.3 2.3l3.6-3.6"/></svg><div><h3>Proteína de verdad</h3><p>Un solo ingrediente: codorniz entera. Carne magra con mucha proteína.</p></div></div>
-          <div class="beneficio"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M18 6l-2.5 2.5M8.5 15.5L6 18"/></svg><div><h3>Proteína novedosa</h3><p>Una buena opción si tu mascota no se lleva bien con el pollo o la res.</p></div></div>
-          <div class="beneficio"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 7l8 8"/><circle cx="6.5" cy="7.5" r="2.2"/><circle cx="8.5" cy="5" r="2.2"/><circle cx="15.5" cy="19" r="2.2"/><circle cx="18" cy="16.5" r="2.2"/></svg><div><h3>Calcio y fósforo naturales</h3><p>Como incluye el hueso, aporta minerales como calcio, fósforo y zinc.</p></div></div>
-          <div class="beneficio"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4c-2.5 0-3.5 2.5-3 5 .6 3 1.7 4 2 7 .3 2.5 1 4 2 4s1.5-2 2-4.5c.3-1.5 1-1.5 2 0s1.5 4.5 2 4.5c1 0 1.7-1.5 2-4 .3-3 1.4-4 2-7 .5-2.5-.5-5-3-5-2 0-3 1-5 1s-3-1-5-1z"/></svg><div><h3>Dientes más limpios</h3><p>Masticarla ayuda a reducir placa y sarro, y mejora el aliento.</p></div></div>
-          <div class="beneficio"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg><div><h3>Menos ansiedad, menos destrozos</h3><p>Masticar los calma, los entretiene y satisface su instinto natural.</p></div></div>
-          <div class="beneficio"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M6 6l12 12"/></svg><div><h3>Sin aditivos</h3><p>Sin conservantes, sin sal añadida, sin colorantes.</p></div></div>
-          <div class="beneficio"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="7" width="12" height="13" rx="2.5"/><path d="M8 4h8v3H8z"/></svg><div><h3>Larga duración</h3><p>Fácil de guardar. Ideal para premiar o entrenar.</p></div></div>
-        </div>
-        <div class="cta-fila">
-          <a href="#pedido" class="btn" data-cta="beneficios">Quiero probarla — Pagar al recibir</a>
-          <span class="cta-nota solo-promo">Promo: 2 frascos por <span data-precio="2">$26.900</span> · Envío gratis</span>
-          <span class="cta-nota solo-unidad"><span data-precio="1">$14.900</span> · Envío gratis · Pagas al recibir</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Para quién / Cómo darlo -->
-    <section class="seccion">
-      <div class="contenedor dos-col">
-        <div>
-          <h2 class="titulo" style="margin-bottom: 18px">¿Para quién es?</h2>
-          <ul class="chips">
-            <li>Perros de todas las razas y tamaños</li>
-            <li>Cachorros desde ~3 meses</li>
-            <li>Adultos</li>
-            <li>Seniors · en trozos pequeños</li>
-            <li>Razas pequeñas · en trozos</li>
-            <li>Gatos</li>
-          </ul>
-          <h3 class="subtitulo">Úsalo como</h3>
-          <ul class="chips chips--verde">
-            <li>Premio diario</li>
-            <li>Entrenamiento</li>
-            <li>Topper triturado sobre la comida</li>
-            <li>Enriquecimiento</li>
-          </ul>
-        </div>
-        <div>
-          <h2 class="titulo" style="margin-bottom: 18px">Cómo darlo</h2>
-          <ol class="pasos">
-            <li><span class="num">1</span><p><strong>Ofrécelo como premio:</strong> de 1 a 3 unidades al día, según el tamaño de tu mascota.</p></li>
-            <li><span class="num">2</span><p><strong>Siempre bajo supervisión</strong> y con agua fresca a la mano.</p></li>
-            <li><span class="num">3</span><p><strong>Guárdalo bien cerrado</strong> en un lugar fresco y seco.</p></li>
-          </ol>
-        </div>
-      </div>
-    </section>
-
-    <!-- Opiniones reales: salen de Supabase (tabla resenas, solo las Publicadas). Si no hay, la sección no aparece. -->
-    <section class="seccion" id="opiniones" aria-labelledby="t-opiniones" hidden style="background: var(--hueso-2)">
-      <div class="contenedor">
-        <h2 class="titulo" id="t-opiniones">Lo que dicen sus dueños</h2>
-        <p class="bajada" style="margin: 6px 0 20px">Opiniones de clientes que ya compraron, con su permiso.</p>
-        <div class="pista pista--resenas" id="pista-resenas"></div>
-        <div class="carrusel-nav" data-para="pista-resenas" data-tarde hidden>
-          <button type="button" class="carrusel-btn" aria-label="Opinión anterior"><svg width="20" height="20" aria-hidden="true"><use href="#i-ant"/></svg></button>
-          <div class="carrusel-puntos" aria-hidden="true"></div>
-          <button type="button" class="carrusel-btn" aria-label="Siguiente opinión"><svg width="20" height="20" aria-hidden="true"><use href="#i-sig"/></svg></button>
-        </div>
-        <p style="margin-top: 16px; text-align: center"><a href="/opina/" style="font-weight: 700; min-height: 44px; display: inline-flex; align-items: center">¿Ya lo probó tu peludo? Cuéntanos aquí</a></p>
-        <a href="#pedido" class="btn btn--ancho" style="margin: 12px auto 0" data-cta="opiniones">Pedir el mío — Pagar al recibir</a>
-      </div>
-    </section>
-
-    <!-- Cómo funciona -->
-    <section class="seccion" style="padding-bottom: clamp(28px, 4vw, 48px)">
-      <div class="contenedor">
-        <h2 class="titulo">Pedir es así de fácil</h2>
-        <ol class="flujo">
-          <li><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M8.5 8h7M8.5 12h7M8.5 16h4"/></svg><div><strong>Llenas el formulario</strong><span>Te toma unos 30 segundos.</span></div></li>
-          <li><svg width="28" height="28" aria-hidden="true"><use href="#i-whatsapp"/></svg><div><strong>Te escribimos por WhatsApp</strong><span>Para confirmar tus datos.</span></div></li>
-          <li><svg width="28" height="28" aria-hidden="true"><use href="#i-billete"/></svg><div><strong>Lo recibes y pagas ahí</strong><span>En la puerta de tu casa. Envío gratis.</span></div></li>
-        </ol>
-      </div>
-    </section>
-
-    <!-- Formulario -->
-    <section id="pedido" class="seccion" style="padding-top: clamp(28px, 4vw, 48px)">
-      <div class="contenedor pedido-grid">
-        <form class="form" id="form-pedido" novalidate>
-          <div>
-            <h2 class="titulo" style="font-size: clamp(30px, 3.6vw, 42px)">Haz tu pedido</h2>
-            <p class="bajada" style="margin-top: 4px">No pagas nada ahora. Envío gratis a toda Colombia.</p>
-          </div>
-
-          <fieldset class="solo-promo">
-            <legend>¿Cuántos frascos quieres?</legend>
-            <div class="paquetes">
-              <button type="button" class="paquete" data-qty="1" aria-pressed="false">
-                <span class="paquete-iconos" aria-hidden="true"><svg width="34" height="44"><use href="#i-frasco"/></svg></span>
-                <span class="paquete-nombre">1 frasco</span>
-                <span class="paquete-precio" data-precio="1">$14.900</span>
-                <span class="paquete-nota">Para probar</span>
-              </button>
-              <button type="button" class="paquete paquete--promo" data-qty="2" aria-pressed="true">
-                <span class="paquete-badge">PROMO</span>
-                <span class="paquete-iconos" aria-hidden="true"><svg width="34" height="44"><use href="#i-frasco"/></svg><svg width="34" height="44"><use href="#i-frasco"/></svg></span>
-                <span class="paquete-nombre">2 frascos</span>
-                <span class="paquete-precio" data-precio="2">$26.900</span>
-                <span class="paquete-nota">Ahorras <span data-ahorro>$2.900</span></span>
-              </button>
-            </div>
-          </fieldset>
-
-          <fieldset class="solo-unidad">
-            <legend>Tu pedido</legend>
-            <div class="paquetes paquetes--uno">
-              <div class="paquete paquete--fijo">
-                <span class="paquete-iconos" aria-hidden="true"><svg width="34" height="44"><use href="#i-frasco"/></svg></span>
-                <span style="display: flex; flex-direction: column; align-items: flex-start">
-                  <span class="paquete-nombre">1 frasco de 50 g</span>
-                  <span class="paquete-nota">Aprox. 30 unidades</span>
-                </span>
-                <span class="paquete-precio" data-precio="1" style="margin-left: auto">$14.900</span>
-              </div>
-            </div>
-          </fieldset>
-
-          <div class="form-seccion">
-            <h3>Datos para el envío</h3>
-            <p class="ayuda">La transportadora los necesita para entregarte el pedido.</p>
-          </div>
-          <div class="campo">
-            <label for="f-nombre">Tu nombre</label>
-            <input id="f-nombre" name="nombre" type="text" autocomplete="name" placeholder="Nombre y apellido" required maxlength="120" aria-describedby="e-nombre">
-            <span class="error" id="e-nombre"></span>
-          </div>
-          <div class="campo">
-            <label for="f-cedula">Cédula</label>
-            <input id="f-cedula" name="cedula" type="text" inputmode="numeric" placeholder="1234567890" required maxlength="14" aria-describedby="a-cedula e-cedula">
-            <span class="ayuda" id="a-cedula">Solo números, sin puntos.</span>
-            <span class="error" id="e-cedula"></span>
-          </div>
-          <div class="campo">
-            <label for="f-celular">Celular (WhatsApp)</label>
-            <input id="f-celular" name="celular" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="300 123 4567" required maxlength="16" aria-describedby="a-celular e-celular">
-            <span class="ayuda" id="a-celular">Por aquí te confirmamos el pedido.</span>
-            <span class="error" id="e-celular"></span>
-          </div>
-          <div class="campos-2">
-            <div class="campo">
-              <label for="f-direccion">Dirección</label>
-              <input id="f-direccion" name="direccion" type="text" autocomplete="address-line1" placeholder="Calle 2 #5-20" required maxlength="200" aria-describedby="e-direccion">
-              <span class="error" id="e-direccion"></span>
-            </div>
-            <div class="campo">
-              <label for="f-barrio">Barrio</label>
-              <input id="f-barrio" name="barrio" type="text" placeholder="Barrio La Sultana" required maxlength="120" aria-describedby="e-barrio">
-              <span class="error" id="e-barrio"></span>
-            </div>
-            <div class="campo">
-              <label for="f-departamento">Departamento</label>
-              <select id="f-departamento" name="departamento" autocomplete="address-level1" required aria-describedby="e-departamento">
-                <option value="">Elige tu departamento</option>
-                <option>Amazonas</option><option>Antioquia</option><option>Arauca</option><option>Atlántico</option><option>Bogotá D.C.</option><option>Bolívar</option><option>Boyacá</option><option>Caldas</option><option>Caquetá</option><option>Casanare</option><option>Cauca</option><option>Cesar</option><option>Chocó</option><option>Córdoba</option><option>Cundinamarca</option><option>Guainía</option><option>Guaviare</option><option>Huila</option><option>La Guajira</option><option>Magdalena</option><option>Meta</option><option>Nariño</option><option>Norte de Santander</option><option>Putumayo</option><option>Quindío</option><option>Risaralda</option><option>San Andrés y Providencia</option><option>Santander</option><option>Sucre</option><option>Tolima</option><option>Valle del Cauca</option><option>Vaupés</option><option>Vichada</option>
-              </select>
-              <span class="error" id="e-departamento"></span>
-            </div>
-            <div class="campo">
-              <label for="f-ciudad">Ciudad o municipio</label>
-              <select id="f-ciudad" name="ciudad" autocomplete="address-level2" required disabled aria-describedby="e-ciudad"><option value="">Primero elige el departamento</option></select>
-              <span class="error" id="e-ciudad"></span>
-            </div>
-          </div>
-          <div class="campo">
-            <label for="f-indicaciones">Indicaciones adicionales <small>(opcional)</small></label>
-            <input id="f-indicaciones" name="indicaciones" type="text" placeholder="Apto, torre, casa, punto de referencia" maxlength="300">
-          </div>
-
-          <fieldset>
-            <legend style="font-size: 15px; margin-bottom: 8px">¿Para quién es? <small style="font-weight: 500; color: var(--tinta-2); font-size: inherit">(opcional)</small></legend>
-            <div class="mascotas">
-              <button type="button" class="mascota" aria-pressed="false">Perro pequeño</button>
-              <button type="button" class="mascota" aria-pressed="false">Perro mediano</button>
-              <button type="button" class="mascota" aria-pressed="false">Perro grande</button>
-              <button type="button" class="mascota" aria-pressed="false">Gato</button>
-            </div>
-          </fieldset>
-
-          <label class="prioritario">
-            <input type="checkbox" id="f-prioritario" name="prioritario">
-            <span><strong>Envío prioritario: +<span data-prioritario>$5.000</span></strong><br><span>Despachamos tu pedido primero.</span></span>
-          </label>
-
-          <div class="resumen" aria-live="polite">
-            <div class="resumen-fila"><span>Subtotal (<span id="r-cantidad"></span>)</span><span id="r-subtotal"></span></div>
-            <div class="resumen-fila"><span>Envío</span><span><s class="tachado">$12.000</s> <strong class="gratis">GRATIS</strong></span></div>
-            <div class="resumen-fila" id="r-prio-fila" hidden><span>Envío prioritario</span><span data-prioritario>$5.000</span></div>
-            <hr class="perforado">
-            <div class="resumen-total"><strong>Total a pagar al recibir</strong><span id="r-total"></span></div>
-          </div>
-
-          <label class="acepto">
-            <input type="checkbox" id="f-acepto" name="acepto" required aria-describedby="e-acepto">
-            <span>Autorizo el tratamiento de mis datos para gestionar mi pedido, según la <a href="/privacidad.html" target="_blank" rel="noopener">política de datos</a> (Ley 1581 de 2012).</span>
-          </label>
-          <span class="error" id="e-acepto" style="margin-top: -10px"></span>
-
-          <div class="trampa" aria-hidden="true"><label for="f-empresa">Empresa</label><input id="f-empresa" name="empresa" type="text" tabindex="-1" autocomplete="off"></div>
-
-          <p class="form-error" id="form-error" role="alert" hidden></p>
-
-          <button type="submit" class="btn btn-pagar" id="btn-pagar">PAGAR AL RECIBIR</button>
-          <p class="seguro"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>No pagas nada ahora. Pagas cuando llegue a tu casa.</p>
-        </form>
-
-        <aside class="aparte" aria-label="Resumen de garantías">
-          <div class="aparte-producto">
-            <img src="/assets/img/frasco-thumb.jpg?v=2" width="200" height="200" alt="" loading="lazy" style="width: 72px; height: 72px">
-            <div><strong style="display: block">Codornices deshidratadas</strong><span style="color: var(--tinta-2)">50 g · aprox. 30 unidades</span></div>
-          </div>
-          <ul>
-            <li><svg width="22" height="22" aria-hidden="true"><use href="#i-check"/></svg>Envío gratis a cualquier ciudad o municipio</li>
-            <li><svg width="22" height="22" aria-hidden="true"><use href="#i-check"/></svg>Pagas en efectivo cuando lo recibes</li>
-            <li><svg width="22" height="22" aria-hidden="true"><use href="#i-check"/></svg>Te confirmamos por WhatsApp antes de despachar</li>
-          </ul>
-        </aside>
-      </div>
-    </section>
-
-    <!-- Preguntas frecuentes -->
-    <section class="seccion" style="background: var(--hueso-2)" aria-labelledby="t-faq">
-      <div class="contenedor faq">
-        <h2 class="titulo" id="t-faq" style="margin-bottom: 18px">Preguntas frecuentes</h2>
-        <details><summary>¿Cuánto tarda el envío?<svg width="20" height="20" aria-hidden="true"><use href="#i-mas"/></svg></summary><p>Depende de tu ciudad. Cuando te escribamos por WhatsApp para confirmar el pedido te decimos el tiempo exacto de entrega.</p></details>
-        <details><summary>¿De verdad el envío es gratis?<svg width="20" height="20" aria-hidden="true"><use href="#i-mas"/></svg></summary><p>Sí. El envío es gratis a toda Colombia, desde un solo frasco.</p></details>
-        <details><summary>¿Cómo pago?<svg width="20" height="20" aria-hidden="true"><use href="#i-mas"/></svg></summary><p>Pagas al recibir: le entregas el dinero a la transportadora cuando el pedido llega a tu casa. No pagas nada por adelantado.</p></details>
-        <details><summary>¿Le sirve a mi gato?<svg width="20" height="20" aria-hidden="true"><use href="#i-mas"/></svg></summary><p>Sí. Ofrécele trozos pequeños, siempre bajo supervisión y con agua fresca disponible.</p></details>
-        <details><summary>¿Cuántas le doy al día?<svg width="20" height="20" aria-hidden="true"><use href="#i-mas"/></svg></summary><p>De 1 a 3 unidades al día, según el tamaño de tu mascota. Es un premio, no reemplaza su comida.</p></details>
-        <details><summary>¿Cómo lo guardo una vez abierto?<svg width="20" height="20" aria-hidden="true"><use href="#i-mas"/></svg></summary><p>Bien cerrado, en un lugar fresco y seco, lejos del sol. Si tienes dudas sobre tu frasco, escríbenos por WhatsApp.</p></details>
-        <details><summary>¿Qué es el envío prioritario?<svg width="20" height="20" aria-hidden="true"><use href="#i-mas"/></svg></summary><p>Por <span data-prioritario>$5.000</span> adicionales despachamos tu pedido antes que los demás.</p></details>
-      </div>
-    </section>
-  </main>
-
-  <footer class="pie">
-    <div class="contenedor pie-grid">
-      <div class="pie-marca">
-        <span><img src="/assets/img/logo.jpg" width="150" height="150" alt="" loading="lazy"></span>
-        <span><strong>Revoltosos</strong><br><span style="font-size: 14px">Hecho en Colombia con amor</span></span>
-      </div>
-      <div class="pie-redes">
-        <a href="https://instagram.com/revoltosos.deshidratados" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.6"/></svg>@revoltosos.deshidratados</a>
-        <a href="https://wa.me/573122448276" target="_blank" rel="noopener"><svg width="18" height="18" aria-hidden="true"><use href="#i-whatsapp"/></svg>312 244 8276</a>
-      </div>
-      <div class="pie-legal">
-        <span>© <span data-anio>2026</span> Revoltosos</span>
-        <a href="/privacidad.html">Política de tratamiento de datos (Ley 1581 de 2012)</a>
-        <a href="/privacidad.html#terminos">Términos y condiciones</a>
-      </div>
-    </div>
-  </footer>
-
-  <div class="barra-fija" id="barra-fija">
-    <a href="#pedido" data-cta="barra">
-      <span>Pedir ahora</span>
-      <span>
-        <span class="solo-promo">2 por <span data-precio="2">$26.900</span></span>
-        <span class="solo-unidad" data-precio="1">$14.900</span>
-        <span>Pagas al recibir · Envío gratis</span>
-      </span>
+<header class="cab">
+  <div class="cab-fila">
+    <a class="cab-logo" href="/" aria-label="Revoltosos, inicio"><img src="/assets/img/logo.jpg" width="150" height="150" alt=""><span>Revoltosos</span></a>
+    <a class="btn-icono" href="#carrito" data-abrir-carrito aria-label="Abrir carrito">
+      <svg width="25" height="25" aria-hidden="true"><use href="#i-bolsa"/></svg>
+      <span class="contador-carrito" data-contador data-n="0">0</span>
     </a>
   </div>
-</div>
+  <nav class="cab-nav" aria-label="Secciones">
+    <a href="/" aria-current="page">Tienda</a>
+    <a href="/productos/">Productos</a>
+    <a href="/combos/">Combos</a>
+    <a href="/codornices/">Codornices</a>
+    <a href="/cajita/">Cajita</a>
+    <a href="#beneficios">Beneficios</a>
+    <a href="#preguntas">Preguntas</a>
+  </nav>
+  <div class="envio-barra" data-envio-barra></div>
+</header>
 
-<!-- Pantalla de gracias -->
-<section id="gracias" hidden aria-labelledby="t-gracias">
-  <div class="gracias-caja">
-    <img src="/assets/img/logo.jpg" width="64" height="64" alt="Revoltosos" style="margin: 0 auto">
-    <span class="gracias-check"><svg width="30" height="30" aria-hidden="true"><use href="#i-check"/></svg></span>
-    <h1 id="t-gracias" tabindex="-1">¡Recibimos tu pedido!</h1>
-    <p>Te escribiremos por WhatsApp en breve para confirmar tus datos y despacharlo.</p>
-    <div class="resumen">
-      <div class="resumen-fila" style="font-size: 15px"><span style="color: var(--tinta-2)">Pedido</span><strong id="g-orden" style="font-variant-numeric: tabular-nums"></strong></div>
-      <hr class="perforado">
-      <div class="resumen-fila"><span id="g-cantidad"></span><span id="g-subtotal"></span></div>
-      <div class="resumen-fila"><span>Envío</span><strong class="gratis">GRATIS</strong></div>
-      <div class="resumen-fila" id="g-prio-fila" hidden><span>Envío prioritario</span><span data-prioritario>$5.000</span></div>
-      <hr class="perforado">
-      <div class="resumen-total"><strong>Pagas al recibir</strong><span id="g-total"></span></div>
-      <p id="g-direccion" style="margin-top: 12px; font-size: 14px; color: var(--tinta-2)"></p>
+<main>
+  <!-- Hero -->
+  <section class="hero-t" data-oculta-barra>
+    <div class="contenedor hero-t-grid">
+      <div class="hero-t-foto">
+        <img src="/assets/img/productos/codornices-frasco-100g-600.jpg" srcset="/assets/img/productos/codornices-frasco-100g-600.jpg 600w, /assets/img/productos/codornices-frasco-100g.jpg 1000w" sizes="(min-width: 860px) 520px, 90vw" width="1000" height="1000" fetchpriority="high" alt="Frasco de 100 g de codornices deshidratadas Revoltosos, abierto con codornices saliendo">
+        <div class="sello-gira" aria-hidden="true">
+          <svg class="anillo" width="92" height="92" viewBox="0 0 150 150"><defs><path id="rv-circulo" d="M75 75m-58 0a58 58 0 1 1 116 0a58 58 0 1 1-116 0"/></defs><circle cx="75" cy="75" r="73" fill="#C2185B"/><text fill="#FFFFFF" font-family="Figtree, sans-serif" font-size="13" font-weight="800" letter-spacing="2.6"><textPath href="#rv-circulo">PAGAS AL RECIBIR • SIN TARJETA • EN TU CASA •</textPath></text></svg>
+          <span><svg width="24" height="24"><use href="#i-casa"/></svg></span>
+        </div>
+      </div>
+      <div class="hero-t-texto">
+        <span class="chip-verde">Snacks 100 % naturales</span>
+        <h1>El premio que tu perro va a pedir todos los días</h1>
+        <p class="bajada">Codorniz, patas, orejas y fémur deshidratados lentamente. Un solo ingrediente: sin sal, sin conservantes, sin colorantes.</p>
+        <div class="prueba-social" data-prueba-social role="status" aria-live="polite" hidden></div>
+        <a href="#catalogo" class="btn rv-pulso" style="min-height: 60px; font-size: 19px">Ver los snacks<svg width="22" height="22" aria-hidden="true"><use href="#i-flecha"/></svg></a>
+        <div class="garantias">
+          <div><svg width="22" height="22" aria-hidden="true"><use href="#i-casa"/></svg>Pagas al recibir</div>
+          <div><svg width="22" height="22" aria-hidden="true"><use href="#i-camion"/></svg>Gratis desde <span data-envio-gratis-desde>$70.000</span></div>
+          <div><svg width="22" height="22" aria-hidden="true"><use href="#i-hoja"/></svg>100 % natural</div>
+        </div>
+      </div>
     </div>
-    <a class="btn btn--verde" id="g-whatsapp" href="https://wa.me/573122448276" target="_blank" rel="noopener"><svg width="20" height="20" aria-hidden="true"><use href="#i-whatsapp"/></svg>Escríbenos por WhatsApp</a>
+  </section>
+
+  <!-- Carrusel: todos los snacks deslizándose -->
+  <section style="padding: 36px 0 0" aria-labelledby="t-slider" hidden>
+    <div class="contenedor"><p class="antetitulo" id="t-slider" style="margin-bottom: 12px">Todos nuestros snacks · toca uno para verlo</p></div>
+    <div class="slider"><div class="slider-pista" id="slider-pista"></div></div>
+  </section>
+
+  <!-- Catálogo -->
+  <section class="seccion-t" id="catalogo" aria-labelledby="t-catalogo">
+    <div class="contenedor">
+      <div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 8px 16px; margin-bottom: 16px">
+        <h2 class="titulo-sec" id="t-catalogo">Nuestros snacks</h2>
+        <div style="display: flex; gap: 16px; font-weight: 700">
+          <a href="/combos/" style="min-height: 44px; display: inline-flex; align-items: center">Ver combos</a>
+          <a href="/productos/" style="min-height: 44px; display: inline-flex; align-items: center">Ver todos →</a>
+        </div>
+      </div>
+      <div class="filtro-cat" id="filtro-cat" role="group" aria-label="Filtrar por tipo" hidden></div>
+      <div class="catalogo" id="catalogo-lista"></div>
+    </div>
+  </section>
+
+  <!-- Entre más pides, más ahorras -->
+  <section style="padding: 0 0 40px" aria-labelledby="t-escalones" hidden>
+    <div class="contenedor">
+      <div class="escalones">
+        <p class="antetitulo" style="color: var(--rosa)">Precio de promoción</p>
+        <h2 class="titulo-sec" id="t-escalones" style="font-size: clamp(28px, 4vw, 40px); margin-top: 4px">Entre más pides, más ahorras</h2>
+        <p class="bajada" style="margin-top: 6px">Patas de pollo · toca un paquete para agregarlo.</p>
+        <div class="escalones-lista" id="escalones-lista" data-producto="patas-pollo"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recordatorio de envío gratis -->
+  <section style="padding: 0 0 48px">
+    <div class="contenedor">
+      <div class="banda-verde">
+        <svg width="44" height="44" aria-hidden="true"><use href="#i-camion"/></svg>
+        <div>
+          <p>Agrega otro snack y el envío es totalmente gratis</p>
+          <p>En pedidos desde <span data-envio-gratis-desde>$70.000</span> no pagas envío a ninguna ciudad de Colombia.</p>
+        </div>
+        <button type="button" class="btn" data-abrir-carrito>Ver mi carrito</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Beneficios -->
+  <section class="seccion-t blanco" id="beneficios" aria-labelledby="t-beneficios">
+    <div class="contenedor">
+      <h2 class="titulo-sec" id="t-beneficios">Por qué un snack natural</h2>
+      <p class="bajada" style="margin: 6px 0 22px">Lo que tu perro se come, sin letra pequeña.</p>
+      <div class="tarjetas-b">
+        <div><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg><strong>Un solo ingrediente</strong><span>Codorniz es codorniz. Pata es pata. Nada más en el empaque.</span></div>
+        <div><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M6.5 6.5l11 11"/></svg><strong>Sin sal ni conservantes</strong><span>Tampoco colorantes ni saborizantes.</span></div>
+        <div><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c3 3 5 6 5 9a5 5 0 0 1-10 0c0-3 2-6 5-9z"/></svg><strong>Deshidratado lento</strong><span>A baja temperatura, para que conserve su sabor.</span></div>
+        <div><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 14c2-6 14-6 16 0"/><path d="M7 14v3M12 13v4M17 14v3"/></svg><strong>Lo mantiene entretenido</strong><span>Texturas para morder y masticar un buen rato.</span></div>
+      </div>
+      <div class="guia-tam">
+        <div><p>Razas pequeñas</p><p>Codornicitas y patas de pollo</p></div>
+        <div><p>Medianos y grandes</p><p>Fémur, húmero y oreja de cerdo</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pagas al recibir -->
+  <section class="seccion-t" aria-labelledby="t-pagas">
+    <div class="contenedor pagas">
+      <div>
+        <h2 class="titulo-sec" id="t-pagas">No pagas nada hoy</h2>
+        <p class="bajada" style="margin: 6px 0 22px">Pagas en efectivo cuando el pedido llega a tu puerta.</p>
+        <div class="pasos-pago">
+          <div><span class="ico"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M10 17h4"/></svg></span>Pides en 1 minuto</div>
+          <svg width="18" height="18" aria-hidden="true"><use href="#i-flecha"/></svg>
+          <div><span class="ico"><svg width="30" height="30" aria-hidden="true"><use href="#i-camion"/></svg></span>Te confirmamos y llega</div>
+          <svg width="18" height="18" aria-hidden="true"><use href="#i-flecha"/></svg>
+          <div><span class="ico"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="11" rx="2"/><circle cx="12" cy="12.5" r="2.5"/></svg></span>Ahí pagas</div>
+        </div>
+      </div>
+      <div style="text-align: center">
+        <span class="sello-goma"><span><small>REVOLTOSOS · GARANTIZADO</small><strong>Pagas al recibir</strong><em>Recibes, revisas y pagas</em></span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Aliados logísticos -->
+  <section class="seccion-t blanco aliados" aria-labelledby="t-aliados" style="padding: 40px 0">
+    <div class="contenedor">
+      <p class="antetitulo" id="t-aliados" style="color: var(--tinta-2)">Nuestros aliados logísticos</p>
+      <p style="margin-top: 6px">Llegamos a cualquier ciudad o municipio de Colombia.</p>
+      <div class="aliados-logos">
+        <div><img src="/assets/img/aliados/envia.png" width="551" height="297" alt="Envía" loading="lazy"></div>
+        <div class="oscuro"><img src="/assets/img/aliados/interrapidisimo.png" width="1200" height="340" alt="Interrapidísimo" loading="lazy"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ya los probaron -->
+  <section class="seccion-t" aria-labelledby="t-duenos">
+    <div class="contenedor">
+      <h2 class="titulo-sec" id="t-duenos">Ya los probaron</h2>
+      <p class="bajada" style="margin: 6px 0 18px">Los peludos de nuestros clientes con sus snacks Revoltosos.</p>
+      <div class="pista pista--duenos" id="pista-duenos">
+        <figure><img src="/assets/img/productos/cliente-golden-bolsa.jpg" width="600" height="800" loading="lazy" alt="Golden retriever con una bolsa de codorniz Revoltosos en la boca"></figure>
+        <figure><img src="/assets/img/productos/cliente-perro-blanco-bolsas.jpg" width="600" height="800" loading="lazy" alt="Perro blanco sonriendo junto a dos bolsas de codorniz Revoltosos"></figure>
+        <figure><img src="/assets/img/productos/cliente-bulldog-bolsas.jpg" width="450" height="800" loading="lazy" alt="Bulldog francés blanco junto a sus bolsas de snacks Revoltosos"></figure>
+      </div>
+      <div class="carrusel-nav" data-para="pista-duenos" hidden>
+        <button type="button" class="carrusel-btn" aria-label="Foto anterior"><svg width="20" height="20" aria-hidden="true"><use href="#i-ant"/></svg></button>
+        <div class="carrusel-puntos" aria-hidden="true"></div>
+        <button type="button" class="carrusel-btn" aria-label="Siguiente foto"><svg width="20" height="20" aria-hidden="true"><use href="#i-sig"/></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Opiniones reales (Supabase, solo las Publicadas). Si no hay, no aparece. -->
+  <section class="seccion-t" id="opiniones" aria-labelledby="t-opiniones" hidden style="background: var(--hueso-2)">
+    <div class="contenedor">
+      <h2 class="titulo-sec" id="t-opiniones">Lo que dicen sus dueños</h2>
+      <p class="bajada" style="margin: 6px 0 20px">Opiniones de clientes que ya compraron, con su permiso.</p>
+      <div class="pista pista--resenas" id="pista-resenas"></div>
+      <div class="carrusel-nav" data-para="pista-resenas" data-tarde hidden>
+        <button type="button" class="carrusel-btn" aria-label="Opinión anterior"><svg width="20" height="20" aria-hidden="true"><use href="#i-ant"/></svg></button>
+        <div class="carrusel-puntos" aria-hidden="true"></div>
+        <button type="button" class="carrusel-btn" aria-label="Siguiente opinión"><svg width="20" height="20" aria-hidden="true"><use href="#i-sig"/></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Preguntas frecuentes -->
+  <section class="seccion-t" id="preguntas" aria-labelledby="t-faq">
+    <div class="contenedor faq">
+      <h2 class="titulo-sec" id="t-faq" style="margin-bottom: 18px">Preguntas frecuentes</h2>
+      <details><summary>¿Cuánto cuesta el envío?<svg width="20" height="20" aria-hidden="true"><use href="#i-mas"/></svg></summary><p>Es gratis si tu pedido llega a <span data-envio-gratis-desde>$70.000</span> en productos. Si es menor, el valor depende de tu departamento y lo ves antes de confirmar el pedido.</p></details>
+      <details><summary>¿Cuánto tarda el envío?<svg width="20" height="20" aria-hidden="true"><use href="#i-mas"/></svg></summary><p>Depende de tu ciudad. Cuando te escribamos por WhatsApp para confirmar el pedido te decimos el tiempo de entrega.</p></details>
+      <details><summary>¿Cómo pago?<svg width="20" height="20" aria-hidden="true"><use href="#i-mas"/></svg></summary><p>Pagas al recibir: le entregas el dinero a la transportadora cuando el pedido llega a tu casa. No pagas nada por adelantado.</p></details>
+      <details><summary>¿Tengo un cupón, dónde lo uso?<svg width="20" height="20" aria-hidden="true"><use href="#i-mas"/></svg></summary><p>Abre tu carrito y escríbelo en «¿Tienes un cupón?». El descuento se ve antes de confirmar.</p></details>
+      <details><summary>¿Le sirve a mi gato?<svg width="20" height="20" aria-hidden="true"><use href="#i-mas"/></svg></summary><p>Las codornices sí. Ofrécele trozos pequeños, siempre bajo supervisión y con agua fresca disponible.</p></details>
+      <details><summary>¿Cuántos le doy al día?<svg width="20" height="20" aria-hidden="true"><use href="#i-mas"/></svg></summary><p>Son premios, no reemplazan su comida. Empieza con poco según el tamaño de tu mascota y siempre con agua fresca a la mano.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer class="pie">
+  <div class="contenedor pie-grid">
+    <div class="pie-marca">
+      <span><img src="/assets/img/logo.jpg" width="150" height="150" alt="" loading="lazy"></span>
+      <span><strong>Revoltosos</strong><br><span style="font-size: 14px">Hecho en Colombia con amor</span></span>
+    </div>
+    <div class="pie-redes">
+      <a href="https://instagram.com/revoltosos.deshidratados" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.6"/></svg>@revoltosos.deshidratados</a>
+      <a href="https://wa.me/573122448276" target="_blank" rel="noopener"><svg width="18" height="18" aria-hidden="true"><use href="#i-whatsapp"/></svg>312 244 8276</a>
+    </div>
+    <div class="pie-legal">
+      <span>© <span data-anio>2026</span> Revoltosos</span>
+      <a href="/privacidad.html">Política de tratamiento de datos (Ley 1581 de 2012)</a>
+      <a href="/privacidad.html#terminos">Términos y condiciones</a>
+    </div>
   </div>
-</section>
+</footer>
+
+<!-- Fijo abajo: WhatsApp + botón principal -->
+<div class="fijo-abajo">
+  <a class="wa-flotante" href="https://wa.me/573122448276?text=Hola%20Revoltosos%2C%20tengo%20una%20pregunta" target="_blank" rel="noopener" aria-label="¿Dudas? Escríbenos por WhatsApp"><svg width="26" height="26" aria-hidden="true"><use href="#i-wa-lleno"/></svg></a>
+  <div class="barra-t" id="barra-t">
+    <button type="button" class="btn rv-meneo" data-barra-btn>Pedir ahora</button>
+    <p class="ahorro-linea rv-pop" data-barra-ahorro hidden></p>
+    <p><svg width="18" height="18" aria-hidden="true"><use href="#i-casa"/></svg>Pagas al recibir en tu casa · <span>no pagas nada hoy</span></p>
+  </div>
+</div>
 
 <div class="cookies" id="cookies" hidden>
   <span>Usamos cookies para medir nuestros anuncios y mejorar la página. <a href="/privacidad.html">Más información</a></span>
   <button type="button" id="cookies-ok">Entendido</button>
 </div>
 
-<script src="/assets/js/landing.js?v=8"></script>
+<script src="/assets/js/tienda.js?v=9"></script>
 </body>
 </html>
