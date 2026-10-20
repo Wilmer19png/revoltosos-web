@@ -23,7 +23,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700;800&display=swap">
 <link rel="preload" as="image" href="/assets/img/productos/combo-codornicitas-patas-foto-600.jpg">
-<link rel="stylesheet" href="/assets/css/landing.css?v=6">
+<link rel="stylesheet" href="/assets/css/landing.css?v=7">
 <link rel="stylesheet" href="/assets/css/tienda.css?v=6">
 
 <!-- Generada con herramientas/landings/generar.pl: los cambios van allá, no aquí. -->
@@ -162,7 +162,21 @@
     </div>
   </section>
 
-  <!-- 2. Combínalo y llega gratis -->
+  <!-- Qué trae el combo -->
+  <section class="seccion" aria-labelledby="t-trae">
+    <div class="contenedor">
+      <h2 class="titulo" id="t-trae">Qué trae el combo</h2>
+      <p class="bajada" style="margin-top: 8px">Dos premios que les encantan, para tener a la mano todo el mes.</p>
+      <div class="caja-grid">
+        <article class="caja-item"><a href="/codornices/" style="display: block"><img src="/assets/img/productos/codornices-bolsa-50g-600.jpg" width="600" height="600" loading="lazy" alt="Codornicitas"></a><div><span class="caja-cantidad">50 g</span><strong>Codornicitas</strong><span>Codorniz deshidratada para premiar todos los días.</span></div></article>
+        <article class="caja-item"><a href="/patas-de-pollo/" style="display: block"><img src="/assets/img/productos/patas-pollo-producto-600.jpg" width="600" height="600" loading="lazy" alt="Patas de pollo"></a><div><span class="caja-cantidad">×30</span><strong>Patas de pollo</strong><span>Crocantes y fáciles de masticar.</span></div></article>
+      </div>
+      <p class="combo-separado" data-combo-separado="codornices-bolsa-50g:1,patas-pollo-30:1" hidden></p>
+      <a href="#comprar" class="btn btn--ancho" style="margin-top: 24px">Pedir el combo · Pagas al recibir</a>
+    </div>
+  </section>
+
+  <!-- Combínalo / súmale otro snack -->
   <section style="padding: 32px 0 8px" aria-labelledby="t-combina" hidden>
     <div class="contenedor">
       <h2 class="titulo-sec" id="t-combina" style="font-size: 28px">Combínalo y llega gratis</h2>
@@ -171,16 +185,15 @@
     </div>
   </section>
 
-  <!-- Qué trae el combo -->
-  <section class="seccion" aria-labelledby="t-trae">
+  <!-- Lo bueno de cada snack -->
+  <section class="seccion" aria-labelledby="t-cada" style="background: var(--hueso-2)">
     <div class="contenedor">
-      <h2 class="titulo" id="t-trae">Qué trae el combo</h2>
-      <p class="bajada" style="margin-top: 8px">Dos premios que les encantan, para tener a la mano todo el mes.</p>
-      <div class="caja-grid">
-        <article class="caja-item"><a href="/codornices/" style="display: block"><img src="/assets/img/productos/codornices-bolsa-50g-600.jpg" width="600" height="600" loading="lazy" alt="Codornicitas"></a><div><span class="caja-cantidad">50 g</span><strong>Codornicitas</strong><span>Codorniz deshidratada para premiar.</span></div></article>
-        <article class="caja-item"><a href="/patas-de-pollo/" style="display: block"><img src="/assets/img/productos/patas-pollo-producto-600.jpg" width="600" height="600" loading="lazy" alt="Patas de pollo"></a><div><span class="caja-cantidad">×30</span><strong>Patas de pollo</strong><span>Crocantes y fáciles de masticar.</span></div></article>
+      <h2 class="titulo" id="t-cada">Lo bueno de cada snack</h2>
+      <p class="bajada" style="margin-top: 8px">Cada uno aporta algo distinto. Esto es lo que gana tu peludo con cada snack del combo.</p>
+      <div class="cada-grid">
+        <article class="cada-item"><img src="/assets/img/productos/codornices-bolsa-50g-600.jpg" width="84" height="84" loading="lazy" alt=""><div><strong>Codornicitas</strong><ul><li>Proteína novedosa: buena opción si no le va bien el pollo o la res.</li><li>Crocantes y del tamaño justo para premiar.</li><li>Un solo ingrediente: codorniz.</li></ul></div></article>
+        <article class="cada-item"><img src="/assets/img/productos/patas-pollo-producto-600.jpg" width="84" height="84" loading="lazy" alt=""><div><strong>Patas de pollo</strong><ul><li>Crocantes y fáciles de masticar.</li><li>Ideales también para perros pequeños.</li><li>Pata de pollo y nada más.</li></ul></div></article>
       </div>
-      <a href="#comprar" class="btn btn--ancho" style="margin-top: 24px">Pedir el combo · Pagas al recibir</a>
     </div>
   </section>
 
@@ -351,6 +364,6 @@
   <button type="button" id="cookies-ok">Entendido</button>
 </div>
 
-<script src="/assets/js/tienda.js?v=9"></script>
+<script src="/assets/js/tienda.js?v=10"></script>
 </body>
 </html>

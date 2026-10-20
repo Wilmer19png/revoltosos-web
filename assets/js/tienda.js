@@ -49,14 +49,14 @@ const ICONO = {
 
 // Respaldo por si Supabase no responde: la tienda sigue mostrando lo principal.
 const RESPALDO = {
-  ajustes: { envio_gratis_desde: 70000, envio_base: 12000, envio_departamentos: {}, prioritario: 5000 },
+  ajustes: { envio_gratis_desde: 70000, envio_base: 20000, envio_departamentos: {}, prioritario: 5000 },
   productos: [
     { id: 'codornices', nombre: 'Codornices deshidratadas', categoria: 'Codorniz', descripcion: 'Codorniz entera, deshidratada lentamente. Un solo ingrediente.', imagen: '/assets/img/productos/codornices-frasco-100g-600.jpg', ruta: '/codornices/', orden: 1 },
     { id: 'cajita-perros', nombre: 'Cajita para perros', categoria: 'Cajitas', descripcion: 'Patas de pollo, oreja de cerdo, codornicitas, codorniz entera y fémur de cerdo.', imagen: '/assets/img/productos/cajita-producto-fondo-blanco-600.jpg', ruta: '/cajita/', orden: 2 }
   ],
   variantes: [
-    { id: 'codornices-bolsa-50g', producto_id: 'codornices', nombre: 'Bolsa 50 g', detalle: 'Para probar', precio: 15900, precio_antes: null, orden: 1, imagen: '/assets/img/productos/codornices-bolsa-50g-600.jpg' },
-    { id: 'codornices-frasco-100g', producto_id: 'codornices', nombre: 'Frasco 100 g', detalle: 'Aprox. 30 codornices', precio: 26900, precio_antes: null, orden: 2, imagen: '/assets/img/productos/codornices-frasco-100g-600.jpg' },
+    { id: 'codornices-bolsa-50g', producto_id: 'codornices', nombre: 'Bolsa 50 g', detalle: 'Para probar', precio: 18900, precio_antes: null, orden: 1, imagen: '/assets/img/productos/codornices-bolsa-50g-600.jpg' },
+    { id: 'codornices-frasco-100g', producto_id: 'codornices', nombre: 'Frasco 100 g', detalle: 'Aprox. 30 codornices', precio: 34900, precio_antes: null, orden: 2, imagen: '/assets/img/productos/codornices-frasco-100g-600.jpg' },
     { id: 'cajita-perros', producto_id: 'cajita-perros', nombre: 'Cajita · 5 snacks', detalle: '5 snacks distintos', precio: 72900, precio_antes: null, orden: 1 }
   ]
 };
@@ -84,11 +84,14 @@ async function rest(ruta, opciones) {
 }
 
 async function descargarCatalogo() {
-  // Si aún no está la migración 011 (foto por tamaño y envío por ciudad), se pide sin esas columnas.
+  // Si aún no están las migraciones 011/015 (foto por tamaño, envío por ciudad, envío gratis por tamaño),
+  // se pide sin esas columnas.
   const pedir = (ruta, extra) => rest(ruta.replace('{extra}', extra)).catch(() => rest(ruta.replace('{extra}', '')));
   const [productos, variantes, ajustes] = await Promise.all([
-    pedir('productos?select=id,nombre,categoria,descripcion,imagen,ruta,orden{extra}&order=orden', ',etiqueta'),
-    pedir('variantes?select=id,producto_id,nombre,detalle,precio,precio_antes,orden{extra}&order=orden', ',imagen'),
+    rest('productos?select=id,nombre,categoria,descripcion,imagen,ruta,orden,etiqueta,fotos&order=orden')
+      .catch(() => pedir('productos?select=id,nombre,categoria,descripcion,imagen,ruta,orden{extra}&order=orden', ',etiqueta')),
+    rest('variantes?select=id,producto_id,nombre,detalle,precio,precio_antes,orden,imagen,envio_gratis&order=orden')
+      .catch(() => pedir('variantes?select=id,producto_id,nombre,detalle,precio,precio_antes,orden{extra}&order=orden', ',imagen')),
     pedir('ajustes?select=envio_gratis_desde,envio_base,envio_departamentos,prioritario{extra}&id=eq.1', ',envio_ciudades')
   ]);
   if (!productos.length || !variantes.length) throw new Error('catálogo vacío');
@@ -154,13 +157,15 @@ function cuentas(departamento, ciudad) {
   const descuento = descuentoCupon(cupon, ls, subtotal);
   const neto = subtotal - descuento;
   const meta = T.ajustes.envio_gratis_desde;
-  const gratis = unidades > 0 && neto >= meta;
+  // Los tamaños con envío gratis (los combos) hacen gratis todo el pedido, igual que en crear-pedido.
+  const porCombo = ls.some((l) => l.v.envio_gratis);
+  const gratis = unidades > 0 && (porCombo || neto >= meta);
   const tarifa = departamento ? tarifaEnvio(departamento, ciudad || '') : null;
   return {
-    ls, subtotal, unidades, descuento, neto, gratis,
+    ls, subtotal, unidades, descuento, neto, gratis, porCombo,
     ahorro: ahorroPromo + descuento,
-    falta: Math.max(0, meta - neto),
-    pct: meta ? Math.min(100, Math.round(neto / meta * 100)) : 100,
+    falta: gratis ? 0 : Math.max(0, meta - neto),
+    pct: gratis ? 100 : (meta ? Math.min(100, Math.round(neto / meta * 100)) : 100),
     envio: gratis ? 0 : tarifa
   };
 }
@@ -304,7 +309,7 @@ function tarjetaProducto(v) {
   const p = prodDe(v);
   const etiqueta = (p.etiqueta ? fuego(p.etiqueta) : '') + (v.precio_antes > v.precio
     ? '<span class="prod-etiqueta">Ahorras ' + pesos(v.precio_antes - v.precio) + '</span>'
-    : (v.precio >= T.ajustes.envio_gratis_desde ? '<span class="prod-etiqueta rosa">Envío gratis</span>' : ''));
+    : (v.envio_gratis || v.precio >= T.ajustes.envio_gratis_desde ? '<span class="prod-etiqueta rosa">Envío gratis</span>' : ''));
   return '<article class="prod">' +
     '<a class="prod-foto" href="' + esc(urlProducto(p)) + '"><img src="' + esc(fotoDe(v)) + '" alt="' + esc(p.nombre) + '" width="600" height="600" loading="lazy">' + (etiqueta ? '<span class="prod-etiquetas">' + etiqueta + '</span>' : '') + '</a>' +
     '<div class="prod-info"><h3><a href="' + esc(urlProducto(p)) + '">' + esc(p.nombre) + '</a></h3>' +
@@ -456,8 +461,73 @@ function pintarCombina() {
   if (seccion) seccion.hidden = !lista.length;
   caja.innerHTML = lista.map((v) => '<div class="combina-item"><img src="' + esc(fotoDe(v)) + '" alt="" width="64" height="64" loading="lazy">' +
     '<div><strong><a href="' + esc(urlProducto(prodDe(v))) + '" style="color: inherit; text-decoration: none">' + esc(prodDe(v).nombre) + '</a></strong><span>' + esc(v.nombre) + ' · ' + pesos(v.precio) +
-    (v.precio >= T.ajustes.envio_gratis_desde ? ' · envío gratis' : '') + '</span></div>' +
+    (v.envio_gratis || v.precio >= T.ajustes.envio_gratis_desde ? ' · envío gratis' : '') + '</span></div>' +
     '<button type="button" class="btn-mas" data-agregar="' + esc(v.id) + '" aria-label="Agregar ' + esc(nombreLargo(v)) + '"></button></div>').join('');
+}
+
+// Combos: lo que costaría comprar lo mismo por separado (con el envío, si el combo lo incluye).
+// data-combo-separado="id-del-tamaño:unidades,…" lo escribe el generador de landings.
+function pintarSeparado() {
+  $$('[data-combo-separado]').forEach((el) => {
+    const combo = variantesDelProducto()[0];
+    const partes = el.dataset.comboSeparado.split(',').map((x) => x.split(':'));
+    if (!combo || partes.some((x) => !T.porId[x[0]])) { el.hidden = true; return; }
+    const productos = partes.reduce((s, x) => s + T.porId[x[0]].precio * Number(x[1]), 0);
+    // Por separado solo pagaría envío si no llega al mínimo del envío gratis.
+    const envio = combo.envio_gratis && productos < T.ajustes.envio_gratis_desde ? Number(T.ajustes.envio_base) || 0 : 0;
+    const suelto = productos + envio;
+    el.hidden = suelto <= combo.precio;
+    if (!el.hidden) {
+      el.innerHTML = 'Por separado' + (envio ? ', con el envío,' : '') + ' pagarías <s>' + pesos(suelto) + '</s>. ' +
+        'Con el combo pagas ' + pesos(combo.precio) + ' y <strong>ahorras ' + pesos(suelto - combo.precio) + '</strong>.';
+    }
+  });
+}
+
+// Fotos subidas desde el gestor (links completos, migración 017): la portada pasa a ser la foto
+// principal de la landing y las fotos extra se suman como miniaturas. Las fotos del sitio (/assets/…)
+// ya vienen en la landing, así que no se tocan.
+function pintarFotosSubidas() {
+  const p = T.prodPorId[P.productoId];
+  const galeria = $('.galeria-p');
+  if (!p || !galeria || P.generico) return;
+  const subida = (src) => /^https?:/.test(src || '');
+  const portada = subida(p.imagen) ? p.imagen : null;
+  const extra = (Array.isArray(p.fotos) ? p.fotos : []).filter(Boolean);
+  $$('[data-subida]', galeria).forEach((b) => b.remove()); // por si se pinta dos veces
+  if (!portada && !extra.length) return;
+
+  // Sin foto todavía (recuadro "foto muy pronto"): se cambia por una imagen.
+  const principal = $('.principal', galeria);
+  const pendiente = $('.pendiente', principal);
+  if (pendiente) {
+    const img = document.createElement('img');
+    img.width = 600; img.height = 600; img.alt = p.nombre;
+    pendiente.replaceWith(img);
+  }
+  let minis = $('.miniaturas', galeria);
+  if (!minis) {
+    minis = document.createElement('div');
+    minis.className = 'miniaturas';
+    minis.setAttribute('role', 'group');
+    minis.setAttribute('aria-label', 'Fotos del producto');
+    galeria.append(minis);
+  }
+  const boton = (src) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.dataset.subida = '';
+    b.dataset.src = src;
+    b.dataset.alt = p.nombre;
+    b.setAttribute('aria-pressed', 'false');
+    b.setAttribute('aria-label', 'Ver foto de ' + p.nombre);
+    b.innerHTML = '<img src="' + esc(src) + '" alt="" width="64" height="64" loading="lazy">';
+    return b;
+  };
+  if (portada) minis.prepend(boton(portada));
+  extra.forEach((src) => minis.append(boton(src)));
+  const primera = portada || (pendiente ? extra[0] : null);
+  if (primera) mostrarFoto(primera, p.nombre, $('[data-subida]', minis));
 }
 
 // Página genérica /producto/?p=id: nombre, foto y descripción salen del catálogo.
@@ -705,7 +775,7 @@ function pintarResumenPedido() {
   if (dep && form.ciudad.value) {
     cotiza.hidden = false;
     cotiza.innerHTML = k.gratis
-      ? '<div class="fila"><span>Envío a ' + esc(form.ciudad.value) + '</span><span>GRATIS</span></div><span>Tu pedido supera ' + pesos(T.ajustes.envio_gratis_desde) + '.</span>'
+      ? '<div class="fila"><span>Envío a ' + esc(form.ciudad.value) + '</span><span>GRATIS</span></div><span>' + (k.porCombo ? 'Tu combo incluye el envío.' : 'Tu pedido supera ' + pesos(T.ajustes.envio_gratis_desde) + '.') + '</span>'
       : '<div class="fila"><span>Envío a ' + esc(form.ciudad.value) + '</span><span>' + pesos(k.envio) + '</span></div>' +
         '<span class="falta">Agrega ' + pesos(k.falta) + ' más en productos y no pagas envío.</span>';
   } else cotiza.hidden = true;
@@ -1118,11 +1188,13 @@ $$('[data-anio]').forEach((el) => { el.textContent = new Date().getFullYear(); }
 
 function pintarTodo() {
   pintarProductoGenerico();
+  pintarFotosSubidas();
   pintarCatalogo();
   pintarSlider();
   pintarEscalones();
   pintarCompra();
   pintarCombina();
+  pintarSeparado();
   $$('[data-envio-gratis-desde]').forEach((el) => { el.textContent = pesos(T.ajustes.envio_gratis_desde); });
   actualizar();
 }

@@ -39,6 +39,7 @@ const MASCOTAS = new Set(['Perro pequeño', 'Perro mediano', 'Perro grande', 'Ga
 
 type Variante = {
   id: string; producto_id: string; nombre: string; precio: number | null; costo: number; visible: boolean;
+  envio_gratis?: boolean;
   productos: { nombre: string; visible: boolean } | null;
 };
 type Cupon = {
@@ -201,14 +202,16 @@ Deno.serve(async (req) => {
   const ids = Array.from(carrito.keys());
   const [{ data: variantes }, { data: ajustes }] = await Promise.all([
     ids.length
-      ? supabase.from('variantes').select('id, producto_id, nombre, precio, costo, visible, productos(nombre, visible)').in('id', ids)
+      ? supabase.from('variantes').select('*, productos(nombre, visible)').in('id', ids)
       : Promise.resolve({ data: [] as Variante[] }),
     supabase.from('ajustes').select('*').eq('id', 1).maybeSingle(),
   ]);
 
   const items: Item[] = [];
+  let conEnvioGratis = false;
   for (const v of (variantes ?? []) as unknown as Variante[]) {
     if (!v.visible || !v.precio || !v.productos?.visible) continue;
+    if (v.envio_gratis) conEnvioGratis = true;
     items.push({
       variante_id: v.id,
       producto_id: v.producto_id,
@@ -250,13 +253,14 @@ Deno.serve(async (req) => {
     if (!descuento) return json({ ok: false, error: 'El cupón ya no es válido para este pedido', campo: 'cupon' }, 422);
   }
 
-  // Envío: gratis desde el mínimo (en productos, ya con descuento); si no, la tarifa de la ciudad,
-  // la del departamento o la normal (mismo orden que tarifaEnvio en assets/js/tienda.js).
+  // Envío: gratis si lleva un tamaño con envío gratis (combos) o desde el mínimo (en productos, ya con
+  // descuento); si no, la tarifa de la ciudad, la del departamento o la normal (mismo orden que
+  // tarifaEnvio en assets/js/tienda.js).
   const a = ajustes!;
   const porCiudad = ((a.envio_ciudades ?? {}) as Record<string, number>)[departamento + '|' + ciudad];
   const porDepartamento = ((a.envio_departamentos ?? {}) as Record<string, number>)[departamento];
   const productosNeto = subtotal - descuento;
-  const envio = productosNeto >= a.envio_gratis_desde ? 0 : Number(porCiudad ?? porDepartamento ?? a.envio_base);
+  const envio = conEnvioGratis || productosNeto >= a.envio_gratis_desde ? 0 : Number(porCiudad ?? porDepartamento ?? a.envio_base);
   const valorPrioritario = prioritario ? a.prioritario : 0;
   const total = productosNeto + envio + valorPrioritario;
 

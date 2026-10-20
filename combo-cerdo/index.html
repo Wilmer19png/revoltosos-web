@@ -23,7 +23,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700;800&display=swap">
 <link rel="preload" as="image" href="/assets/img/productos/combo-cerdo-foto-600.jpg">
-<link rel="stylesheet" href="/assets/css/landing.css?v=6">
+<link rel="stylesheet" href="/assets/css/landing.css?v=7">
 <link rel="stylesheet" href="/assets/css/tienda.css?v=6">
 
 <!-- Generada con herramientas/landings/generar.pl: los cambios van allá, no aquí. -->
@@ -164,15 +164,6 @@
     </div>
   </section>
 
-  <!-- 2. Combínalo y llega gratis -->
-  <section style="padding: 32px 0 8px" aria-labelledby="t-combina" hidden>
-    <div class="contenedor">
-      <h2 class="titulo-sec" id="t-combina" style="font-size: 28px">Combínalo y llega gratis</h2>
-      <p class="bajada" style="margin: 4px 0 14px; font-size: 15px">Desde <span data-envio-gratis-desde>$70.000</span> el envío corre por nuestra cuenta.</p>
-      <div class="combina" id="combina"></div>
-    </div>
-  </section>
-
   <!-- Qué trae el combo -->
   <section class="seccion" aria-labelledby="t-trae">
     <div class="contenedor">
@@ -184,7 +175,31 @@
         <article class="caja-item"><a href="/humero-de-cerdo/" style="display: block"><img src="/assets/img/productos/humero-cerdo-producto-600.jpg" width="600" height="600" loading="lazy" alt="Húmero de cerdo"></a><div><span class="caja-cantidad">×1</span><strong>Húmero de cerdo</strong><span>Hueso natural para morder.</span></div></article>
         <article class="caja-item"><a href="/paleta-de-cerdo/" style="display: block"><img src="/assets/img/productos/paleta-cerdo-producto-600.jpg" width="600" height="600" loading="lazy" alt="Paleta de cerdo"></a><div><span class="caja-cantidad">×1</span><strong>Paleta de cerdo</strong><span>Plana y fácil de sostener.</span></div></article>
       </div>
+      <p class="combo-separado" data-combo-separado="oreja-cerdo:1,femur-cerdo:1,humero-cerdo:1,paleta-cerdo:1" hidden></p>
       <a href="#comprar" class="btn btn--ancho" style="margin-top: 24px">Pedir el combo · Pagas al recibir</a>
+    </div>
+  </section>
+
+  <!-- Combínalo / súmale otro snack -->
+  <section style="padding: 32px 0 8px" aria-labelledby="t-combina" hidden>
+    <div class="contenedor">
+      <h2 class="titulo-sec" id="t-combina" style="font-size: 28px">Combínalo y llega gratis</h2>
+      <p class="bajada" style="margin: 4px 0 14px; font-size: 15px">Desde <span data-envio-gratis-desde>$70.000</span> el envío corre por nuestra cuenta.</p>
+      <div class="combina" id="combina"></div>
+    </div>
+  </section>
+
+  <!-- Lo bueno de cada snack -->
+  <section class="seccion" aria-labelledby="t-cada" style="background: var(--hueso-2)">
+    <div class="contenedor">
+      <h2 class="titulo" id="t-cada">Lo bueno de cada snack</h2>
+      <p class="bajada" style="margin-top: 8px">Cada uno aporta algo distinto. Esto es lo que gana tu peludo con cada snack del combo.</p>
+      <div class="cada-grid">
+        <article class="cada-item"><img src="/assets/img/productos/oreja-cerdo-producto-600.jpg" width="84" height="84" loading="lazy" alt=""><div><strong>Oreja de cerdo</strong><ul><li>Para masticar un buen rato.</li><li>Masticar ayuda a reducir placa y sarro.</li><li>Oreja de cerdo y nada más.</li></ul></div></article>
+        <article class="cada-item"><img src="/assets/img/productos/femur-cerdo-producto-600.jpg" width="84" height="84" loading="lazy" alt=""><div><strong>Fémur de cerdo</strong><ul><li>Un reto para los que muerden fuerte.</li><li>Con carne pegada al hueso: ahí está el sabor que los atrae.</li><li>Horas de entretenimiento, siempre bajo supervisión.</li></ul></div></article>
+        <article class="cada-item"><img src="/assets/img/productos/humero-cerdo-producto-600.jpg" width="84" height="84" loading="lazy" alt=""><div><strong>Húmero de cerdo</strong><ul><li>Hueso natural para morder.</li><li>Canaliza las ganas de morder lejos de tus cosas.</li><li>Masticar ayuda a reducir placa y sarro.</li></ul></div></article>
+        <article class="cada-item"><img src="/assets/img/productos/paleta-cerdo-producto-600.jpg" width="84" height="84" loading="lazy" alt=""><div><strong>Paleta de cerdo</strong><ul><li>Plana y fácil de sostener entre las patas.</li><li>Una textura distinta a la de los huesos largos.</li><li>Hueso de cerdo y nada más.</li></ul></div></article>
+      </div>
     </div>
   </section>
 
@@ -378,6 +393,6 @@
   <button type="button" id="cookies-ok">Entendido</button>
 </div>
 
-<script src="/assets/js/tienda.js?v=9"></script>
+<script src="/assets/js/tienda.js?v=10"></script>
 </body>
 </html>

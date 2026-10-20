@@ -321,6 +321,24 @@ html[data-oferta="codornices-unidad"] .solo-promo { display: none !important; }
 .caja-item span { color: var(--tinta-2); font-size: 14px; }
 .caja-cantidad { display: inline-block; margin-bottom: 4px; padding: 2px 10px; border-radius: 999px; background: var(--rosa-claro); color: var(--rosa-hover); font-size: 13px; font-weight: 800; }
 @media (min-width: 860px) { .caja-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+.caja-item .pendiente { border: 0; }
+
+/* Combos: lo bueno de cada snack */
+.cada-grid { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); margin-top: 24px; }
+.cada-item { display: flex; gap: 14px; align-items: flex-start; padding: 14px; border-radius: 18px; background: #FFFFFF; }
+.cada-item img, .cada-item .pendiente { flex: none; width: 84px; height: 84px; border-radius: 12px; object-fit: cover; }
+.cada-item .pendiente { padding: 4px; font-size: 11px; }
+.cada-item strong { display: block; font-size: 17px; }
+.cada-item ul { margin: 6px 0 0; padding: 0; list-style: none; }
+.cada-item li { position: relative; margin-top: 5px; padding-left: 20px; color: var(--tinta-2); font-size: 14px; line-height: 1.4; }
+.cada-item li::before { content: ''; position: absolute; left: 2px; top: 5px; width: 10px; height: 5px; border-left: 2px solid var(--salvia); border-bottom: 2px solid var(--salvia); transform: rotate(-45deg); }
+@media (min-width: 700px) { .cada-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1040px) { .cada-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* Combos: lo que costaría por separado */
+.combo-separado { margin-top: 18px; padding: 14px 18px; border-radius: var(--radio); background: var(--salvia-claro); color: var(--tinta); font-size: 16px; line-height: 1.45; }
+.combo-separado s { color: var(--tinta-2); }
+.combo-separado strong { color: var(--salvia); }
 
 /* Banda de envío gratis */
 .envio { background: var(--salvia); color: #F5F1E8; padding: clamp(28px, 4vw, 44px) 0; }

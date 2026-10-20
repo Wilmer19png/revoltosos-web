@@ -23,7 +23,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700;800&display=swap">
 <link rel="preload" as="image" href="/assets/img/productos/combo-res-codornicitas-foto-600.jpg">
-<link rel="stylesheet" href="/assets/css/landing.css?v=6">
+<link rel="stylesheet" href="/assets/css/landing.css?v=7">
 <link rel="stylesheet" href="/assets/css/tienda.css?v=6">
 
 <!-- Generada con herramientas/landings/generar.pl: los cambios van allá, no aquí. -->
@@ -163,15 +163,6 @@
     </div>
   </section>
 
-  <!-- 2. Combínalo y llega gratis -->
-  <section style="padding: 32px 0 8px" aria-labelledby="t-combina" hidden>
-    <div class="contenedor">
-      <h2 class="titulo-sec" id="t-combina" style="font-size: 28px">Combínalo y llega gratis</h2>
-      <p class="bajada" style="margin: 4px 0 14px; font-size: 15px">Desde <span data-envio-gratis-desde>$70.000</span> el envío corre por nuestra cuenta.</p>
-      <div class="combina" id="combina"></div>
-    </div>
-  </section>
-
   <!-- Qué trae el combo -->
   <section class="seccion" aria-labelledby="t-trae">
     <div class="contenedor">
@@ -182,7 +173,30 @@
         <article class="caja-item"><a href="/humero-de-res/" style="display: block"><img src="/assets/img/productos/humero-res-empaque-fondo-blanco-600.jpg" width="600" height="600" loading="lazy" alt="Húmero de res"></a><div><span class="caja-cantidad">×1</span><strong>Húmero de res</strong><span>Grande y firme, para morder con ganas.</span></div></article>
         <article class="caja-item"><a href="/codornices/" style="display: block"><img src="/assets/img/productos/codornices-bolsa-50g-600.jpg" width="600" height="600" loading="lazy" alt="Codornicitas"></a><div><span class="caja-cantidad">50 g</span><strong>Codornicitas</strong><span>Codorniz deshidratada para premiar todos los días.</span></div></article>
       </div>
+      <p class="combo-separado" data-combo-separado="femur-res:1,humero-res:1,codornices-bolsa-50g:1" hidden></p>
       <a href="#comprar" class="btn btn--ancho" style="margin-top: 24px">Pedir el combo · Pagas al recibir</a>
+    </div>
+  </section>
+
+  <!-- Combínalo / súmale otro snack -->
+  <section style="padding: 32px 0 8px" aria-labelledby="t-combina" hidden>
+    <div class="contenedor">
+      <h2 class="titulo-sec" id="t-combina" style="font-size: 28px">Combínalo y llega gratis</h2>
+      <p class="bajada" style="margin: 4px 0 14px; font-size: 15px">Desde <span data-envio-gratis-desde>$70.000</span> el envío corre por nuestra cuenta.</p>
+      <div class="combina" id="combina"></div>
+    </div>
+  </section>
+
+  <!-- Lo bueno de cada snack -->
+  <section class="seccion" aria-labelledby="t-cada" style="background: var(--hueso-2)">
+    <div class="contenedor">
+      <h2 class="titulo" id="t-cada">Lo bueno de cada snack</h2>
+      <p class="bajada" style="margin-top: 8px">Cada uno aporta algo distinto. Esto es lo que gana tu peludo con cada snack del combo.</p>
+      <div class="cada-grid">
+        <article class="cada-item"><img src="/assets/img/productos/femur-res-producto-600.jpg" width="84" height="84" loading="lazy" alt=""><div><strong>Fémur de res</strong><ul><li>El hueso más grande y resistente que tenemos.</li><li>Para perros grandes que muerden en serio.</li><li>Horas de entretenimiento, siempre bajo supervisión.</li></ul></div></article>
+        <article class="cada-item"><img src="/assets/img/productos/humero-res-empaque-fondo-blanco-600.jpg" width="84" height="84" loading="lazy" alt=""><div><strong>Húmero de res</strong><ul><li>Grande y firme, para morder con ganas.</li><li>Va muy bien con perros medianos y grandes.</li><li>Masticar ayuda a reducir placa y sarro.</li></ul></div></article>
+        <article class="cada-item"><img src="/assets/img/productos/codornices-bolsa-50g-600.jpg" width="84" height="84" loading="lazy" alt=""><div><strong>Codornicitas</strong><ul><li>Proteína novedosa: buena opción si no le va bien el pollo o la res.</li><li>Crocantes y del tamaño justo para premiar.</li><li>Un solo ingrediente: codorniz.</li></ul></div></article>
+      </div>
     </div>
   </section>
 
@@ -375,6 +389,6 @@
   <button type="button" id="cookies-ok">Entendido</button>
 </div>
 
-<script src="/assets/js/tienda.js?v=9"></script>
+<script src="/assets/js/tienda.js?v=10"></script>
 </body>
 </html>

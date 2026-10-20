@@ -213,6 +213,18 @@ td.der, th.der { text-align: right; font-variant-numeric: tabular-nums; }
 .tarifas label { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 14px; }
 .tarifas input { width: 110px; min-height: 38px; padding: 0 10px; border-radius: 10px; border: 1.5px solid var(--campo); font: inherit; font-size: 14px; text-align: right; }
 .nota { font-size: 13px; color: var(--tinta-2); }
+/* Fotos del producto */
+.fotos-editor { display: flex; flex-direction: column; gap: 16px; }
+.foto-portada { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; }
+.foto-portada > img { width: 120px; height: 120px; border-radius: 12px; object-fit: cover; background: #FFFFFF; border: 1px solid var(--linea); }
+.etiqueta-campo { display: block; margin-bottom: 8px; font-weight: 700; font-size: 14px; }
+.fotos-lista { display: flex; flex-wrap: wrap; gap: 10px; }
+.foto-mini { position: relative; }
+.foto-mini img { display: block; width: 88px; height: 88px; border-radius: 10px; object-fit: cover; background: #FFFFFF; border: 1px solid var(--linea); }
+.foto-mini button { position: absolute; top: 4px; right: 4px; width: 28px; height: 28px; border-radius: 50%; border: 0; background: rgba(18, 17, 15, .75); color: #FFFFFF; font: inherit; font-size: 18px; line-height: 1; cursor: pointer; }
+.foto-mini button.mover { right: auto; left: 4px; }
+.foto-tam { display: flex; gap: 6px; align-items: center; min-width: 260px; }
+.foto-tam img { flex: none; width: 40px; height: 40px; border-radius: 8px; object-fit: cover; background: #FFFFFF; border: 1px solid var(--linea); }
 
 /* Reseñas */
 .landing-link { display: flex; gap: 8px; align-items: center; background: var(--hueso); border-radius: 12px; padding: 6px 6px 6px 12px; }
@@ -1298,7 +1310,7 @@ function pintarProductos() {
     const stock = vs.filter((v) => !v.descuenta_de).reduce((s, v) => s + v.stock, 0);
     const f = el('div', 'prod-fila' + (abierto === p.id ? ' abierto' : '') + (p.visible ? '' : ' apagado'));
     const img = el('img');
-    img.src = p.imagen ? '..' + p.imagen : '../assets/img/logo.jpg';
+    img.src = verFoto(p.imagen);
     img.alt = '';
     const info = el('button');
     info.type = 'button';
@@ -1324,6 +1336,51 @@ function pintarProductos() {
   pintarEditor();
 }
 
+/* ---------- Fotos de productos (Storage › productos, migración 017) ---------- */
+// Las fotos del sitio son rutas (/assets/…); las subidas desde aquí, links completos.
+const verFoto = (src) => !src ? '../assets/img/logo.jpg' : (/^https?:/.test(src) ? src : '..' + src);
+
+// Achica la foto (lado mayor 1400 px, JPEG) para que la tienda cargue rápido, y la sube.
+async function subirFoto(archivo, carpeta) {
+  if (!/^image\//.test(archivo.type)) throw new Error('Ese archivo no es una foto');
+  const bitmap = await createImageBitmap(archivo);
+  const escala = Math.min(1, 1400 / Math.max(bitmap.width, bitmap.height));
+  const lienzo = document.createElement('canvas');
+  lienzo.width = Math.round(bitmap.width * escala);
+  lienzo.height = Math.round(bitmap.height * escala);
+  const ctx = lienzo.getContext('2d');
+  ctx.fillStyle = '#FFFFFF'; // las PNG transparentes quedan sobre blanco
+  ctx.fillRect(0, 0, lienzo.width, lienzo.height);
+  ctx.drawImage(bitmap, 0, 0, lienzo.width, lienzo.height);
+  const blob = await new Promise((ok) => lienzo.toBlob(ok, 'image/jpeg', 0.86));
+  const ruta = (carpeta || 'sin-producto') + '/' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6) + '.jpg';
+  const { error } = await sb.storage.from('productos').upload(ruta, blob, { contentType: 'image/jpeg', upsert: false });
+  if (error) throw new Error(/bucket/i.test(error.message) ? 'Falta correr la migración 017' : error.message);
+  return sb.storage.from('productos').getPublicUrl(ruta).data.publicUrl;
+}
+
+// Abre el selector de archivos y sube lo elegido; devuelve los links (vacío si se cancela).
+function elegirFotos(varias, carpeta) {
+  return new Promise((ok) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/jpeg,image/png,image/webp';
+    input.multiple = !!varias;
+    input.addEventListener('change', async () => {
+      const archivos = Array.from(input.files || []);
+      if (!archivos.length) { ok([]); return; }
+      avisar(archivos.length > 1 ? 'Subiendo ' + archivos.length + ' fotos…' : 'Subiendo foto…');
+      const links = [];
+      for (const a of archivos) {
+        try { links.push(await subirFoto(a, carpeta)); } catch (e) { avisar('No se pudo subir: ' + e.message); }
+      }
+      if (links.length) avisar(links.length > 1 ? links.length + ' fotos subidas · guarda los cambios' : 'Foto subida · guarda los cambios');
+      ok(links);
+    });
+    input.click();
+  });
+}
+
 function pintarEditor() {
   const caja = $('#prod-editor');
   const p = abierto === '__nuevo' ? { id: '', nombre: '', categoria: 'Codorniz', descripcion: '', imagen: '', ruta: '', visible: false, orden: D.productos.length + 1, nuevo: true } : productoDe(abierto);
@@ -1334,6 +1391,9 @@ function pintarEditor() {
   const otrasVariantes = D.variantes.filter((v) => !v.descuenta_de);
   const conPeso = !D.variantes.length || 'peso_g' in D.variantes[0];
   const conFoto = !D.variantes.length || 'imagen' in D.variantes[0];
+  const conEnvioGratis = D.variantes.length && 'envio_gratis' in D.variantes[0];
+  const conGaleria = D.productos.length && 'fotos' in D.productos[0]; // migración 017
+  let fotos = Array.isArray(p.fotos) ? p.fotos.slice() : [];
   // Link de cada tamaño para pautar: abre la landing con ese tamaño ya elegido.
   const alias = (v) => v.id.indexOf(p.id + '-') === 0 ? v.id.slice(p.id.length + 1) : v.id;
   const linksTamanos = vs.length > 1 && !p.nuevo ? '<div><h3 style="margin-bottom: 4px">Links para pautar cada tamaño</h3><p class="nota" style="margin-bottom: 8px">Úsalo como URL del anuncio: la landing abre con ese tamaño ya seleccionado.</p>' +
@@ -1347,13 +1407,16 @@ function pintarEditor() {
     '<td class="der"><strong>' + (v.precio && v.costo ? Math.round((v.precio - v.costo) / v.precio * 100) + ' %' : '—') + '</strong></td>' +
     '<td><input type="number" name="stock_minimo" min="0" step="1" value="' + (v.stock_minimo != null ? v.stock_minimo : 5) + '" aria-label="Stock mínimo" style="width: 70px"></td>' +
     (conPeso ? '<td><input type="number" name="peso_g" min="1" step="10" value="' + (v.peso_g || '') + '" aria-label="Peso empacado en gramos" placeholder="—" style="width: 80px"></td>' : '') +
-    (conFoto ? '<td><input class="ancho" name="imagen" maxlength="200" value="' + esc(v.imagen || '') + '" aria-label="Foto propia de este tamaño" placeholder="La del producto"></td>' : '') +
+    (conFoto ? '<td><div class="foto-tam"><img src="' + esc(verFoto(v.imagen || p.imagen)) + '" alt="" width="40" height="40"' + (v.imagen ? '' : ' style="opacity: .4"') + '>' +
+      '<input class="ancho" name="imagen" maxlength="300" value="' + esc(v.imagen || '') + '" aria-label="Foto propia de este tamaño" placeholder="La del producto">' +
+      (conGaleria ? '<button type="button" class="btn-sec" data-subir-var style="min-height: 36px; padding: 0 10px">Subir</button>' : '') + '</div></td>' : '') +
     (v.id && componentesDe(v.id).length
       ? '<td style="font-size: 13px; min-width: 200px">Combo: descuenta ' + esc(componentesDe(v.id).map((c) => c.cantidad + ' × ' + nombreVariante(c.componente_id)).join(', ')) +
         '<input type="hidden" name="descuenta_de" value=""><input type="hidden" name="descuenta_cantidad" value="1"></td>'
       : '<td><select name="descuenta_de" aria-label="Descuenta inventario de"><option value="">Su propio stock</option>' +
         otrasVariantes.filter((o) => o.id !== v.id).map((o) => '<option value="' + esc(o.id) + '"' + (v.descuenta_de === o.id ? ' selected' : '') + '>' + esc((productoDe(o.producto_id) || {}).nombre + ' · ' + o.nombre) + '</option>').join('') + '</select>' +
         ' × <input type="number" name="descuenta_cantidad" min="1" max="20" step="1" value="' + (v.descuenta_cantidad || 1) + '" aria-label="Cuántas unidades descuenta" style="width: 60px"></td>') +
+    (conEnvioGratis ? '<td style="text-align: center"><input type="checkbox" name="envio_gratis"' + (v.envio_gratis ? ' checked' : '') + ' aria-label="Envío gratis siempre"></td>' : '') +
     '<td style="text-align: center"><input type="checkbox" name="visible"' + (v.visible !== false ? ' checked' : '') + ' aria-label="Visible"></td>' +
     '<td><button type="button" class="btn-sec btn-peligro" data-quitar-var aria-label="Quitar tamaño" style="min-height: 36px; padding: 0 10px">Quitar</button></td></tr>';
   caja.innerHTML = '<form class="editor" id="form-producto">' +
@@ -1365,13 +1428,20 @@ function pintarEditor() {
     '<div class="campo"><label for="pe-nombre">Nombre</label><input id="pe-nombre" name="nombre" required maxlength="80" value="' + esc(p.nombre) + '"></div>' +
     '<div class="campo"><label for="pe-cat">Categoría</label><input id="pe-cat" name="categoria" list="pe-cats" maxlength="40" value="' + esc(p.categoria) + '"><datalist id="pe-cats">' + cats.map((c) => '<option value="' + esc(c) + '">').join('') + '</datalist></div>' +
     '<div class="campo"><label for="pe-orden">Orden en la tienda</label><input id="pe-orden" name="orden" type="number" step="1" value="' + (p.orden || 0) + '"></div>' +
-    '<div class="campo"><label for="pe-img">Foto (ruta)</label><input id="pe-img" name="imagen" maxlength="200" value="' + esc(p.imagen || '') + '" placeholder="/assets/img/productos/…jpg"></div>' +
     ('etiqueta' in p || p.nuevo ? '<div class="campo"><label for="pe-etiqueta">Etiqueta con fueguito <small style="font-weight: 500">(opcional)</small></label><input id="pe-etiqueta" name="etiqueta" maxlength="30" value="' + esc(p.etiqueta || '') + '" placeholder="El más vendido"></div>' : '') +
     '<div class="campo"><label for="pe-ruta">Landing propia</label><input id="pe-ruta" name="ruta" maxlength="120" value="' + esc(p.ruta || '') + '" placeholder="Vacío = página genérica"></div>' +
     '</div>' +
     '<div class="campo"><label for="pe-desc">Descripción corta</label><textarea id="pe-desc" name="descripcion" maxlength="400">' + esc(p.descripcion || '') + '</textarea></div>' +
-    '<div><h3 style="margin-bottom: 4px">Tamaños y precios</h3><p class="nota" style="margin-bottom: 8px">Precio normal = el tachado. Precio de venta = lo que se cobra. Un combo («2 frascos») puede descontar del inventario de otro tamaño.</p>' +
-    '<div class="tabla-caja tabla-variantes"><table><thead><tr><th>Tamaño</th><th>Detalle</th><th>Precio normal</th><th>Precio venta</th><th>Costo</th><th class="der">Margen</th><th>Mínimo</th>' + (conPeso ? '<th>Peso (g)</th>' : '') + (conFoto ? '<th>Foto (ruta)</th>' : '') + '<th>Inventario</th><th>Visible</th><th></th></tr></thead><tbody id="pe-variantes">' +
+    '<div><h3 style="margin-bottom: 4px">Fotos</h3><p class="nota" style="margin-bottom: 10px">La portada sale en la tienda y como foto principal de la landing.' +
+    (conGaleria ? ' Las demás fotos salen como miniaturas en la landing. Los cambios se ven al guardar.' : ' Para subir fotos desde aquí corre la migración 017.') + '</p>' +
+    '<div class="fotos-editor"><div class="foto-portada"><img id="pe-img-vista" src="' + esc(verFoto(p.imagen)) + '" alt="Portada" width="120" height="120">' +
+    '<div class="campo" style="flex: 1; min-width: 200px"><label for="pe-img">Portada</label><input id="pe-img" name="imagen" maxlength="300" value="' + esc(p.imagen || '') + '" placeholder="Sube una foto o pega una ruta">' +
+    (conGaleria ? '<button type="button" class="btn-sec" id="pe-subir-portada" style="margin-top: 8px; align-self: flex-start">Subir foto de portada</button>' : '') + '</div></div>' +
+    (conGaleria ? '<div><span class="etiqueta-campo">Más fotos para la landing</span><div class="fotos-lista" id="pe-fotos"></div>' +
+      '<button type="button" class="btn-sec" id="pe-subir-fotos" style="margin-top: 8px">+ Agregar fotos</button></div>' : '') +
+    '</div></div>' +
+    '<div><h3 style="margin-bottom: 4px">Tamaños y precios</h3><p class="nota" style="margin-bottom: 8px">Precio normal = el tachado. Precio de venta = lo que se cobra. Un combo («2 frascos») puede descontar del inventario de otro tamaño.' + (conEnvioGratis ? ' «Envío gratis» = el pedido que lo lleve no paga envío, sin importar el total.' : '') + '</p>' +
+    '<div class="tabla-caja tabla-variantes"><table><thead><tr><th>Tamaño</th><th>Detalle</th><th>Precio normal</th><th>Precio venta</th><th>Costo</th><th class="der">Margen</th><th>Mínimo</th>' + (conPeso ? '<th>Peso (g)</th>' : '') + (conFoto ? '<th>Foto (ruta)</th>' : '') + '<th>Inventario</th>' + (conEnvioGratis ? '<th>Envío gratis</th>' : '') + '<th>Visible</th><th></th></tr></thead><tbody id="pe-variantes">' +
     vs.map(filaVar).join('') + '</tbody></table></div>' +
     '<button type="button" class="btn-sec" id="pe-agregar-var" style="margin-top: 10px">+ Agregar tamaño</button></div>' +
     '<p class="mensaje error" id="pe-msg" role="alert"></p>' +
@@ -1379,10 +1449,46 @@ function pintarEditor() {
     (p.nuevo ? '' : '<button type="button" class="btn-sec btn-peligro" id="pe-borrar">Borrar producto</button>') +
     '<button type="submit" class="btn btn--oscuro">Guardar cambios</button></div></form>';
 
+  // Fotos: portada, galería y foto de cada tamaño.
+  const carpeta = p.id || 'nuevo';
+  const inputPortada = $('#pe-img');
+  inputPortada.addEventListener('input', () => { $('#pe-img-vista').src = verFoto(inputPortada.value.trim()); });
+  const pintarFotos = () => {
+    const lista = $('#pe-fotos');
+    if (!lista) return;
+    lista.innerHTML = fotos.length ? fotos.map((src, i) => '<div class="foto-mini"><img src="' + esc(verFoto(src)) + '" alt="Foto ' + (i + 1) + '" width="88" height="88">' +
+      '<button type="button" data-quitar-foto="' + i + '" aria-label="Quitar foto ' + (i + 1) + '">×</button>' +
+      (i ? '<button type="button" class="mover" data-subir-foto="' + i + '" aria-label="Mover antes">‹</button>' : '') + '</div>').join('')
+      : '<p class="nota">Sin fotos extra.</p>';
+  };
+  pintarFotos();
+  if ($('#pe-fotos')) {
+    $('#pe-fotos').addEventListener('click', (e) => {
+      const q = e.target.closest('[data-quitar-foto]');
+      const m = e.target.closest('[data-subir-foto]');
+      if (q) fotos.splice(Number(q.dataset.quitarFoto), 1);
+      else if (m) { const i = Number(m.dataset.subirFoto); fotos.splice(i - 1, 0, fotos.splice(i, 1)[0]); }
+      else return;
+      pintarFotos();
+    });
+    $('#pe-subir-fotos').addEventListener('click', async () => { fotos = fotos.concat(await elegirFotos(true, carpeta)); pintarFotos(); });
+    $('#pe-subir-portada').addEventListener('click', async () => {
+      const [link] = await elegirFotos(false, carpeta);
+      if (link) { inputPortada.value = link; $('#pe-img-vista').src = link; }
+    });
+  }
+  $('#form-producto').fotosActuales = () => fotos;
+
   $('#pe-agregar-var').addEventListener('click', () => {
     $('#pe-variantes').insertAdjacentHTML('beforeend', filaVar({ id: '', nombre: '', detalle: '', precio: null, precio_antes: null, costo: 0, stock_minimo: 5, visible: true }));
   });
   $('#pe-variantes').addEventListener('click', async (e) => {
+    const sv = e.target.closest('[data-subir-var]');
+    if (sv) {
+      const [link] = await elegirFotos(false, carpeta);
+      if (link) { const fila = sv.closest('.foto-tam'); fila.querySelector('input').value = link; const im = fila.querySelector('img'); im.src = link; im.style.opacity = ''; }
+      return;
+    }
     const b = e.target.closest('[data-quitar-var]');
     if (!b) return;
     const tr = b.closest('tr');
@@ -1414,14 +1520,16 @@ async function guardarProducto(p) {
   const msg = $('#pe-msg');
   msg.textContent = '';
   const datos = {
-    nombre: form.nombre.value.trim(),
+    // Por id: los tamaños también tienen campos «nombre» e «imagen», y form.nombre los mezclaría.
+    nombre: $('#pe-nombre').value.trim(),
     categoria: form.categoria.value.trim() || 'Otros',
     orden: Number(form.orden.value) || 0,
-    imagen: form.imagen.value.trim() || null,
+    imagen: $('#pe-img').value.trim() || null,
     ruta: form.ruta.value.trim() || null,
     descripcion: form.descripcion.value.trim() || null
   };
   if (form.etiqueta && D.productos.length && 'etiqueta' in D.productos[0]) datos.etiqueta = form.etiqueta.value.trim() || null;
+  if ($('#pe-fotos')) datos.fotos = form.fotosActuales();
   if (datos.nombre.length < 2) { msg.textContent = 'Escribe el nombre del producto.'; return; }
   let id = p.id;
   if (p.nuevo) {
@@ -1453,6 +1561,7 @@ async function guardarProducto(p) {
     };
     if (g('peso_g')) v.peso_g = num(g('peso_g').value) || null;
     if (g('imagen')) v.imagen = g('imagen').value.trim() || null;
+    if (g('envio_gratis')) v.envio_gratis = g('envio_gratis').checked;
     if (!v.nombre) { msg.textContent = 'Cada tamaño necesita un nombre.'; return; }
     if (v.precio_antes && v.precio && v.precio_antes <= v.precio) { msg.textContent = 'En «' + v.nombre + '» el precio normal debe ser mayor que el de venta (o déjalo vacío).'; return; }
     let r;
