@@ -1278,7 +1278,7 @@ $iconos
   <button type="button" id="cookies-ok">Entendido</button>
 </div>
 
-<script src="/assets/js/tienda.js?v=11"></script>
+<script src="/assets/js/tienda.js?v=12"></script>
 </body>
 </html>
 HTML

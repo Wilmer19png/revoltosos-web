@@ -623,6 +623,7 @@ function pintarCarrito() {
   const k = cuentas();
   $('[data-carrito-n]', d).textContent = k.unidades ? '(' + k.unidades + ')' : '';
   $('[data-carrito-pie]', d).hidden = !k.unidades;
+  $('[data-carrito-pie] p', d).innerHTML = T.ajustes.wompi_activo ? '<b>Pagas al recibir</b> o en línea con Wompi' : '<b>Pagas al recibir</b> · no pagas nada hoy';
   const cuerpo = $('[data-carrito-cuerpo]', d);
   if (!k.unidades) {
     cuerpo.innerHTML = '<div class="carrito-vacio"><p>Tu carrito está vacío.</p><a class="btn" href="/#catalogo">Ver los snacks</a></div>';
@@ -768,6 +769,7 @@ function pintarBoton(form, total) {
   $('#btn-pagar').innerHTML = wompi
     ? '<span>Pagar ' + pesos(total) + '</span><span>Tarjeta, PSE, Nequi o Bancolombia</span>'
     : '<span>Confirmar pedido</span><span>Pago contraentrega · sin tarjeta</span>';
+  $('#pedido-titulo + p').textContent = wompi ? 'Tarda 1 minuto. Al final pagas con Wompi.' : 'Tarda 1 minuto. No pagas nada ahora.';
   $('[data-seguro]', form).textContent = wompi
     ? 'Pago seguro con Wompi, de Bancolombia. No guardamos los datos de tu tarjeta.'
     : 'No pagas nada ahora. Te confirmamos por WhatsApp.';
@@ -1064,7 +1066,25 @@ async function abrirWompi(datos, r, unidades, eventId) {
     redirectUrl: location.origin + location.pathname,
     customerData: { fullName: datos.nombre, phoneNumber: datos.celular.slice(2), phoneNumberPrefix: '+57', legalId: datos.cedula, legalIdType: 'CC' }
   });
-  checkout.open((resultado) => resultadoWompi(resultado && resultado.transaction));
+  // El formulario es un <dialog> modal y quedaría encima de Wompi: se cierra mientras se paga
+  // (sin borrar lo escrito) y vuelve si el cliente cierra la ventana de Wompi sin terminar.
+  const m = $('#pedido-modal');
+  cerrarDialogo(m);
+  let terminado = false;
+  let visto = false;
+  const vigia = new MutationObserver(() => {
+    const w = document.querySelector('.waybox-modal');
+    const abierta = !!w && getComputedStyle(w).display !== 'none';
+    if (abierta) { visto = true; return; }
+    if (!visto) return;
+    vigia.disconnect();
+    if (!terminado && !m.open) abrirDialogo(m);
+  });
+  vigia.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style'] });
+  checkout.open((resultado) => {
+    terminado = true;
+    resultadoWompi(resultado && resultado.transaction);
+  });
 }
 
 // Lo que diga el navegador solo cambia la pantalla: el pedido se marca pagado cuando Wompi avisa a wompi-eventos.
