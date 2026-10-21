@@ -110,8 +110,8 @@ async function paquete(sb: SupabaseClient, p: Pedido, caja: Record<string, numbe
     declaredValue: Math.max(0, valorProductos), lengthUnit: 'CM', weightUnit: 'KG',
     weight: Math.max(0.1, Math.round(gramos / 10) / 100),
     dimensions: { length: caja.largo || 20, width: caja.ancho || 15, height: caja.alto || 12 },
-    // Contraentrega: la transportadora cobra el total del pedido al entregar.
-    additionalServices: [{ service: 'cash_on_delivery', data: { amount: p.total } }],
+    // Contraentrega: la transportadora cobra el total del pedido al entregar (si ya se pagó con Wompi, nada).
+    additionalServices: p.metodo_pago === 'wompi' ? [] : [{ service: 'cash_on_delivery', data: { amount: p.total } }],
   };
 }
 
@@ -165,6 +165,9 @@ Deno.serve(async (req) => {
   const cargarPedido = async () => {
     const { data } = await sb.from('pedidos').select('*').eq('id', String(b.pedido_id ?? '')).maybeSingle();
     if (!data) throw new ErrorEnvia('No encontramos ese pedido.', null, 404);
+    if (data.metodo_pago === 'wompi' && data.pago_estado !== 'aprobado') {
+      throw new ErrorEnvia('Este pedido es con Wompi y el pago aún no está aprobado.', null, 409);
+    }
     return data as Pedido;
   };
 

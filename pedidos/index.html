@@ -518,6 +518,15 @@ td.der, th.der { text-align: right; font-variant-numeric: tabular-nums; }
         </div>
         <p class="nota" style="margin-top: 8px">Se usa el promedio mientras no anotes el envío real de cada pedido. Si generas la guía con Envía, el envío real se anota solo (y ya incluye la comisión de recaudo: en ese caso deja la comisión en 0).</p>
       </section>
+      <section class="caja" id="sec-wompi" hidden>
+        <h3>Pago en línea con Wompi</h3>
+        <label style="display: flex; gap: 10px; align-items: center; font-weight: 700; margin: 8px 0 12px; cursor: pointer"><input id="a-wompi" type="checkbox" style="width: 22px; height: 22px; accent-color: var(--verde)">Mostrar “Pagar ahora con Wompi” en la tienda</label>
+        <div class="rejilla">
+          <div class="campo"><label for="a-wompi-pct">Comisión de Wompi (%)</label><input id="a-wompi-pct" type="number" min="0" max="30" step="0.01" required></div>
+          <div class="campo"><label for="a-wompi-fija">Valor fijo por pago</label><input id="a-wompi-fija" type="number" min="0" step="10" required></div>
+        </div>
+        <p class="nota" style="margin-top: 8px">Antes de IVA (el gestor le suma el 19 %). El cliente siempre puede elegir contra entrega. Los pedidos de Wompi muestran si ya pagaron; no despaches uno que diga “sin pagar”.</p>
+      </section>
       <section class="caja" id="sec-envia" aria-labelledby="t-envia">
         <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; align-items: flex-start">
           <div><h3 id="t-envia" style="margin-bottom: 2px">Envía: quién despacha</h3><p class="nota">Estos datos van en cada guía como remitente.</p></div>
@@ -777,10 +786,18 @@ function cuentasPedido(p) {
     return { devuelto: true, envioReal, vuelta, ganancia: -(envioReal + vuelta) };
   }
   const costoProd = p.costo_productos || 0;
-  const comision = Math.round(p.total * (Number(A.comision_recaudo) || 0) / 100);
+  // Wompi cobra % + valor fijo, más IVA; contra entrega, el % de recaudo.
+  const comision = p.metodo_pago === 'wompi'
+    ? Math.round((p.total * Number(A.comision_wompi ?? 2.65) / 100 + Number(A.comision_wompi_fija ?? 700)) * 1.19)
+    : Math.round(p.total * (Number(A.comision_recaudo) || 0) / 100);
   return { devuelto: false, costoProd, envioReal, comision, ganancia: p.total - costoProd - envioReal - comision };
 }
 const fechaVenta = (p) => p.entregado_en || p.creado_en;
+
+/* ---------- Pago con Wompi (migración 018) ---------- */
+const pagadoWompi = (p) => p.metodo_pago === 'wompi' && p.pago_estado === 'aprobado';
+const PAGO_WOMPI = { pendiente: ['Wompi · sin pagar', 'bajo'], aprobado: ['Pagado · Wompi', 'bien'], rechazado: ['Wompi · rechazado', 'cero'], anulado: ['Wompi · anulado', 'cero'], error: ['Wompi · revisar pago', 'cero'] };
+const MEDIOS_WOMPI = { CARD: 'tarjeta', PSE: 'PSE', NEQUI: 'Nequi', BANCOLOMBIA_TRANSFER: 'Bancolombia', BANCOLOMBIA_QR: 'QR Bancolombia', DAVIPLATA: 'Daviplata' };
 
 /* ---------- Resumen ---------- */
 let mesSel = hoy().slice(0, 7);
@@ -1030,7 +1047,7 @@ function mensajeWhatsApp(p) {
     ...lineasPedido(p).map((l) => '• ' + l.txt),
     p.descuento ? '• Cupón ' + (p.cupon || '') + ': −' + pesos(p.descuento) : '',
     '• Envío: ' + (p.envio_cobrado ? pesos(p.envio_cobrado) : 'GRATIS') + (p.prioritario ? ' + prioritario' : ''),
-    '• Total a pagar al recibir: ' + pesos(p.total),
+    pagadoWompi(p) ? '• Total pagado con Wompi: ' + pesos(p.total) : '• Total a pagar al recibir: ' + pesos(p.total),
     '📍 ' + p.direccion + ', ' + p.barrio + ', ' + p.ciudad + ' - ' + p.departamento,
     p.indicaciones || '',
     '¿Nos confirmas que los datos están correctos para despacharlo? ✅'
@@ -1101,8 +1118,14 @@ function tarjeta(p) {
   if (p.para_quien && p.para_quien.length) extra.append(p.para_quien.join(', '));
 
   const tot = el('div', 'pedido-total');
-  tot.append(el('span', null, 'Cobrar al entregar'), el('span', null, pesos(p.total)));
+  tot.append(el('span', null, pagadoWompi(p) ? 'Ya pagó en línea' : p.metodo_pago === 'wompi' ? 'Total (pago en línea)' : 'Cobrar al entregar'), el('span', null, pesos(p.total)));
   tot.firstChild.style.fontWeight = '700';
+  if (p.metodo_pago === 'wompi') {
+    const [txt, clase] = PAGO_WOMPI[p.pago_estado] || PAGO_WOMPI.pendiente;
+    const chip = el('span', 'chip ' + clase, txt + (p.pago_estado === 'aprobado' && MEDIOS_WOMPI[p.wompi_medio] ? ' (' + MEDIOS_WOMPI[p.wompi_medio] + ')' : ''));
+    chip.style.marginLeft = '8px';
+    tot.firstChild.append(chip);
+  }
 
   // Costos internos y ganancia
   const c = cuentasPedido(p);
@@ -1131,7 +1154,7 @@ function tarjeta(p) {
     vuelta.placeholder = String(c.envioReal);
     vuelta.setAttribute('aria-label', 'Flete de la devolución');
     fila('Flete de vuelta', vuelta);
-  } else fila('Comisión de recaudo', '−' + pesos(c.comision));
+  } else fila(p.metodo_pago === 'wompi' ? 'Comisión de Wompi' : 'Comisión de recaudo', '−' + pesos(c.comision));
   const transp = campo(p.transportadora, null, (v) => guardarPedido(p, { transportadora: v || null }, 'Transportadora guardada'), ['', 'Envía', 'Interrapidísimo', 'Otra']);
   transp.setAttribute('aria-label', 'Transportadora');
   fila('Transportadora', transp);
@@ -1156,10 +1179,30 @@ function tarjeta(p) {
   copiar.type = 'button';
   copiar.setAttribute('aria-label', 'Copiar datos de envío de ' + p.nombre);
   copiar.addEventListener('click', async () => {
-    const t = [p.nombre, p.cedula ? 'C.C. ' + p.cedula : '', p.celular.slice(2), p.direccion + ', ' + p.barrio, p.ciudad + ' - ' + p.departamento, p.indicaciones || '', lineasPedido(p).map((l) => l.txt).join(' + '), 'Cobrar: ' + pesos(p.total)].filter(Boolean).join('\n');
+    const t = [p.nombre, p.cedula ? 'C.C. ' + p.cedula : '', p.celular.slice(2), p.direccion + ', ' + p.barrio, p.ciudad + ' - ' + p.departamento, p.indicaciones || '', lineasPedido(p).map((l) => l.txt).join(' + '), pagadoWompi(p) ? 'Pagado con Wompi: no cobrar' : 'Cobrar: ' + pesos(p.total)].filter(Boolean).join('\n');
     try { await navigator.clipboard.writeText(t); avisar('Datos copiados'); } catch (e) { avisar('No se pudo copiar'); }
   });
   acc.append(wa, copiar);
+  // Borrar (migración 019): para pedidos de prueba. Si el producto ya salió del inventario, primero se cancela.
+  if (!p.inventario_descontado) {
+    const borrar = el('button', 'btn-sec btn-peligro', 'Borrar');
+    borrar.type = 'button';
+    borrar.setAttribute('aria-label', 'Borrar el pedido ' + p.order_id);
+    borrar.addEventListener('click', async () => {
+      if (!confirm('¿Borrar el pedido ' + p.order_id + ' de ' + p.nombre + '? Se elimina para siempre (úsalo para pedidos de prueba).')) return;
+      borrar.disabled = true;
+      const { data, error } = await sb.from('pedidos').delete().eq('id', p.id).select('id');
+      if (error || !data || !data.length) {
+        borrar.disabled = false;
+        avisar(error ? 'No se pudo borrar' : 'No se pudo borrar: corre la migración 019 o cancela el pedido primero');
+        return;
+      }
+      D.pedidos = D.pedidos.filter((x) => x.id !== p.id);
+      pintarTodo();
+      avisar('Pedido ' + p.order_id + ' borrado');
+    });
+    acc.append(borrar);
+  }
   if (p.estado === 'Entregado') {
     const pedir = el('a', 'btn-sec', 'Pedir reseña');
     pedir.href = 'https://wa.me/' + p.celular + '?text=' + encodeURIComponent(mensajeResena(p));
@@ -1187,11 +1230,11 @@ const waCliente = (p, texto) => 'https://wa.me/' + p.celular + '?text=' + encode
 function mensajeGuia(p) {
   return '¡Hola ' + primerNombre(p) + '! 🐾 Tu pedido Revoltosos #' + p.order_id + ' ya va en camino con ' + (p.transportadora || 'la transportadora') + '.\n' +
     '📦 Guía: ' + p.guia + (p.rastreo_url ? '\n🔎 Síguelo aquí: ' + p.rastreo_url : '') + '\n' +
-    '💵 Pagas al recibir: ' + pesos(p.total) + '. Ten el valor listo para que la entrega sea rápida. ¡Gracias por tu compra!';
+    (pagadoWompi(p) ? '✅ Ya está pagado: no tienes que pagarle nada al mensajero. ¡Gracias por tu compra!' : '💵 Pagas al recibir: ' + pesos(p.total) + '. Ten el valor listo para que la entrega sea rápida. ¡Gracias por tu compra!');
 }
 function mensajeReparto(p) {
   return '¡Hola ' + primerNombre(p) + '! 🐾 Tu pedido Revoltosos #' + p.order_id + ' sale hoy a reparto 🚚.\n' +
-    'Ten listos ' + pesos(p.total) + ' para pagarle al mensajero. Si no vas a estar, avísanos por aquí para coordinar. ¡Gracias!';
+    (pagadoWompi(p) ? 'Ya está pagado, no tienes que pagarle nada al mensajero.' : 'Ten listos ' + pesos(p.total) + ' para pagarle al mensajero.') + ' Si no vas a estar, avísanos por aquí para coordinar. ¡Gracias!';
 }
 function mensajeNovedad(p) {
   return '¡Hola ' + primerNombre(p) + '! Somos Revoltosos. La transportadora reporta una novedad con tu pedido #' + p.order_id + ' (' + p.novedad + ').\n' +
@@ -1280,7 +1323,7 @@ function bloqueEnvia(p) {
       l.append(radio, txt, el('strong', null, pesos(o.precio)));
       zona.append(l);
     });
-    zona.append(el('p', 'nota', 'Incluye el recaudo contraentrega de ' + pesos(p.total) + '. Peso: ' + r.peso_kg + ' kg.' + (r.errores.length ? ' Sin respuesta de: ' + r.errores.map((x) => x.carrier).join(', ') + '.' : '')));
+    zona.append(el('p', 'nota', (p.metodo_pago === 'wompi' ? 'Sin recaudo: ya se pagó con Wompi.' : 'Incluye el recaudo contraentrega de ' + pesos(p.total) + '.') + ' Peso: ' + r.peso_kg + ' kg.' + (r.errores.length ? ' Sin respuesta de: ' + r.errores.map((x) => x.carrier).join(', ') + '.' : '')));
     zona.append(boton('Generar guía', 'btn', async (g) => {
       const o = r.opciones[Number((zona.querySelector('input[name="' + nombre + '"]:checked') || {}).value || 0)];
       if (!confirm('¿Generar la guía con ' + o.nombre + ' por ' + pesos(o.precio) + '?' + (r.entorno === 'produccion' ? ' Es una guía real y Envía la cobra.' : ''))) return;
@@ -1872,6 +1915,12 @@ function pintarAjustes() {
   $('#a-prio').value = A.prioritario;
   $('#a-costo-envio').value = A.costo_envio_promedio;
   $('#a-comision').value = A.comision_recaudo;
+  $('#sec-wompi').hidden = !('wompi_activo' in A);
+  if ('wompi_activo' in A) {
+    $('#a-wompi').checked = !!A.wompi_activo;
+    $('#a-wompi-pct').value = A.comision_wompi;
+    $('#a-wompi-fija').value = A.comision_wompi_fija;
+  }
   const t = A.envio_departamentos || {};
   $('#a-tarifas').innerHTML = DEPARTAMENTOS.map((d) => '<label>' + esc(d) + '<input type="number" min="0" step="500" data-dep="' + esc(d) + '" value="' + (t[d] != null ? t[d] : '') + '" placeholder="' + A.envio_base + '"></label>').join('');
   $$('#form-ajustes input, #form-ajustes button').forEach((n) => { n.disabled = !D.tienda; });
@@ -1982,6 +2031,11 @@ $('#form-ajustes').addEventListener('submit', async (e) => {
     actualizado_en: new Date().toISOString()
   };
   if ('envio_ciudades' in D.ajustes) cambios.envio_ciudades = tarifasCiudadEnPantalla();
+  if ('wompi_activo' in D.ajustes) {
+    cambios.wompi_activo = $('#a-wompi').checked;
+    cambios.comision_wompi = Number($('#a-wompi-pct').value);
+    cambios.comision_wompi_fija = Math.round(Number($('#a-wompi-fija').value));
+  }
   if ('envia_remitente' in D.ajustes) {
     const r = {};
     ['nombre', 'empresa', 'documento', 'telefono', 'email', 'direccion', 'barrio', 'referencia'].forEach((k) => { const v = $('#e-' + k).value.trim(); if (v) r[k] = v; });

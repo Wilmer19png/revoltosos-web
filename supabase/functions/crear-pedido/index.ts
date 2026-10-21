@@ -5,6 +5,13 @@
 // migración 007), guarda el pedido en `pedidos` y envía el evento Purchase a la
 // API de Conversiones de Meta con el mismo event_id del Pixel (deduplicación).
 //
+// Pago con Wompi (migración 018): si el cliente elige pagar en línea, el pedido se
+// guarda con pago_estado = 'pendiente' y se devuelve la firma de integridad para
+// abrir el checkout de Wompi. El Purchase a Meta lo manda wompi-eventos cuando el
+// pago se aprueba. Si el cliente vuelve a enviar el mismo pedido (pago rechazado,
+// cerró la ventana, cambió el carrito o se pasó a contra entrega), se actualiza ese
+// mismo pedido mientras no esté pagado.
+//
 // Lo que diga el navegador sobre precios se ignora: solo se usan los ids de los
 // tamaños y las cantidades.
 //
@@ -14,6 +21,7 @@
 //   META_TEST_EVENT_CODE                     → opcional, solo para pruebas
 //   META_API_VERSION                         → opcional (por defecto v23.0)
 //   ALLOWED_ORIGIN                           → opcional, p. ej. https://revoltosos.com
+//   WOMPI_PUBLIC_KEY, WOMPI_INTEGRITY_SECRET → para pagar con Wompi (pub_test_… / test_integrity_… en pruebas)
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
@@ -73,10 +81,36 @@ function descuentoCupon(c: Cupon, items: Item[], subtotal: number): number {
   return Math.min(base, c.tipo === 'porcentaje' ? redondear100((base * Math.min(c.valor, 100)) / 100) : c.valor);
 }
 
-async function sha256(valor: string): Promise<string> {
-  const datos = new TextEncoder().encode(valor.trim().toLowerCase());
-  const hash = await crypto.subtle.digest('SHA-256', datos);
+async function sha256Exacto(valor: string): Promise<string> {
+  const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(valor));
   return Array.from(new Uint8Array(hash)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+const sha256 = (valor: string) => sha256Exacto(valor.trim().toLowerCase());
+
+// La llave pública viaja al navegador: si alguien pega otra (p. ej. la privada prv_…), no se usa.
+const wompiListo = () => {
+  const publica = Deno.env.get('WOMPI_PUBLIC_KEY')?.trim() ?? '';
+  if (publica && !/^pub_(test|prod)_/.test(publica)) console.error('WOMPI_PUBLIC_KEY no es una llave pública (debe empezar por pub_test_ o pub_prod_)');
+  return /^pub_(test|prod)_/.test(publica) && !!Deno.env.get('WOMPI_INTEGRITY_SECRET')?.trim();
+};
+
+// Datos para abrir el checkout de Wompi. Cada intento lleva su propia referencia
+// (Wompi no deja repetirla): order_id + 4 letras. La firma es
+// SHA256(referencia + monto en centavos + moneda + secreto de integridad).
+async function checkoutWompi(orderId: string, total: number) {
+  const referencia = `${orderId}-${crypto.randomUUID().slice(0, 4)}`;
+  const centavos = total * 100;
+  const firma = await sha256Exacto(`${referencia}${centavos}COP${Deno.env.get('WOMPI_INTEGRITY_SECRET')!.trim()}`);
+  return {
+    referencia,
+    datos: {
+      public_key: Deno.env.get('WOMPI_PUBLIC_KEY')!.trim(),
+      currency: 'COP',
+      amount_in_cents: centavos,
+      reference: referencia,
+      signature: firma,
+    },
+  };
 }
 
 // Quita tildes y espacios, como pide Meta para ct/st/fn/ln
@@ -190,6 +224,7 @@ Deno.serve(async (req) => {
   const departamento = texto(b.departamento, 40);
   const indicaciones = texto(b.indicaciones, 300);
   const prioritario = b.prioritario === true;
+  const conWompi = b.metodo_pago === 'wompi';
   const codigoCupon = texto(b.cupon, 30).toUpperCase();
   const paraQuien = Array.isArray(b.para_quien) ? b.para_quien.filter((m) => MASCOTAS.has(String(m))).map(String) : [];
 
@@ -236,6 +271,9 @@ Deno.serve(async (req) => {
   if (ciudad.length < 2) errores.push('ciudad');
   if (!DEPARTAMENTOS.has(departamento)) errores.push('departamento');
   if (errores.length) return json({ ok: false, error: 'Revisa: ' + errores.join(', ') }, 422);
+  if (conWompi && (!wompiListo() || !ajustes!.wompi_activo)) {
+    return json({ ok: false, error: 'El pago en línea no está disponible ahora', campo: 'metodo_pago' }, 503);
+  }
 
   const subtotal = items.reduce((s, i) => s + i.precio * i.cantidad, 0);
   const costoProductos = items.reduce((s, i) => s + i.costo * i.cantidad, 0);
@@ -264,19 +302,30 @@ Deno.serve(async (req) => {
   const valorPrioritario = prioritario ? a.prioritario : 0;
   const total = productosNeto + envio + valorPrioritario;
 
-  // Idempotencia: si el mismo event_id ya llegó (doble clic o reintento), se devuelve ese pedido.
-  const { data: existente } = await supabase.from('pedidos').select('order_id, total').eq('event_id', eventId).maybeSingle();
-  if (existente) return json({ ok: true, order_id: existente.order_id, total: existente.total });
-
   const ip = (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim();
+  const extra = {
+    fbp: texto(b.fbp, 200),
+    fbc: texto(b.fbc, 600),
+    ua: req.headers.get('user-agent') ?? '',
+    ip,
+    url: texto(b.event_source_url, 500),
+  };
+
+  // Idempotencia: si el mismo event_id ya llegó (doble clic o reintento), se devuelve ese pedido.
+  // Excepción: un pedido de Wompi sin pagar se reabre y se actualiza con lo que llega ahora.
+  const { data: existente } = await supabase.from('pedidos').select('*').eq('event_id', eventId).maybeSingle();
+  const reabierto = !!existente && existente.metodo_pago === 'wompi' && existente.pago_estado !== 'aprobado';
+  if (existente && !reabierto) {
+    return json({ ok: true, order_id: existente.order_id, total: existente.total, pagado: existente.pago_estado === 'aprobado' });
+  }
+
   const ipHash = ip ? await sha256(ip) : null;
-  if (ipHash) {
+  if (ipHash && !reabierto) {
+    // Un pedido de Wompi que nunca se pagó no cuenta para el límite.
     const desde = new Date(Date.now() - HORAS_ENTRE_PEDIDOS * 3600 * 1000).toISOString();
-    const { count } = await supabase
-      .from('pedidos')
-      .select('id', { count: 'exact', head: true })
-      .eq('ip_hash', ipHash)
-      .gte('creado_en', desde);
+    const recientes = () => supabase.from('pedidos').select('id', { count: 'exact', head: true }).eq('ip_hash', ipHash).gte('creado_en', desde);
+    let { count, error } = await recientes().or('metodo_pago.eq.contraentrega,pago_estado.eq.aprobado');
+    if (error) ({ count } = await recientes()); // migración 018 sin correr
     if (count) {
       return json({ ok: false, error: 'Ya hay un pedido reciente desde esta conexión' }, 429);
     }
@@ -306,12 +355,24 @@ Deno.serve(async (req) => {
     utm_term: texto(b.utm_term, 200) || null,
     fbclid: texto(b.fbclid, 500) || null,
   };
+  // Con Wompi se guardan las cookies de Meta para mandar el Purchase cuando se apruebe el pago.
+  const pago = conWompi
+    ? { metodo_pago: 'wompi', pago_estado: 'pendiente', meta_datos: extra }
+    : reabierto ? { metodo_pago: 'contraentrega', pago_estado: null, wompi_referencia: null, meta_datos: null } : {};
 
   let orderId = '';
+  if (reabierto) {
+    const { error } = await supabase.from('pedidos').update({ ...fila, ...pago }).eq('id', existente.id);
+    if (error) {
+      console.error('update reabierto', error);
+      return json({ ok: false, error: 'No pudimos guardar el pedido' }, 500);
+    }
+    orderId = existente.order_id;
+  }
   let filaFinal: Record<string, unknown> = fila;
   for (let intento = 0; intento < 5 && !orderId; intento++) {
     const candidato = generarOrderId();
-    const { error } = await supabase.from('pedidos').insert({ ...filaFinal, order_id: candidato });
+    const { error } = await supabase.from('pedidos').insert({ ...filaFinal, ...pago, order_id: candidato });
     if (!error) orderId = candidato;
     else if (error.code === 'PGRST204') {
       // Falta una columna (migración 009 sin correr): se guarda el pedido sin los datos del anuncio.
@@ -329,22 +390,26 @@ Deno.serve(async (req) => {
   }
   if (!orderId) return json({ ok: false, error: 'No pudimos generar el número de pedido' }, 500);
 
-  if (descuento) {
+  if (descuento && !(reabierto && existente.cupon === cupon!.codigo)) {
     const { error } = await supabase.from('cupones').update({ usos: cupon!.usos + 1 }).eq('codigo', cupon!.codigo);
     if (error) console.error('cupon usos', error);
   }
 
-  const extra = {
-    fbp: texto(b.fbp, 200),
-    fbc: texto(b.fbc, 600),
-    ua: req.headers.get('user-agent') ?? '',
-    ip,
-    url: texto(b.event_source_url, 500),
-  };
-  // Meta no debe frenar la respuesta al cliente si tarda o falla.
-  const meta = enviarAMeta({ ...fila, order_id: orderId }, extra).catch((e) => console.error('Meta', e));
-  // @ts-ignore EdgeRuntime existe en Supabase
-  if (typeof EdgeRuntime !== 'undefined') EdgeRuntime.waitUntil(meta); else await meta;
+  let wompi = null;
+  if (conWompi) {
+    const checkout = await checkoutWompi(orderId, total);
+    const { error } = await supabase.from('pedidos').update({ wompi_referencia: checkout.referencia }).eq('order_id', orderId);
+    if (error) {
+      console.error('wompi_referencia', error);
+      return json({ ok: false, error: 'No pudimos preparar el pago' }, 500);
+    }
+    wompi = checkout.datos;
+  } else {
+    // Meta no debe frenar la respuesta al cliente si tarda o falla.
+    const meta = enviarAMeta({ ...fila, order_id: orderId }, extra).catch((e) => console.error('Meta', e));
+    // @ts-ignore EdgeRuntime existe en Supabase
+    if (typeof EdgeRuntime !== 'undefined') EdgeRuntime.waitUntil(meta); else await meta;
+  }
 
   return json({
     ok: true,
@@ -355,5 +420,7 @@ Deno.serve(async (req) => {
     envio,
     prioritario: valorPrioritario,
     items: items.map(({ costo: _costo, ...i }) => i),
+    metodo_pago: conWompi ? 'wompi' : 'contraentrega',
+    wompi,
   });
 });

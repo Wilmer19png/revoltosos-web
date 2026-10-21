@@ -22,6 +22,7 @@ Tienda con catálogo, carrito, cupones y pago contraentrega, una landing por pro
 | `assets/css/tienda.css`, `assets/js/tienda.js` | Estilos y lógica compartidos de la tienda (carrito, cupón, envío gratis, formulario) |
 | `assets/css/landing.css` | Base visual y secciones de contenido (anatomía, carruseles, beneficios…) |
 | `supabase/functions/crear-pedido/index.ts` | Función del servidor: recalcula precios, cupón y envío, guarda el pedido y avisa a Meta |
+| `supabase/functions/wompi-eventos/index.ts` | Recibe los avisos de pago de Wompi y marca el pedido como pagado |
 | `supabase/migraciones/` | Cambios de la base de datos, en orden |
 
 ```
@@ -77,6 +78,20 @@ Desde cada pedido: **Generar guía con Envía** cotiza con todas las transportad
 4. Secrets: `ENVIA_TOKEN` = el token. Mientras pruebas no pongas nada más (queda en modo pruebas). Para guías reales: cambia `ENVIA_TOKEN` por el token de producción y agrega `ENVIA_ENTORNO` = `produccion`.
 5. Gestor → **Ajustes → Envía**: llena el remitente y la caja, guarda y toca **Probar conexión con Envía**.
 6. Gestor → **Productos**: pon el **Peso (g)** de cada tamaño ya empacado.
+
+## Wompi: pagar en línea o contra entrega
+
+En el formulario el cliente elige **Contra entrega** (como siempre) o **Pagar ahora** (tarjeta, PSE, Nequi, Bancolombia). Con Wompi el pedido se guarda primero como «Wompi · sin pagar», se abre la ventana de pago de Wompi y, cuando Wompi avisa que se aprobó, la función `wompi-eventos` lo marca **Pagado** y manda el Purchase a Meta. En el gestor cada pedido muestra si ya pagó; la guía de Envía de un pedido pagado sale sin recaudo, y Envía no deja generar guía si el pago no está aprobado. Si el pago se rechaza, el cliente puede reintentar o pasarse a contra entrega y se actualiza el mismo pedido.
+
+1. Crea la cuenta en comercios.wompi.co. En **Desarrolladores** están las llaves de **pruebas** (sandbox) y las de producción.
+2. SQL Editor → `supabase/migraciones/018-wompi.sql` → Run.
+3. Edge Functions → `crear-pedido` → reemplaza el código por `supabase/functions/crear-pedido/index.ts` → Deploy. Edge Functions → `envia` → igual con `supabase/functions/envia/index.ts`.
+4. Edge Functions → **Deploy a new function** → `wompi-eventos` → pega `supabase/functions/wompi-eventos/index.ts` → Deploy → **apaga Verify JWT** (quien la llama es Wompi).
+5. Secrets: `WOMPI_PUBLIC_KEY` (`pub_test_…`), `WOMPI_INTEGRITY_SECRET` (secreto de **Integridad**, `test_integrity_…`) y `WOMPI_EVENTS_SECRET` (secreto de **Eventos**, `test_events_…`).
+6. Wompi → Desarrolladores → **URL de eventos**: `https://jlvnrxmardcnarzspccs.supabase.co/functions/v1/wompi-eventos` (en pruebas y en producción).
+7. Gestor → **Ajustes → Pago en línea con Wompi** → marca «Mostrar “Pagar ahora con Wompi”» → Guardar.
+8. Prueba en la tienda con la tarjeta de pruebas `4242 4242 4242 4242` (aprobada) o `4111 1111 1111 1111` (rechazada), cualquier fecha futura y CVC. El pedido debe pasar a «Pagado · Wompi» en el gestor.
+9. Para cobrar de verdad: cambia los tres secrets por los de producción (`pub_prod_…`, `prod_integrity_…`, `prod_events_…`).
 
 ## Primera puesta en marcha (ya hecha)
 

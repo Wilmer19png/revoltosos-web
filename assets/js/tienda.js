@@ -92,7 +92,8 @@ async function descargarCatalogo() {
       .catch(() => pedir('productos?select=id,nombre,categoria,descripcion,imagen,ruta,orden{extra}&order=orden', ',etiqueta')),
     rest('variantes?select=id,producto_id,nombre,detalle,precio,precio_antes,orden,imagen,envio_gratis&order=orden')
       .catch(() => pedir('variantes?select=id,producto_id,nombre,detalle,precio,precio_antes,orden{extra}&order=orden', ',imagen')),
-    pedir('ajustes?select=envio_gratis_desde,envio_base,envio_departamentos,prioritario{extra}&id=eq.1', ',envio_ciudades')
+    rest('ajustes?select=envio_gratis_desde,envio_base,envio_departamentos,prioritario,envio_ciudades,wompi_activo&id=eq.1')
+      .catch(() => pedir('ajustes?select=envio_gratis_desde,envio_base,envio_departamentos,prioritario{extra}&id=eq.1', ',envio_ciudades'))
   ]);
   if (!productos.length || !variantes.length) throw new Error('catálogo vacío');
   return { productos, variantes, ajustes: ajustes[0] };
@@ -744,18 +745,33 @@ function plantillaFormulario() {
     '<fieldset><legend style="font-size: 15px; margin-bottom: 8px">¿Para quién es? <small style="font-weight: 500; color: var(--tinta-2); font-size: inherit">(opcional)</small></legend>' +
     '<div class="mascotas"><button type="button" class="mascota" aria-pressed="false">Perro pequeño</button><button type="button" class="mascota" aria-pressed="false">Perro mediano</button><button type="button" class="mascota" aria-pressed="false">Perro grande</button><button type="button" class="mascota" aria-pressed="false">Gato</button></div></fieldset>' +
     '<label class="prioritario"><input type="checkbox" id="f-prioritario" name="prioritario"><span><strong>Envío prioritario: +<span data-valor-prioritario></span></strong><br><span>Despachamos tu pedido primero.</span></span></label>' +
+    '<fieldset class="metodos" data-metodos hidden><legend style="font-size: 15px; margin-bottom: 8px">¿Cómo quieres pagar?</legend>' +
+    '<label class="metodo"><input type="radio" name="metodo_pago" value="contraentrega" checked><span><strong>Contra entrega</strong><span>Pagas en efectivo cuando te llegue.</span></span></label>' +
+    '<label class="metodo"><input type="radio" name="metodo_pago" value="wompi"><span><strong>Pagar ahora</strong><span>Tarjeta, PSE, Nequi o Bancolombia, con Wompi.</span></span></label></fieldset>' +
     '<div class="resumen cuentas" aria-live="polite" data-cuentas-pedido></div>' +
     '<label class="acepto"><input type="checkbox" id="f-acepto" name="acepto" required aria-describedby="e-acepto"><span>Autorizo el tratamiento de mis datos para gestionar mi pedido, según la <a href="/privacidad.html" target="_blank" rel="noopener">política de datos</a> (Ley 1581 de 2012).</span></label>' +
     '<span class="error" id="e-acepto" style="margin-top: -8px"></span>' +
     '<div class="trampa" aria-hidden="true"><label for="f-empresa">Empresa</label><input id="f-empresa" name="empresa" type="text" tabindex="-1" autocomplete="off"></div>' +
     '<p class="form-error" id="form-error" role="alert" hidden></p>' +
     '<button type="submit" class="btn btn-confirmar rv-pulso" id="btn-pagar"><span>Confirmar pedido</span><span>Pago contraentrega · sin tarjeta</span></button>' +
-    '<p class="seguro">' + ICONO.candado + 'No pagas nada ahora. Te confirmamos por WhatsApp.</p>' +
+    '<p class="seguro">' + ICONO.candado + '<span data-seguro>No pagas nada ahora. Te confirmamos por WhatsApp.</span></p>' +
     '</form>';
 }
 
 let enviando = false;
 const mascotas = new Set();
+
+// Pago con Wompi (migración 018): la opción solo aparece si está activa en el gestor.
+const metodoDe = (form) => (T.ajustes.wompi_activo && form.metodo_pago && form.metodo_pago.value === 'wompi' ? 'wompi' : 'contraentrega');
+function pintarBoton(form, total) {
+  const wompi = metodoDe(form) === 'wompi';
+  $('#btn-pagar').innerHTML = wompi
+    ? '<span>Pagar ' + pesos(total) + '</span><span>Tarjeta, PSE, Nequi o Bancolombia</span>'
+    : '<span>Confirmar pedido</span><span>Pago contraentrega · sin tarjeta</span>';
+  $('[data-seguro]', form).textContent = wompi
+    ? 'Pago seguro con Wompi, de Bancolombia. No guardamos los datos de tu tarjeta.'
+    : 'No pagas nada ahora. Te confirmamos por WhatsApp.';
+}
 
 function pintarResumenPedido() {
   const d = $('#pedido-modal');
@@ -770,6 +786,8 @@ function pintarResumenPedido() {
       esc(k.ls.map((l) => l.q + ' × ' + nombreLargo(l.v)).join(', ')) + '</span></div><strong>' + pesos(k.neto) + '</strong>'
     : '<div><strong>Tu carrito está vacío</strong></div>';
   $('[data-valor-prioritario]', d).textContent = pesos(T.ajustes.prioritario);
+  $('[data-metodos]', d).hidden = !T.ajustes.wompi_activo;
+  const wompi = metodoDe(form) === 'wompi';
 
   const cotiza = $('[data-cotiza]', d);
   if (dep && form.ciudad.value) {
@@ -787,8 +805,9 @@ function pintarResumenPedido() {
     (k.descuento ? '<div class="verde"><span>Cupón ' + esc(cupon.codigo) + '</span><span>−' + pesos(k.descuento) + '</span></div>' : '') +
     '<div><span>Envío</span>' + envioTxt + '</div>' +
     (prio ? '<div><span>Envío prioritario</span><span>' + pesos(prio) + '</span></div>' : '') +
-    '<hr class="perforado"><div class="resumen-total"><strong>Pagas al recibir</strong><span>' + pesos(total) + (dep || k.gratis ? '' : ' + envío') + '</span></div>' +
+    '<hr class="perforado"><div class="resumen-total"><strong>' + (wompi ? 'Pagas ahora' : 'Pagas al recibir') + '</strong><span>' + pesos(total) + (dep || k.gratis ? '' : ' + envío') + '</span></div>' +
     (k.ahorro ? '<div class="ahorro-caja" style="margin-top: 10px"><span>' + ICONO.etiqueta + 'Estás ahorrando</span><strong>' + pesos(k.ahorro) + '</strong></div>' : '');
+  if (!enviando) pintarBoton(form, total);
   return total;
 }
 
@@ -882,6 +901,7 @@ function iniciarFormulario() {
   });
   form.ciudad.addEventListener('change', pintarResumenPedido);
   form.prioritario.addEventListener('change', pintarResumenPedido);
+  $$('[name="metodo_pago"]', form).forEach((r) => r.addEventListener('change', pintarResumenPedido));
   $$('.mascota', form).forEach((btn) => btn.addEventListener('click', () => {
     const on = btn.getAttribute('aria-pressed') !== 'true';
     btn.setAttribute('aria-pressed', String(on));
@@ -939,6 +959,7 @@ async function enviarPedido(e) {
     departamento: form.departamento.value,
     indicaciones: form.indicaciones.value.trim(),
     prioritario: form.prioritario.checked,
+    metodo_pago: metodoDe(form),
     para_quien: Array.from(mascotas),
     utm_source: leer('rv-utm_source') || '',
     utm_medium: leer('rv-utm_medium') || '',
@@ -961,20 +982,23 @@ async function enviarPedido(e) {
     const r = await res.json().catch(() => ({}));
     if (!res.ok || !r.ok) throw Object.assign(new Error(r.error || 'No pudimos registrar el pedido.'), { status: res.status, campo: r.campo });
 
-    if (window.fbq) {
-      const [fn, ...resto] = datos.nombre.toLowerCase().split(/\s+/);
-      fbq('init', CONFIG.PIXEL_ID, { ph: datos.celular, fn: fn, ln: resto.join(' '), ct: datos.ciudad.toLowerCase(), st: datos.departamento.toLowerCase(), country: 'co', external_id: r.order_id });
-      track('Purchase', { value: r.total, currency: 'COP', content_ids: datos.items.map((i) => i.variante_id), contents: datos.items.map((i) => ({ id: i.variante_id, quantity: i.cantidad })), content_type: 'product', num_items: k.unidades }, { eventID: eventId });
+    if (r.wompi) {
+      // El pedido queda guardado sin pagar; si el cliente cierra la ventana de Wompi puede volver a intentar.
+      btn.innerHTML = '<span>Abriendo el pago…</span>';
+      await abrirWompi(datos, r, k.unidades, eventId);
+      enviando = false;
+      btn.disabled = false;
+      pintarResumenPedido();
+      return;
     }
-    try { sessionStorage.removeItem('rv-event-id'); } catch (err) {}
-    mostrarGracias(datos, r, k);
-    carrito = {};
-    cupon = null;
-    guardarCarrito();
-    guardar('rv-cupon', '');
-    actualizar();
+    pedidoListo(datos, r, k.unidades, eventId, r.pagado ? 'aprobado' : null);
   } catch (err) {
-    if (err.campo === 'cupon') {
+    if (err.campo === 'metodo_pago') {
+      $$('[name="metodo_pago"]', form).forEach((x) => { x.checked = x.value === 'contraentrega'; });
+      errorGeneral.textContent = 'El pago en línea no está disponible en este momento. Cambiamos a pago contra entrega: revisa y vuelve a confirmar.';
+    } else if (err.campo === 'wompi') {
+      errorGeneral.textContent = 'No pudimos abrir la ventana de pago. Revisa tu conexión e inténtalo de nuevo, o elige pago contra entrega.';
+    } else if (err.campo === 'cupon') {
       cupon = null;
       guardar('rv-cupon', '');
       pintarResumenPedido();
@@ -991,28 +1015,128 @@ async function enviarPedido(e) {
     }
     errorGeneral.hidden = false;
     btn.disabled = false;
-    btn.innerHTML = '<span>Confirmar pedido</span><span>Pago contraentrega · sin tarjeta</span>';
+    enviando = false;
+    pintarResumenPedido();
   }
   enviando = false;
 }
 
-function mostrarGracias(datos, r, k) {
+// Pedido listo: Purchase al Pixel (salvo pago en verificación: ese lo manda wompi-eventos a Meta al aprobarse),
+// pantalla de gracias y carrito vacío. pago: null (contra entrega), 'aprobado' o 'pendiente'.
+function pedidoListo(datos, r, unidades, eventId, pago) {
+  if (window.fbq && pago !== 'pendiente') {
+    const [fn, ...resto] = datos.nombre.toLowerCase().split(/\s+/);
+    fbq('init', CONFIG.PIXEL_ID, { ph: datos.celular, fn: fn, ln: resto.join(' '), ct: datos.ciudad.toLowerCase(), st: datos.departamento.toLowerCase(), country: 'co', external_id: r.order_id });
+    track('Purchase', { value: r.total, currency: 'COP', content_ids: datos.items.map((i) => i.variante_id), contents: datos.items.map((i) => ({ id: i.variante_id, quantity: i.cantidad })), content_type: 'product', num_items: unidades }, { eventID: eventId });
+  }
+  // rv-wompi se deja: si Wompi recarga la página con ?id= después de aprobar, se vuelve a mostrar este mismo resultado.
+  try { sessionStorage.removeItem('rv-event-id'); } catch (err) {}
+  mostrarGracias(datos, r, pago);
+  carrito = {};
+  cupon = null;
+  guardarCarrito();
+  guardar('rv-cupon', '');
+  actualizar();
+}
+
+/* Wompi: ventana de pago (widget). Si el medio de pago saca al cliente de la página (PSE, Bancolombia),
+   Wompi lo devuelve a esta misma página con ?id=<transacción> y se retoma en volverDeWompi. */
+let cargandoWompi = null;
+const cargarWompi = () => cargandoWompi || (cargandoWompi = new Promise((ok, mal) => {
+  if (window.WidgetCheckout) return ok();
+  const s = document.createElement('script');
+  s.src = 'https://checkout.wompi.co/widget.js';
+  s.onload = ok;
+  s.onerror = () => { cargandoWompi = null; mal(Object.assign(new Error('widget'), { campo: 'wompi' })); };
+  document.head.appendChild(s);
+}));
+
+async function abrirWompi(datos, r, unidades, eventId) {
+  await cargarWompi();
+  const w = r.wompi;
+  guardar('rv-wompi', JSON.stringify({ datos, r, unidades, eventId }));
+  const checkout = new window.WidgetCheckout({
+    currency: w.currency,
+    amountInCents: w.amount_in_cents,
+    reference: w.reference,
+    publicKey: w.public_key,
+    signature: { integrity: w.signature },
+    redirectUrl: location.origin + location.pathname,
+    customerData: { fullName: datos.nombre, phoneNumber: datos.celular.slice(2), phoneNumberPrefix: '+57', legalId: datos.cedula, legalIdType: 'CC' }
+  });
+  checkout.open((resultado) => resultadoWompi(resultado && resultado.transaction));
+}
+
+// Lo que diga el navegador solo cambia la pantalla: el pedido se marca pagado cuando Wompi avisa a wompi-eventos.
+async function resultadoWompi(tx) {
+  let s = null;
+  try { s = JSON.parse(leer('rv-wompi') || 'null'); } catch (e) {}
+  if (!s || !tx || tx.reference !== s.r.wompi.reference) return;
+  const d = $('#pedido-modal');
+  if (!d.open) abrirDialogo(d);
+  if (tx.status === 'APPROVED' || tx.status === 'PENDING') {
+    pedidoListo(s.datos, s.r, s.unidades, s.eventId, tx.status === 'APPROVED' ? 'aprobado' : 'pendiente');
+    return;
+  }
+  // Rechazado, anulado o con error: el pedido sigue guardado sin pagar y el formulario queda listo para reintentar.
+  if (d.dataset.gracias || !$('#form-pedido', d)) reiniciarFormulario();
+  const form = $('#form-pedido', d);
+  if (!form.nombre.value) await llenarFormulario(form, s.datos);
+  const errorGeneral = $('#form-error');
+  errorGeneral.textContent = 'Tu pago no fue aprobado. Puedes intentarlo de nuevo con otro medio de pago, o elegir pago contra entrega.';
+  errorGeneral.hidden = false;
+  pintarResumenPedido();
+}
+
+async function llenarFormulario(form, datos) {
+  ['nombre', 'cedula', 'direccion', 'barrio', 'indicaciones'].forEach((n) => { form[n].value = datos[n] || ''; });
+  form.celular.value = datos.celular.slice(2);
+  form.prioritario.checked = !!datos.prioritario;
+  $$('[name="metodo_pago"]', form).forEach((x) => { x.checked = x.value === datos.metodo_pago; });
+  form.departamento.value = datos.departamento;
+  form.departamento.dispatchEvent(new Event('change'));
+  await cargarMunicipios();
+  await Promise.resolve();
+  form.ciudad.value = datos.ciudad;
+}
+
+async function volverDeWompi() {
+  const q = new URLSearchParams(location.search);
+  const id = q.get('id');
+  const guardado = leer('rv-wompi');
+  if (!id || !guardado) return;
+  q.delete('id');
+  q.delete('env');
+  history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + location.hash);
+  let s = null;
+  try { s = JSON.parse(guardado); } catch (e) { return; }
+  const api = /^pub_test_/.test(s.r.wompi.public_key) ? 'https://sandbox.wompi.co/v1' : 'https://production.wompi.co/v1';
+  try {
+    const res = await fetch(api + '/transactions/' + encodeURIComponent(id));
+    const tx = (await res.json()).data;
+    if (tx) resultadoWompi(tx);
+  } catch (e) { /* sin respuesta: el pedido quedó guardado y el gestor verá el pago cuando Wompi avise */ }
+}
+
+function mostrarGracias(datos, r, pago) {
   const d = $('#pedido-modal');
   d.dataset.gracias = '1';
-  $('#pedido-titulo').textContent = '¡Pedido recibido!';
+  $('#pedido-titulo').textContent = pago === 'aprobado' ? '¡Pago aprobado!' : '¡Pedido recibido!';
   $('.panel-cab p', d).hidden = true;
-  const items = (r.items && r.items.length ? r.items : k.ls.map((l) => ({ nombre: nombreLargo(l.v), cantidad: l.q, precio: l.v.precio })));
-  const msg = 'Hola Revoltosos, acabo de hacer el pedido #' + r.order_id + ' (total ' + pesos(r.total) + ').';
+  const items = r.items || [];
+  const msg = 'Hola Revoltosos, acabo de hacer el pedido #' + r.order_id + ' (total ' + pesos(r.total) + (pago === 'aprobado' ? ', pagado con Wompi' : '') + ').';
   $('[data-pedido-cuerpo]', d).innerHTML = '<div class="gracias-t">' +
     '<span class="gracias-check">' + ICONO.check.replace('width="17" height="17"', 'width="30" height="30"') + '</span>' +
     '<h2 tabindex="-1" id="t-gracias">¡Gracias, ' + esc(datos.nombre.split(/\s+/)[0]) + '!</h2>' +
-    '<p>Te escribiremos por WhatsApp en breve para confirmar tus datos y despacharlo.</p>' +
+    '<p>' + (pago === 'aprobado' ? 'Recibimos tu pago. Te escribiremos por WhatsApp cuando despachemos tu pedido.'
+      : pago === 'pendiente' ? 'Tu pago está en verificación con el banco. Apenas se confirme te escribimos por WhatsApp.'
+      : 'Te escribiremos por WhatsApp en breve para confirmar tus datos y despacharlo.') + '</p>' +
     '<div class="resumen cuentas"><div><span style="color: var(--tinta-2)">Pedido</span><strong>' + esc(r.order_id) + '</strong></div><hr class="perforado">' +
     items.map((i) => '<div><span>' + i.cantidad + ' × ' + esc(i.nombre) + '</span><span>' + pesos(i.precio * i.cantidad) + '</span></div>').join('') +
     (r.descuento ? '<div class="verde"><span>Cupón</span><span>−' + pesos(r.descuento) + '</span></div>' : '') +
     '<div><span>Envío</span><span' + (r.envio ? '' : ' class="verde"') + '>' + (r.envio ? pesos(r.envio) : 'GRATIS') + '</span></div>' +
     (r.prioritario ? '<div><span>Envío prioritario</span><span>' + pesos(r.prioritario) + '</span></div>' : '') +
-    '<hr class="perforado"><div class="resumen-total"><strong>Pagas al recibir</strong><span>' + pesos(r.total) + '</span></div>' +
+    '<hr class="perforado"><div class="resumen-total"><strong>' + (pago === 'aprobado' ? 'Pagado con Wompi' : pago === 'pendiente' ? 'Pago en verificación' : 'Pagas al recibir') + '</strong><span>' + pesos(r.total) + '</span></div>' +
     '<p style="margin-top: 12px; font-size: 14px; color: var(--tinta-2)">' + esc([datos.direccion, datos.barrio, datos.ciudad + ' - ' + datos.departamento].join(', ')) + '</p></div>' +
     '<a class="btn btn--verde" href="https://wa.me/' + CONFIG.WHATSAPP + '?text=' + encodeURIComponent(msg) + '" target="_blank" rel="noopener">' + ICONO.whatsapp + 'Escríbenos por WhatsApp</a>' +
     '<button type="button" class="btn btn--borde" data-cerrar>Seguir mirando</button></div>';
@@ -1213,3 +1337,4 @@ cargarCatalogo(pintarTodo).then(() => {
 pintarTodo();
 if (location.hash === '#carrito') abrirCarrito();
 else if (location.hash === '#pedido') abrirPedido();
+volverDeWompi();
