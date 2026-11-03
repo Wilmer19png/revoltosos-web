@@ -293,6 +293,12 @@ function actualizar() {
     if (b.classList.contains('btn-agregar')) b.innerHTML = (q ? ICONO.check + 'Agregado (' + q + ')' : ICONO.mas + 'Agregar');
     if (b.classList.contains('btn-mas')) b.innerHTML = q ? ICONO.check : ICONO.mas;
   });
+  $$('[data-elegir]').forEach((b) => {
+    const q = T.variantes.filter((v) => v.producto_id === b.dataset.elegir).reduce((s, v) => s + (carrito[v.id] || 0), 0);
+    b.classList.toggle('en-carrito', q > 0);
+    b.innerHTML = q ? ICONO.check + 'Agregado (' + q + ')' : ICONO.mas + 'Agregar';
+  });
+  if ($('#elegir') && $('#elegir').open) pintarElegir();
   pintarBarraFija(k);
   if ($('#carrito') && $('#carrito').open) pintarCarrito();
   if ($('#pedido-modal') && $('#pedido-modal').open && !$('#pedido-modal').dataset.gracias) pintarResumenPedido();
@@ -342,28 +348,45 @@ let catPedida = new URLSearchParams(location.search).get('cat'); // /productos/?
 
 const fuego = (texto) => '<span class="etq-fuego">' + ICONO.fuego + esc(texto) + '</span>';
 
-function tarjetaProducto(v) {
+// Una tarjeta por producto. Con un solo tamaño, "Agregar" lo agrega de una vez;
+// con varios, abre la ventana para elegir cuál llevar (data-elegir).
+function tarjetaProducto(vs) {
+  const v = vs[0];
   const p = prodDe(v);
-  const etiqueta = (p.etiqueta ? fuego(p.etiqueta) : '') + (v.precio_antes > v.precio
-    ? '<span class="prod-etiqueta">Ahorras ' + pesos(v.precio_antes - v.precio) + '</span>'
-    : (v.envio_gratis || v.precio >= T.ajustes.envio_gratis_desde ? '<span class="prod-etiqueta rosa">Envío gratis</span>' : ''));
+  const varios = vs.length > 1;
+  const desde = varios ? vs.reduce((a, b) => (b.precio < a.precio ? b : a)) : v;
+  const ahorro = Math.max.apply(null, vs.map((x) => (x.precio_antes > x.precio ? x.precio_antes - x.precio : 0)));
+  const etiqueta = (p.etiqueta ? fuego(p.etiqueta) : '') + (ahorro
+    ? '<span class="prod-etiqueta">Ahorras ' + (varios ? 'hasta ' : '') + pesos(ahorro) + '</span>'
+    : (vs.some((x) => x.envio_gratis || x.precio >= T.ajustes.envio_gratis_desde) ? '<span class="prod-etiqueta rosa">Envío gratis</span>' : ''));
   return '<article class="prod">' +
     '<a class="prod-foto" href="' + esc(urlProducto(p)) + '"><img src="' + esc(fotoDe(v)) + '" alt="' + esc(p.nombre) + '" width="600" height="600" loading="lazy">' + (etiqueta ? '<span class="prod-etiquetas">' + etiqueta + '</span>' : '') + '</a>' +
     '<div class="prod-info"><h3><a href="' + esc(urlProducto(p)) + '">' + esc(p.nombre) + '</a></h3>' +
-    '<span class="tam">' + esc(v.nombre) + (v.detalle ? ' · ' + esc(v.detalle) : '') + '</span>' +
-    '<div class="precio"><strong>' + pesos(v.precio) + '</strong>' + (v.precio_antes > v.precio ? '<s>' + pesos(v.precio_antes) + '</s>' : '') + '</div>' +
-    '<button type="button" class="btn-agregar" data-agregar="' + esc(v.id) + '" aria-label="Agregar ' + esc(nombreLargo(v)) + ' al carrito"></button></div></article>';
+    (varios
+      ? '<span class="tam">' + vs.length + ' tamaños: ' + esc(vs.map((x) => x.nombre).join(' · ')) + '</span>' +
+        '<div class="precio"><span class="desde">Desde</span><strong>' + pesos(desde.precio) + '</strong></div>' +
+        '<button type="button" class="btn-agregar" data-elegir="' + esc(p.id) + '" aria-haspopup="dialog" aria-label="Elegir tamaño de ' + esc(p.nombre) + '"></button>'
+      : '<span class="tam">' + esc(v.nombre) + (v.detalle ? ' · ' + esc(v.detalle) : '') + '</span>' +
+        '<div class="precio"><strong>' + pesos(v.precio) + '</strong>' + (v.precio_antes > v.precio ? '<s>' + pesos(v.precio_antes) + '</s>' : '') + '</div>' +
+        '<button type="button" class="btn-agregar" data-agregar="' + esc(v.id) + '" aria-label="Agregar ' + esc(nombreLargo(v)) + ' al carrito"></button>') +
+    '</div></article>';
 }
 
-// Los primeros productos del gestor (orden 1 a DESTACADOS) van adelante con su tamaño principal;
-// todo lo demás (incluidos sus otros tamaños) sigue del más barato al más caro.
+// Agrupa los tamaños por producto. Los primeros productos del gestor (orden 1 a DESTACADOS)
+// van adelante; los demás siguen del más barato al más caro (según su tamaño más económico).
 const DESTACADOS = 5;
 function ordenCatalogo(vs) {
-  const principal = {};
-  vs.forEach((v) => { if (!principal[v.producto_id] || v.orden < principal[v.producto_id].orden) principal[v.producto_id] = v; });
-  const destacado = (v) => prodDe(v).orden <= DESTACADOS && principal[v.producto_id] === v;
-  const primeros = vs.filter(destacado);
-  const resto = vs.filter((v) => !destacado(v)).sort((a, b) => (a.precio - b.precio) || (prodDe(a).orden - prodDe(b).orden) || (a.orden - b.orden));
+  const grupos = {};
+  const lista = [];
+  vs.forEach((v) => {
+    if (!grupos[v.producto_id]) lista.push(grupos[v.producto_id] = []);
+    grupos[v.producto_id].push(v);
+  });
+  lista.forEach((g) => g.sort((a, b) => a.orden - b.orden));
+  const orden = (g) => prodDe(g[0]).orden;
+  const minimo = (g) => Math.min.apply(null, g.map((v) => v.precio));
+  const primeros = lista.filter((g) => orden(g) <= DESTACADOS).sort((a, b) => orden(a) - orden(b));
+  const resto = lista.filter((g) => orden(g) > DESTACADOS).sort((a, b) => (minimo(a) - minimo(b)) || (orden(a) - orden(b)));
   return primeros.concat(resto);
 }
 
@@ -383,7 +406,7 @@ function pintarCatalogo() {
   }
   const lista = ordenCatalogo(T.variantes.filter((v) => !categoria || prodDe(v).categoria === categoria));
   const total = $('[data-total-catalogo]');
-  if (total) total.textContent = lista.length + (lista.length === 1 ? ' opción' : ' opciones');
+  if (total) total.textContent = lista.length + (lista.length === 1 ? ' producto' : ' productos');
   caja.innerHTML = lista.length ? lista.map(tarjetaProducto).join('') : '<p class="catalogo-vacio">' + (P.categoriaFija ? 'Pronto tendremos combos aquí.' : 'Pronto tendremos más snacks aquí.') + ' <a href="/productos/">Ver todos los productos</a></p>';
 }
 
@@ -636,7 +659,18 @@ function crearDialogos() {
     '<div class="panel-cuerpo" data-pedido-cuerpo>' + plantillaFormulario() + '</div></div>';
   document.body.appendChild(m);
 
-  [c, m].forEach((d) => {
+  const e = document.createElement('dialog');
+  e.id = 'elegir';
+  e.className = 'panel elegir';
+  e.setAttribute('aria-labelledby', 'elegir-titulo');
+  e.innerHTML = '<div class="elegir-in"><div class="agarre" aria-hidden="true"></div>' +
+    '<div class="panel-cab"><div><h2 id="elegir-titulo"></h2><p>¿Cuál quieres llevar?</p></div>' +
+    '<button type="button" class="btn-icono" data-cerrar aria-label="Cerrar">' + ICONO.cerrar + '</button></div>' +
+    '<div class="panel-cuerpo" data-elegir-cuerpo></div>' +
+    '<div class="panel-pie"><button type="button" class="btn" data-elegir-agregar></button></div></div>';
+  document.body.appendChild(e);
+
+  [c, m, e].forEach((d) => {
     d.addEventListener('click', (e) => { if (e.target === d || e.target.closest('[data-cerrar]')) cerrarDialogo(d); });
     d.addEventListener('close', () => {
       if (!$$('dialog.panel').some((x) => x.open)) document.documentElement.style.overflow = '';
@@ -653,6 +687,40 @@ function abrirDialogo(d) {
 }
 function cerrarDialogo(d) {
   if (typeof d.close === 'function') d.close(); else { d.removeAttribute('open'); d.dispatchEvent(new Event('close')); }
+}
+
+/* ---------- Elegir tamaño (productos con varios tamaños) ---------- */
+
+const eleccion = { producto: null, variante: null, cantidad: 1 };
+
+function abrirElegir(productoId) {
+  const vs = T.variantes.filter((v) => v.producto_id === productoId);
+  if (!vs.length) return;
+  eleccion.producto = productoId;
+  eleccion.variante = vs[0].id;
+  eleccion.cantidad = 1;
+  pintarElegir();
+  abrirDialogo($('#elegir'));
+}
+
+function pintarElegir() {
+  const d = $('#elegir');
+  const vs = T.variantes.filter((v) => v.producto_id === eleccion.producto);
+  const v = T.porId[eleccion.variante];
+  if (!v) return;
+  const mejor = vs.filter((x) => x.precio_antes > x.precio).sort((a, b) => (b.precio_antes - b.precio) - (a.precio_antes - a.precio))[0];
+  $('#elegir-titulo').textContent = prodDe(v).nombre;
+  $('[data-elegir-cuerpo]', d).innerHTML =
+    '<img class="elegir-foto" src="' + esc(fotoDe(v)) + '" alt="" width="600" height="600">' +
+    '<div class="opciones-lista" role="group" aria-label="Tamaño">' + vs.map((x) => '<button type="button" class="opcion" data-elegir-opcion="' + esc(x.id) + '" aria-pressed="' + (x.id === v.id) + '">' +
+      '<span class="radio"></span><span class="nom"><strong>' + esc(x.nombre) + '</strong>' + (x.detalle ? '<span>' + esc(x.detalle) + '</span>' : '') +
+      (carrito[x.id] ? '<span class="ya">Ya tienes ' + carrito[x.id] + ' en el carrito</span>' : '') + '</span>' +
+      '<span class="val">' + (x.precio_antes > x.precio ? '<s>' + pesos(x.precio_antes) + '</s>' : '') + '<strong>' + pesos(x.precio) + '</strong></span>' +
+      (mejor && mejor.id === x.id ? '<span class="etq">Mejor precio</span>' : '') + '</button>').join('') + '</div>' +
+    '<div class="elegir-cantidad"><span>Cantidad</span><div class="cantidad" role="group" aria-label="Cantidad">' +
+      '<button type="button" data-elegir-q="-1" aria-label="Quitar uno">−</button><output aria-live="polite">' + eleccion.cantidad + '</output>' +
+      '<button type="button" data-elegir-q="1" aria-label="Agregar uno">+</button></div></div>';
+  $('[data-elegir-agregar]', d).innerHTML = 'Agregar al carrito · ' + pesos(v.precio * eleccion.cantidad);
 }
 
 function abrirCarrito() {
@@ -748,6 +816,17 @@ function iniciarCarrito() {
     if (abrir) { e.preventDefault(); abrirCarrito(); return; }
     const ag = t.closest('[data-agregar]');
     if (ag) { agregar(ag.dataset.agregar, 1); return; }
+    const el = t.closest('[data-elegir]');
+    if (el) { abrirElegir(el.dataset.elegir); return; }
+    const op = t.closest('[data-elegir-opcion]');
+    if (op) { eleccion.variante = op.dataset.elegirOpcion; pintarElegir(); return; }
+    const eq = t.closest('[data-elegir-q]');
+    if (eq) { eleccion.cantidad = Math.min(20, Math.max(1, eleccion.cantidad + Number(eq.dataset.elegirQ))); pintarElegir(); return; }
+    if (t.closest('[data-elegir-agregar]')) {
+      cerrarDialogo($('#elegir'));
+      agregar(eleccion.variante, eleccion.cantidad);
+      return;
+    }
     const esc_ = t.closest('[data-agregar-escalon]');
     if (esc_) { agregar(esc_.dataset.agregarEscalon, 1); return; }
     const sug = t.closest('[data-agregar-sug]');

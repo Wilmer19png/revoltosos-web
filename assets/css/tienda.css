@@ -120,6 +120,7 @@ body { overflow-x: clip; }
 .precio { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; font-variant-numeric: tabular-nums; }
 .precio strong { font-size: 17px; }
 .precio s { font-size: 13px; color: var(--tinta-2); }
+.precio .desde { font-size: 13px; color: var(--tinta-2); margin-right: 4px; }
 .btn-agregar { margin-top: auto; min-height: 44px; border-radius: 12px; border: 2px solid var(--rosa); background: var(--rosa); color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background-color .15s ease; }
 .btn-agregar:hover { background: var(--rosa-hover); border-color: var(--rosa-hover); }
 .btn-agregar.en-carrito { background: var(--salvia-claro); border-color: var(--salvia); color: var(--salvia); }
@@ -309,6 +310,15 @@ dialog.panel:focus, dialog.panel:focus-visible { outline: none; }
 .ahorro-caja strong { font-size: 20px; font-variant-numeric: tabular-nums; }
 .carrito-vacio { text-align: center; padding: 32px 8px; color: var(--tinta-2); display: flex; flex-direction: column; gap: 14px; align-items: center; }
 
+.elegir { position: fixed; inset: auto 0 0 0; width: 100%; max-height: 92dvh; }
+.elegir-in { max-height: 92dvh; background: #FFFFFF; border-radius: 24px 24px 0 0; display: flex; flex-direction: column; overflow: hidden; }
+.elegir .panel-cab { background: #FFFFFF; align-items: flex-start; }
+.elegir .panel-cab p { font-size: 14px; color: var(--tinta-2); margin-top: 2px; }
+.elegir .agarre { width: 44px; height: 5px; border-radius: 3px; background: var(--linea); margin: 10px auto 0; flex: none; }
+.elegir-foto { width: 120px; height: 120px; border-radius: 16px; object-fit: cover; align-self: center; background: var(--hueso); }
+.elegir .opcion { background: #FFFFFF; }
+.elegir .opcion .ya { color: var(--salvia); font-weight: 800; }
+.elegir-cantidad { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-weight: 800; }
 .modal { position: fixed; inset: auto 0 0 0; height: min(96dvh, 1100px); width: 100%; }
 .modal-in { background: #FFFFFF; }
 .modal .panel-cab { background: #FFFFFF; align-items: flex-start; }
@@ -378,6 +388,9 @@ dialog.panel:focus, dialog.panel:focus-visible { outline: none; }
   .barra-t { align-self: flex-end; }
   .carrito { inset: 0 0 0 auto; width: min(460px, 100vw); height: 100dvh; }
   .carrito-in { border-radius: 24px 0 0 24px; }
+  dialog.panel.elegir { inset: 0; margin: auto; width: min(480px, calc(100vw - 32px)); height: fit-content; }
+  .elegir-in { border-radius: 24px; }
+  .elegir .agarre { display: none; }
   dialog.panel.modal { inset: 0; margin: auto; width: min(620px, calc(100vw - 32px)); height: min(92dvh, 980px); }
   .modal-in { border-radius: 24px; }
   .modal .agarre { display: none; }
