@@ -41,7 +41,7 @@ const ICONO = {
   cupon: '<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V6h18v3a3 3 0 0 0 0 6v3H3v-3a3 3 0 0 0 0-6z"/><path d="M14 6v12" stroke-dasharray="2 2"/></svg>',
   fuego: '<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24"><path d="M12 2c1 3.5-1.5 5.3-2.6 7.4C8.2 11.6 8 13 8.5 14.5 7.3 14 6.5 12.8 6.4 11.4 4.9 13 4 15 4 17a8 8 0 0 0 16 0c0-4.6-3.2-7.5-4.7-10.4-.6 1.5-1.5 2.4-2.6 2.9C13.5 7 13.6 4.4 12 2z" fill="#F28C28"/><path d="M12 13c.4 1.5-.8 2.3-1.3 3.3-.4.9-.2 1.9.4 2.6a3 3 0 0 0 4.4-3.3c-.3-1.1-1.1-1.8-1.6-2.8-.3.6-.7 1-1.2 1.2.1-.4 0-.7-.7-1z" fill="#FFD166"/></svg>',
   basura: '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg>',
-  whatsapp: '<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"/></svg>',
+  whatsapp: '<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z" fill="currentColor"/></svg>',
   candado: '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>'
 };
 
@@ -179,7 +179,7 @@ function agregar(id, n, opciones) {
   track('AddToCart', { content_ids: [id], content_type: 'product', content_name: nombreLargo(v), num_items: n || 1, value: v.precio * (n || 1), currency: 'COP' });
   actualizar();
   $$('[data-contador]').forEach((c) => { c.classList.remove('rv-salto'); void c.offsetWidth; c.classList.add('rv-salto'); });
-  if (!(opciones && opciones.silencioso)) toast((n > 1 ? n + ' × ' : '') + nombreLargo(v) + ' en tu carrito', 'Ver carrito', abrirCarrito);
+  if (!(opciones && opciones.silencioso)) avisoAgregado(v, n || 1);
 }
 
 function cambiar(id, q) {
@@ -190,21 +190,57 @@ function cambiar(id, q) {
 
 /* ---------- Avisos ---------- */
 
-function toast(texto, accion, alHacer) {
-  let t = $('#toast-t');
+// Tarjeta "Agregado al carrito": qué entró, cuánto vale, cómo va el carrito y botón para verlo.
+// Se queda mientras el cliente tenga el mouse o el dedo encima.
+function avisoAgregado(v, n) {
+  let t = $('#aviso-carrito');
   if (!t) {
     t = document.createElement('div');
-    t.id = 'toast-t';
-    t.className = 'toast-t';
+    t.id = 'aviso-carrito';
+    t.className = 'aviso-carrito';
     t.setAttribute('role', 'status');
     document.body.appendChild(t);
+    t.addEventListener('click', (e) => {
+      if (e.target.closest('[data-ver-carrito]')) { cerrarAviso(); abrirCarrito(); }
+      else if (e.target.closest('[data-cerrar-aviso]')) cerrarAviso();
+    });
+    t.addEventListener('pointerenter', () => clearTimeout(avisoAgregado.temp));
+    t.addEventListener('pointerleave', () => programarCierre(3000));
+    t.addEventListener('focusin', () => clearTimeout(avisoAgregado.temp));
   }
-  t.innerHTML = '<span>' + esc(texto) + '</span>' + (accion ? '<button type="button">' + esc(accion) + '</button>' : '');
-  if (accion) $('button', t).addEventListener('click', () => { t.hidden = true; alHacer(); });
+  const k = cuentas();
+  t.innerHTML = '<div class="aviso-cab">' + ICONO.check + '<strong>¡Agregado a tu carrito!</strong>' +
+    '<button type="button" class="aviso-x" data-cerrar-aviso aria-label="Cerrar aviso">' + ICONO.cerrar + '</button></div>' +
+    '<div class="aviso-prod"><img src="' + esc(fotoDe(v)) + '" alt="" width="64" height="64">' +
+    '<div><strong>' + esc(prodDe(v).nombre) + '</strong><span>' + esc(v.nombre) + ' · ' + n + (n === 1 ? ' unidad' : ' unidades') + '</span></div>' +
+    '<strong class="aviso-precio">' + pesos(v.precio * n) + '</strong></div>' +
+    '<p class="aviso-total">Tu carrito: <b>' + k.unidades + (k.unidades === 1 ? ' producto' : ' productos') + ' · ' + pesos(k.neto) + '</b>' +
+    (k.gratis ? ' · <span class="verde">envío GRATIS</span>' : '') + '</p>' +
+    '<div class="aviso-botones"><button type="button" class="btn" data-ver-carrito>Ver mi carrito' + ICONO.flecha + '</button>' +
+    '<button type="button" class="aviso-seguir" data-cerrar-aviso>Seguir comprando</button></div>';
   t.hidden = false;
+  ubicarAviso(t);
   t.classList.remove('rv-entra'); void t.offsetWidth; t.classList.add('rv-entra');
-  clearTimeout(toast.temp);
-  toast.temp = setTimeout(() => { t.hidden = true; }, 3800);
+  programarCierre(7000);
+}
+// Justo debajo del ícono del carrito del encabezado, con la flecha apuntándole.
+function ubicarAviso(t) {
+  const icono = $('.cab [data-abrir-carrito]');
+  if (!icono) return;
+  const r = icono.getBoundingClientRect();
+  const derecha = Math.max(16, innerWidth - r.right);
+  t.style.top = Math.max(8, r.bottom + 10) + 'px';
+  t.style.right = derecha + 'px';
+  t.style.setProperty('--flecha', Math.max(14, innerWidth - derecha - (r.left + r.width / 2) - 8) + 'px');
+}
+function programarCierre(ms) {
+  clearTimeout(avisoAgregado.temp);
+  avisoAgregado.temp = setTimeout(cerrarAviso, ms);
+}
+function cerrarAviso() {
+  clearTimeout(avisoAgregado.temp);
+  const t = $('#aviso-carrito');
+  if (t) t.hidden = true;
 }
 
 function lanzarConfeti(contenedor) {
@@ -319,6 +355,18 @@ function tarjetaProducto(v) {
     '<button type="button" class="btn-agregar" data-agregar="' + esc(v.id) + '" aria-label="Agregar ' + esc(nombreLargo(v)) + ' al carrito"></button></div></article>';
 }
 
+// Los primeros productos del gestor (orden 1 a DESTACADOS) van adelante con su tamaño principal;
+// todo lo demás (incluidos sus otros tamaños) sigue del más barato al más caro.
+const DESTACADOS = 5;
+function ordenCatalogo(vs) {
+  const principal = {};
+  vs.forEach((v) => { if (!principal[v.producto_id] || v.orden < principal[v.producto_id].orden) principal[v.producto_id] = v; });
+  const destacado = (v) => prodDe(v).orden <= DESTACADOS && principal[v.producto_id] === v;
+  const primeros = vs.filter(destacado);
+  const resto = vs.filter((v) => !destacado(v)).sort((a, b) => (a.precio - b.precio) || (prodDe(a).orden - prodDe(b).orden) || (a.orden - b.orden));
+  return primeros.concat(resto);
+}
+
 function pintarCatalogo() {
   const caja = $('#catalogo-lista');
   if (!caja) return;
@@ -333,7 +381,7 @@ function pintarCatalogo() {
     filtros.innerHTML = ['', ...cats].map((c) => '<button type="button" data-cat="' + esc(c) + '" aria-pressed="' + (c === categoria) + '">' + esc(c || 'Todo') + '</button>').join('');
     filtros.hidden = cats.length < 2 || !!P.categoriaFija;
   }
-  const lista = T.variantes.filter((v) => !categoria || prodDe(v).categoria === categoria);
+  const lista = ordenCatalogo(T.variantes.filter((v) => !categoria || prodDe(v).categoria === categoria));
   const total = $('[data-total-catalogo]');
   if (total) total.textContent = lista.length + (lista.length === 1 ? ' opción' : ' opciones');
   caja.innerHTML = lista.length ? lista.map(tarjetaProducto).join('') : '<p class="catalogo-vacio">' + (P.categoriaFija ? 'Pronto tendremos combos aquí.' : 'Pronto tendremos más snacks aquí.') + ' <a href="/productos/">Ver todos los productos</a></p>';
@@ -562,12 +610,6 @@ function iniciarCompra() {
     compra.cantidad = 1;
     pintarCompra();
   });
-  $('#compra-pedir').addEventListener('click', () => {
-    if (!carrito[compra.variante]) agregar(compra.variante, compra.cantidad, { silencioso: true });
-    compra.cantidad = 1;
-    pintarCompra();
-    abrirPedido();
-  });
 }
 
 /* ---------- Carrito (panel) ---------- */
@@ -623,7 +665,7 @@ function pintarCarrito() {
   const k = cuentas();
   $('[data-carrito-n]', d).textContent = k.unidades ? '(' + k.unidades + ')' : '';
   $('[data-carrito-pie]', d).hidden = !k.unidades;
-  $('[data-carrito-pie] p', d).innerHTML = T.ajustes.wompi_activo ? '<b>Pagas al recibir</b> o en línea con Wompi' : '<b>Pagas al recibir</b> · no pagas nada hoy';
+  $('[data-carrito-pie] p', d).innerHTML = T.ajustes.wompi_activo ? '<b>Paga en línea</b> con Wompi o al recibir' : '<b>Pagas al recibir</b> · no pagas nada hoy';
   const cuerpo = $('[data-carrito-cuerpo]', d);
   if (!k.unidades) {
     cuerpo.innerHTML = '<div class="carrito-vacio"><p>Tu carrito está vacío.</p><a class="btn" href="/#catalogo">Ver los snacks</a></div>';
@@ -747,8 +789,8 @@ function plantillaFormulario() {
     '<div class="mascotas"><button type="button" class="mascota" aria-pressed="false">Perro pequeño</button><button type="button" class="mascota" aria-pressed="false">Perro mediano</button><button type="button" class="mascota" aria-pressed="false">Perro grande</button><button type="button" class="mascota" aria-pressed="false">Gato</button></div></fieldset>' +
     '<label class="prioritario"><input type="checkbox" id="f-prioritario" name="prioritario"><span><strong>Envío prioritario: +<span data-valor-prioritario></span></strong><br><span>Despachamos tu pedido primero.</span></span></label>' +
     '<fieldset class="metodos" data-metodos hidden><legend style="font-size: 15px; margin-bottom: 8px">¿Cómo quieres pagar?</legend>' +
-    '<label class="metodo"><input type="radio" name="metodo_pago" value="contraentrega" checked><span><strong>Contra entrega</strong><span>Pagas en efectivo cuando te llegue.</span></span></label>' +
-    '<label class="metodo"><input type="radio" name="metodo_pago" value="wompi"><span><strong>Pagar ahora</strong><span>Tarjeta, PSE, Nequi o Bancolombia, con Wompi.</span></span></label></fieldset>' +
+    '<label class="metodo"><input type="radio" name="metodo_pago" value="wompi" checked><span><strong>Pagar ahora</strong><span>Tarjeta, PSE, Nequi o Bancolombia, con Wompi.</span></span><b class="metodo-precio" data-precio-metodo></b></label>' +
+    '<label class="metodo"><input type="radio" name="metodo_pago" value="contraentrega"><span><strong>Contra entrega</strong><span>Pagas en efectivo cuando te llegue.</span></span><b class="metodo-precio" data-precio-metodo></b></label></fieldset>' +
     '<div class="resumen cuentas" aria-live="polite" data-cuentas-pedido></div>' +
     '<label class="acepto"><input type="checkbox" id="f-acepto" name="acepto" required aria-describedby="e-acepto"><span>Autorizo el tratamiento de mis datos para gestionar mi pedido, según la <a href="/privacidad.html" target="_blank" rel="noopener">política de datos</a> (Ley 1581 de 2012).</span></label>' +
     '<span class="error" id="e-acepto" style="margin-top: -8px"></span>' +
@@ -794,20 +836,23 @@ function pintarResumenPedido() {
   const cotiza = $('[data-cotiza]', d);
   if (dep && form.ciudad.value) {
     cotiza.hidden = false;
-    cotiza.innerHTML = k.gratis
+    cotiza.innerHTML = '<span class="cotiza-titulo">' + ICONO.camion + 'Detalles del envío</span>' + (k.gratis
       ? '<div class="fila"><span>Envío a ' + esc(form.ciudad.value) + '</span><span>GRATIS</span></div><span>' + (k.porCombo ? 'Tu combo incluye el envío.' : 'Tu pedido supera ' + pesos(T.ajustes.envio_gratis_desde) + '.') + '</span>'
       : '<div class="fila"><span>Envío a ' + esc(form.ciudad.value) + '</span><span>' + pesos(k.envio) + '</span></div>' +
-        '<span class="falta">Agrega ' + pesos(k.falta) + ' más en productos y no pagas envío.</span>';
+        '<span class="falta">Agrega ' + pesos(k.falta) + ' más en productos y no pagas envío.</span>');
   } else cotiza.hidden = true;
 
   const envioTxt = k.gratis ? '<span class="verde">GRATIS</span>' : (dep ? pesos(k.envio) : '<span style="color: var(--tinta-2)">Elige tu departamento</span>');
   const total = k.neto + (k.gratis ? 0 : (k.envio || 0)) + prio;
+  const totalTxt = pesos(total) + (dep || k.gratis ? '' : ' + envío');
+  $$('[data-precio-metodo]', d).forEach((b) => { b.textContent = totalTxt; });
   $('[data-cuentas-pedido]', d).innerHTML =
-    '<div><span>Productos</span><span>' + pesos(k.subtotal) + '</span></div>' +
+    '<h3 class="resumen-titulo">Resumen de tu pago</h3>' +
+    '<div><span>Productos (' + k.unidades + ')</span><span>' + pesos(k.subtotal) + '</span></div>' +
     (k.descuento ? '<div class="verde"><span>Cupón ' + esc(cupon.codigo) + '</span><span>−' + pesos(k.descuento) + '</span></div>' : '') +
     '<div><span>Envío</span>' + envioTxt + '</div>' +
     (prio ? '<div><span>Envío prioritario</span><span>' + pesos(prio) + '</span></div>' : '') +
-    '<hr class="perforado"><div class="resumen-total"><strong>' + (wompi ? 'Pagas ahora' : 'Pagas al recibir') + '</strong><span>' + pesos(total) + (dep || k.gratis ? '' : ' + envío') + '</span></div>' +
+    '<hr class="perforado"><div class="resumen-total"><strong>' + (wompi ? 'Total a pagar ahora' : 'Total a pagar al recibir') + '</strong><span>' + totalTxt + '</span></div>' +
     (k.ahorro ? '<div class="ahorro-caja" style="margin-top: 10px"><span>' + ICONO.etiqueta + 'Estás ahorrando</span><strong>' + pesos(k.ahorro) + '</strong></div>' : '');
   if (!enviando) pintarBoton(form, total);
   return total;

@@ -1040,7 +1040,7 @@ COMBINA
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght\@400;500;600;700;800&display=swap">
 $precarga<link rel="stylesheet" href="/assets/css/landing.css?v=7">
-<link rel="stylesheet" href="/assets/css/tienda.css?v=7">
+<link rel="stylesheet" href="/assets/css/tienda.css?v=9">
 
 <!-- Generada con herramientas/landings/generar.pl: los cambios van allá, no aquí. -->
 <script>
@@ -1111,11 +1111,6 @@ $iconos
           </div>
           <button type="button" class="btn rv-pulso" id="compra-agregar"><svg width="20" height="20" aria-hidden="true"><use href="#i-bolsa"/></svg>Agregar al carrito</button>
         </div>
-        <button type="button" class="btn btn--oscuro btn-pedir-ya" id="compra-pedir" data-solo-disponible>
-          <span><span>Hacer mi pedido ahora</span><span>Hoy pagas \$0 · pagas al recibir</span></span>
-          <svg width="22" height="22" aria-hidden="true"><use href="#i-flecha"/></svg>
-        </button>
-        <p class="nota-pedir" data-solo-disponible>¿Quieres algo más? Agrégalo al carrito y sigue mirando.</p>
         <ul class="checks">
           $checks
         </ul>
@@ -1278,7 +1273,7 @@ $iconos
   <button type="button" id="cookies-ok">Entendido</button>
 </div>
 
-<script src="/assets/js/tienda.js?v=12"></script>
+<script src="/assets/js/tienda.js?v=14"></script>
 </body>
 </html>
 HTML
