@@ -826,6 +826,36 @@ my @productos = (
       @PREGUNTA_ENVIO_COMBO,
     ],
   },
+
+  # --- Combos sin envío incluido: en el carrito se sugieren codornices para llegar al envío gratis ---
+  {
+    id => 'combo-granja-revoltosa', ruta => 'combo-granja-revoltosa', nombre => 'Combo Granja Revoltosa', corto => 'el Combo Granja Revoltosa',
+    antetitulo => 'Combo · 5 snacks · cerdo, pollo y codorniz',
+    descripcion => '1 húmero de cerdo, 1 paleta de cerdo, 1 oreja de cerdo, 5 patas de pollo y 1 codorniz entera. Cerdo, pollo y codorniz en un solo pedido.',
+    meta => 'Combo Granja Revoltosa: húmero, paleta y oreja de cerdo, 5 patas de pollo y codorniz entera deshidratados, sin conservantes. Pagas al recibir.',
+    foto => 'humero-cerdo-producto', alt_foto => 'Húmero de cerdo deshidratado Revoltosos',
+    miniaturas => galeria('humero-cerdo-producto', 'Húmero de cerdo deshidratado Revoltosos', 'humero_cerdo', 'paleta', 'oreja', 'patas', 'entera'),
+    trae => [pieza('humero_cerdo', '×1', 1), pieza('paleta', '×1', 1), pieza('oreja', '×1', 1), pieza('patas5', '×5', 1), pieza('entera', '×1', 1)],
+    trae_bajada => 'Huesos de cerdo para morder, una oreja para masticar, patas crocantes y una codorniz entera para un día especial.',
+    llega => [empaques('humero_cerdo', 'paleta', 'oreja', 'patas', 'entera')],
+    checks => ['5 snacks en un pedido', '3 proteínas distintas', 'Sin conservantes', 'Hecho en Colombia'],
+    beneficios_titulo => 'Lo mejor de la granja.',
+    beneficios_bajada => 'Cerdo, pollo y codorniz: cinco snacks para que cada día tenga algo distinto.',
+    beneficios => [
+      ['textura', 'Cinco texturas', 'Hueso para morder, paleta para sostener, oreja para masticar, patas crocantes y codorniz.'],
+      ['novedosa', 'Tres proteínas', 'Cerdo, pollo y codorniz: descubre cuál le gusta más.'],
+      ['calma', 'Horas de entretenimiento', 'Morder y masticar los calma y ayuda a que no muerdan lo que no deben.'],
+      ['dientes', 'Ayuda a mantener los dientes', 'La masticación ayuda a reducir placa y sarro.'],
+      ['aditivos', 'Sin aditivos', 'Sin conservantes, sin sal añadida, sin colorantes.'],
+    ],
+    para_quien => ['Perros medianos y grandes', 'Perros que disfrutan masticar', 'Adultos'],
+    uso => ['Para morder', 'Premio diario', 'Para regalar'],
+    como_darlo => \@HUESOS_COMO,
+    preguntas => [
+      ['¿Le sirve a un perro pequeño?', 'Las patas y la codorniz (en trozos) sí; los huesos de cerdo van mejor con perros medianos y grandes. Para los pequeños mira el Combo Pollo Loco.'],
+      ['¿Cómo hago para no pagar envío?', 'Súmale codornices a tu pedido: desde $70.000 en productos el envío es gratis.'],
+    ],
+  },
 );
 
 # --- Íconos de beneficios (mismos trazos de la landing de codornices) ---------------
@@ -1273,7 +1303,7 @@ $iconos
   <button type="button" id="cookies-ok">Entendido</button>
 </div>
 
-<script src="/assets/js/tienda.js?v=15"></script>
+<script src="/assets/js/tienda.js?v=16"></script>
 </body>
 </html>
 HTML

@@ -47,6 +47,9 @@ const ICONO = {
 
 /* ---------- Catálogo ---------- */
 
+// Para llegar al envío gratis se sugieren codornices (bolsa, frasco o codorniz entera).
+const PRODUCTOS_SUGERIDOS = ['codornices', 'codorniz-entera'];
+
 // Respaldo por si Supabase no responde: la tienda sigue mostrando lo principal.
 const RESPALDO = {
   ajustes: { envio_gratis_desde: 70000, envio_base: 20000, envio_departamentos: {}, prioritario: 5000 },
@@ -526,6 +529,9 @@ function pintarCombina() {
   const caja = $('#combina');
   if (!caja) return;
   const otros = T.variantes.filter((v) => v.producto_id !== P.productoId);
+  // Primero las codornices (las que se sugieren para llegar al envío gratis).
+  const peso = (v) => (PRODUCTOS_SUGERIDOS.indexOf(v.producto_id) >= 0 ? 0 : 1);
+  otros.sort((a, b) => peso(a) - peso(b)); // sort estable: lo demás conserva su orden
   // Un tamaño por producto, primero lo que ayuda a llegar al envío gratis.
   const vistos = {};
   const lista = otros.filter((v) => (vistos[v.producto_id] ? false : (vistos[v.producto_id] = true))).slice(0, 4);
@@ -782,8 +788,11 @@ function pintarCarrito() {
 }
 
 // El tamaño más barato que alcanza para el envío gratis; si ninguno alcanza, el más caro.
+// Primero entre las codornices; solo si ya están todas en el carrito, entre lo demás.
 function sugerencia(k) {
-  const fuera = T.variantes.filter((v) => !carrito[v.id]);
+  const libres = T.variantes.filter((v) => !carrito[v.id]);
+  const codornices = libres.filter((v) => PRODUCTOS_SUGERIDOS.indexOf(v.producto_id) >= 0);
+  const fuera = codornices.length ? codornices : libres;
   if (!fuera.length) return null;
   const alcanzan = fuera.filter((v) => v.precio >= k.falta).sort((a, b) => a.precio - b.precio);
   return alcanzan[0] || fuera.slice().sort((a, b) => b.precio - a.precio)[0];
