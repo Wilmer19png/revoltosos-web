@@ -639,6 +639,19 @@ function iniciarCompra() {
     compra.cantidad = 1;
     pintarCompra();
   });
+  // "Pedir contra entrega": mete el producto (si no estaba) y abre el formulario con contra entrega ya elegido.
+  const pedir = $('#compra-pedir');
+  if (pedir) pedir.addEventListener('click', () => {
+    if (!carrito[compra.variante]) agregar(compra.variante, compra.cantidad, { silencioso: true });
+    compra.cantidad = 1;
+    pintarCompra();
+    abrirPedido();
+    const form = $('#form-pedido');
+    if (form) {
+      $$('[name="metodo_pago"]', form).forEach((x) => { x.checked = x.value === 'contraentrega'; });
+      pintarResumenPedido();
+    }
+  });
 }
 
 /* ---------- Carrito (panel) ---------- */
