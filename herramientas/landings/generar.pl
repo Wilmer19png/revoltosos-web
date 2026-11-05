@@ -829,12 +829,12 @@ my @productos = (
 
   # --- Combos sin envío incluido: en el carrito se sugieren codornices para llegar al envío gratis ---
   {
-    id => 'combo-granja-revoltosa', ruta => 'combo-granja-revoltosa', nombre => 'Combo Granja Revoltosa', corto => 'el Combo Granja Revoltosa',
-    antetitulo => 'Combo · 5 snacks · cerdo, pollo y codorniz',
+    id => 'combo-granja-revoltosa', ruta => 'combo-granja-revoltosa', nombre => 'Combo Menos de 50 Mil', corto => 'el Combo Menos de 50 Mil',
+    antetitulo => 'Combo · 5 snacks por menos de $50.000',
     descripcion => '1 húmero de cerdo, 1 paleta de cerdo, 1 oreja de cerdo, 5 patas de pollo y 1 codorniz entera. Cerdo, pollo y codorniz en un solo pedido.',
-    meta => 'Combo Granja Revoltosa: húmero, paleta y oreja de cerdo, 5 patas de pollo y codorniz entera deshidratados, sin conservantes. Pagas al recibir.',
-    foto => 'humero-cerdo-producto', alt_foto => 'Húmero de cerdo deshidratado Revoltosos',
-    miniaturas => galeria('humero-cerdo-producto', 'Húmero de cerdo deshidratado Revoltosos', 'humero_cerdo', 'paleta', 'oreja', 'patas', 'entera'),
+    meta => 'Combo Menos de 50 Mil: húmero, paleta y oreja de cerdo, 5 patas de pollo y codorniz entera deshidratados, sin conservantes. Pagas al recibir.',
+    foto => 'combo-granja-revoltosa-foto', ancho => 1000, alt_foto => 'Húmero, paleta y oreja de cerdo, patas de pollo y codorniz entera deshidratados Revoltosos',
+    miniaturas => galeria('combo-granja-revoltosa-foto', 'Húmero, paleta y oreja de cerdo, patas de pollo y codorniz entera deshidratados Revoltosos', 'humero_cerdo', 'paleta', 'oreja', 'patas', 'entera'),
     trae => [pieza('humero_cerdo', '×1', 1), pieza('paleta', '×1', 1), pieza('oreja', '×1', 1), pieza('patas5', '×5', 1), pieza('entera', '×1', 1)],
     trae_bajada => 'Huesos de cerdo para morder, una oreja para masticar, patas crocantes y una codorniz entera para un día especial.',
     llega => [empaques('humero_cerdo', 'paleta', 'oreja', 'patas', 'entera')],

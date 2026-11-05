@@ -1,4 +1,4 @@
--- Revoltosos · 021 · Combo Granja Revoltosa (2026-11-05)
+-- Revoltosos · 021 · Combo Menos de 50 Mil (2026-11-05)
 -- Correr DESPUÉS de 020. Pégalo completo en Supabase › SQL Editor › New query › Run.
 -- Se puede correr más de una vez sin romper nada.
 --
@@ -6,13 +6,13 @@
 -- · Precio: $46.500, lo mismo que suma todo por separado (precio acordado; no termina en 900 a propósito).
 -- · NO trae envío incluido: paga envío como cualquier pedido, y en el carrito se sugieren
 --   codornices para llegar al envío gratis.
--- · Foto provisional (húmero de cerdo) hasta tener la foto real del combo.
+-- · Foto: combo-granja-revoltosa-foto (los 5 snacks juntos).
 
 insert into public.productos (id, nombre, categoria, descripcion, imagen, ruta, visible, orden) values
-  ('combo-granja-revoltosa', 'Combo Granja Revoltosa', 'Combos',
+  ('combo-granja-revoltosa', 'Combo Menos de 50 Mil', 'Combos',
    '1 húmero de cerdo, 1 paleta de cerdo, 1 oreja de cerdo, 5 patas de pollo y 1 codorniz entera.',
-   '/assets/img/productos/humero-cerdo-producto-600.jpg', '/combo-granja-revoltosa/', true, 99)
-on conflict (id) do update set nombre = excluded.nombre, descripcion = excluded.descripcion, ruta = excluded.ruta;
+   '/assets/img/productos/combo-granja-revoltosa-foto-600.jpg', '/combo-granja-revoltosa/', true, 99)
+on conflict (id) do update set nombre = excluded.nombre, descripcion = excluded.descripcion, imagen = excluded.imagen, ruta = excluded.ruta;
 
 insert into public.variantes (id, producto_id, nombre, detalle, precio, envio_gratis, visible, orden) values
   ('combo-granja-revoltosa', 'combo-granja-revoltosa', 'Combo', null, 46500, false, true, 1)
