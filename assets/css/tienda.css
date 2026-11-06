@@ -69,9 +69,12 @@ body { overflow-x: clip; }
 /* Inicio: hero */
 .hero-t { background: #FFFFFF; padding: 18px 0 clamp(40px, 6vw, 80px); }
 .hero-t-grid { display: grid; gap: 22px; align-items: center; }
-.hero-t-foto { position: relative; border-radius: 22px; overflow: hidden; aspect-ratio: 1 / 1; background: var(--hueso); }
-.hero-t-foto img { width: 100%; height: 100%; object-fit: cover; }
 .hero-t-texto { display: flex; flex-direction: column; gap: 14px; }
+/* Video del hero: en móvil va dentro del texto (tras la descripción); en escritorio cubre todo el hero */
+.hero-t-video { position: relative; border-radius: 18px; overflow: hidden; aspect-ratio: 16 / 9; background: var(--hueso); margin: 2px 0 4px; }
+.hero-t-video video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.hero-t-video .sello-gira { width: 72px; height: 72px; right: 8px; bottom: 8px; }
+.hero-t-video .sello-gira span { width: 40px; height: 40px; }
 .hero-t h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(38px, 6vw, 72px); line-height: 1.02; letter-spacing: -0.02em; text-wrap: balance; }
 .hero-t .chip-verde { align-self: flex-start; background: var(--salvia-claro); color: var(--salvia); font-size: 13px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; padding: 6px 11px; border-radius: 999px; }
 .garantias { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; font-size: 13px; font-weight: 700; text-align: center; }
@@ -176,7 +179,7 @@ body { overflow-x: clip; }
 .sello-goma strong { display: block; font-family: var(--serif); font-weight: 400; font-size: 28px; margin: 4px 0; }
 .sello-goma em { display: block; font-style: normal; font-size: 12px; font-weight: 700; }
 .sello-gira { position: absolute; right: 10px; bottom: 10px; width: 92px; height: 92px; display: grid; place-items: center; }
-.sello-gira svg.anillo { position: absolute; inset: 0; animation: rvGira 14s linear infinite; }
+.sello-gira svg.anillo { position: absolute; inset: 0; width: 100%; height: 100%; animation: rvGira 14s linear infinite; }
 .sello-gira span { position: relative; width: 50px; height: 50px; border-radius: 50%; background: #FFFFFF; display: grid; place-items: center; color: var(--rosa); }
 
 /* Aliados logísticos */
@@ -379,11 +382,35 @@ dialog.panel:focus, dialog.panel:focus-visible { outline: none; }
 .aviso-botones .btn { width: 100%; min-height: 52px; }
 .aviso-seguir { background: none; border: 0; min-height: 40px; font: inherit; font-size: 15px; font-weight: 700; color: var(--tinta-2); text-decoration: underline; cursor: pointer; }
 
+/* Celular: título → video cuadrado (solo el producto) → botón → garantías */
+@media (max-width: 859px) {
+  .hero-t .chip-verde, .hero-t .bajada { display: none; }
+  /* Sin título visible en celular: queda solo para lectores de pantalla y Google */
+  .hero-t h1 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+  .hero-t-video { order: 2; aspect-ratio: 1 / 1; }
+  .hero-t-video video { object-position: 100% center; }
+  .hero-t-texto > .btn { order: 3; }
+  .hero-t .garantias { order: 4; }
+  .hero-t .prueba-social { order: 5; }
+}
 @media (min-width: 640px) {
   .cab-logo span { display: inline; }
 }
 @media (min-width: 860px) {
-  .hero-t-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 56px; }
+  /* Escritorio: recuadro 16:9 del ancho del contenido, video completo y textos encima a la izquierda */
+  .hero-t { padding: 20px 0 clamp(40px, 5vw, 64px); }
+  .hero-t-grid { position: relative; overflow: hidden; border-radius: 24px; width: calc(100% - 32px); max-width: calc(var(--ancho) - 32px); aspect-ratio: 16 / 9; margin: 0 auto; padding: clamp(28px, 4vw, 56px); display: flex; align-items: center; }
+  .hero-t-texto { max-width: 46%; gap: 12px; }
+  .hero-t-texto > :not(.hero-t-video) { position: relative; z-index: 1; }
+  .hero-t h1 { font-size: clamp(32px, 3.6vw, 52px); }
+  .hero-t .bajada { font-size: clamp(15px, 1.3vw, 18px); }
+  .hero-t .garantias { font-size: 12px; }
+  .hero-t .garantias div { background: rgba(255,255,255,.85); }
+  .hero-t-video { position: absolute; inset: 0; z-index: 0; border-radius: 0; aspect-ratio: auto; margin: 0; }
+  /* Degradado blanco a la izquierda para que los textos se lean sobre el video */
+  .hero-t-video::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255,255,255,.95) 0%, rgba(255,255,255,.85) 36%, rgba(255,255,255,.35) 52%, rgba(255,255,255,0) 62%); pointer-events: none; }
+  .hero-t-video .sello-gira { z-index: 1; width: 84px; height: 84px; right: 20px; bottom: 20px; }
+  .hero-t-video .sello-gira span { width: 46px; height: 46px; }
   .compra { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
   .galeria-p { position: sticky; top: 150px; }
   .pagas { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
