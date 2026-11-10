@@ -316,9 +316,20 @@ function actualizar() {
 
 /* ---------- Barra fija de abajo ---------- */
 
+// En el catálogo la barra solo aparece con algo en el carrito; en un producto, siempre
+// (salvo cuando se ve algo marcado con data-oculta-barra, como el bloque de compra).
+let barraTapada = false;
+function mostrarBarra() {
+  const barra = $('#barra-t');
+  if (!barra) return;
+  const conCarrito = P.tipo === 'producto' || cuentas().unidades > 0;
+  barra.classList.toggle('visible', conCarrito && !barraTapada);
+}
+
 function pintarBarraFija(k) {
   const barra = $('#barra-t');
   if (!barra) return;
+  mostrarBarra();
   const btn = $('[data-barra-btn]', barra);
   btn.innerHTML = (k.unidades ? 'Finalizar pedido (' + k.unidades + ')' : 'Pedir ahora') + ICONO.flecha;
   const ahorro = $('[data-barra-ahorro]', barra);
@@ -335,11 +346,12 @@ function iniciarBarraFija() {
     if (destino) destino.scrollIntoView({ behavior: reducirMovimiento ? 'auto' : 'smooth', block: 'start' });
   });
   const ocultan = $$('[data-oculta-barra]');
-  if (!('IntersectionObserver' in window) || !ocultan.length) { barra.classList.add('visible'); return; }
+  if (!('IntersectionObserver' in window) || !ocultan.length) { mostrarBarra(); return; }
   const vistos = new Set();
   const obs = new IntersectionObserver((entradas) => {
     entradas.forEach((e) => { if (e.isIntersecting) vistos.add(e.target); else vistos.delete(e.target); });
-    barra.classList.toggle('visible', vistos.size === 0);
+    barraTapada = vistos.size > 0;
+    mostrarBarra();
   }, { threshold: 0.15 });
   ocultan.forEach((el) => obs.observe(el));
 }

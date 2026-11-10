@@ -171,8 +171,9 @@ td.der, th.der { text-align: right; font-variant-numeric: tabular-nums; }
 .pedido-items div { display: flex; justify-content: space-between; gap: 10px; font-variant-numeric: tabular-nums; }
 .pedido-items .gris { color: var(--tinta-2); font-size: 14px; }
 .tag { padding: 2px 10px; border-radius: 999px; background: #F6ECD6; color: #6E5110; font-size: 13px; font-weight: 800; }
-.pedido-total { display: flex; justify-content: space-between; align-items: baseline; border-top: 1.5px dashed var(--linea); padding-top: 10px; }
-.pedido-total span:last-child { font-family: var(--serif); font-size: 24px; font-variant-numeric: tabular-nums; }
+.pedido-total { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px 10px; border-top: 1.5px dashed var(--linea); padding-top: 10px; }
+.pedido-total > span:first-child { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; min-width: 0; }
+.pedido-total > span:last-child { margin-left: auto; font-family: var(--serif); font-size: 24px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .pedido-origen { font-size: 12px; color: var(--tinta-2); }
 .costos { border: 1.5px solid var(--hueso-2); border-radius: 14px; }
 .costos summary { cursor: pointer; padding: 10px 12px; font-weight: 800; font-size: 14px; display: flex; justify-content: space-between; gap: 8px; list-style: none; }
@@ -1123,7 +1124,6 @@ function tarjeta(p) {
   if (p.metodo_pago === 'wompi') {
     const [txt, clase] = PAGO_WOMPI[p.pago_estado] || PAGO_WOMPI.pendiente;
     const chip = el('span', 'chip ' + clase, txt + (p.pago_estado === 'aprobado' && MEDIOS_WOMPI[p.wompi_medio] ? ' (' + MEDIOS_WOMPI[p.wompi_medio] + ')' : ''));
-    chip.style.marginLeft = '8px';
     tot.firstChild.append(chip);
   }
 
