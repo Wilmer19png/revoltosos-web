@@ -264,7 +264,7 @@ Deno.serve(async (req) => {
   if (!ajustes) errores.push('ajustes');
   if (!/^[0-9a-f-]{16,64}$/i.test(eventId)) errores.push('event_id');
   if (nombre.length < 3) errores.push('nombre');
-  if (!/^\d{6,10}$/.test(cedula)) errores.push('cedula');
+  if (cedula && !/^\d{6,10}$/.test(cedula)) errores.push('cedula'); // opcional: el checkout ya no la pide
   if (!/^573\d{9}$/.test(celular)) errores.push('celular');
   if (direccion.length < 4) errores.push('direccion');
   if (barrio.length < 2) errores.push('barrio');
@@ -335,7 +335,7 @@ Deno.serve(async (req) => {
   const fila = {
     ip_hash: ipHash,
     event_id: eventId,
-    nombre, cedula, celular, direccion, barrio, ciudad, departamento,
+    nombre, cedula: cedula || null, celular, direccion, barrio, ciudad, departamento,
     indicaciones: indicaciones || null,
     cantidad: unidades,
     prioritario: prioritario,

@@ -884,10 +884,9 @@ const DEPARTAMENTOS = ['Amazonas', 'Antioquia', 'Arauca', 'Atlántico', 'Bogotá
 function plantillaFormulario() {
   return '<form id="form-pedido" novalidate>' +
     '<div class="mini-resumen" data-mini-resumen></div>' +
-    '<div class="campo"><label for="f-nombre">Tu nombre</label><input id="f-nombre" name="nombre" type="text" autocomplete="name" placeholder="Nombre y apellido" required maxlength="120" aria-describedby="e-nombre"><span class="error" id="e-nombre"></span></div>' +
-    '<div class="campos-2">' +
-    '<div class="campo"><label for="f-cedula">Cédula</label><input id="f-cedula" name="cedula" type="text" inputmode="numeric" placeholder="1234567890" required maxlength="14" aria-describedby="e-cedula"><span class="error" id="e-cedula"></span></div>' +
+    '<div class="campo"><label for="f-nombre">Nombre completo</label><input id="f-nombre" name="nombre" type="text" autocomplete="name" placeholder="Ej: María Pérez" required maxlength="120" aria-describedby="e-nombre"><span class="error" id="e-nombre"></span></div>' +
     '<div class="campo"><label for="f-celular">Celular (WhatsApp)</label><input id="f-celular" name="celular" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="300 123 4567" required maxlength="16" aria-describedby="e-celular"><span class="error" id="e-celular"></span></div>' +
+    '<div class="campos-2">' +
     '<div class="campo"><label for="f-departamento">Departamento</label><select id="f-departamento" name="departamento" autocomplete="address-level1" required aria-describedby="e-departamento"><option value="">Elige</option>' +
     DEPARTAMENTOS.map((d) => '<option>' + d + '</option>').join('') + '</select><span class="error" id="e-departamento"></span></div>' +
     '<div class="campo"><label for="f-ciudad">Ciudad o municipio</label><select id="f-ciudad" name="ciudad" autocomplete="address-level2" required disabled aria-describedby="e-ciudad"><option value="">Primero el departamento</option></select><span class="error" id="e-ciudad"></span></div>' +
@@ -1001,13 +1000,8 @@ function normalizarCelular(v) {
   if (d.length === 12 && d.startsWith('57')) d = d.slice(2);
   return /^3\d{9}$/.test(d) ? '57' + d : '';
 }
-function normalizarCedula(v) {
-  const d = String(v).replace(/\D/g, '');
-  return /^\d{6,10}$/.test(d) ? d : '';
-}
 const reglas = {
-  nombre: (v) => v.trim().length >= 3 && /\s/.test(v.trim()) ? '' : 'Escribe tu nombre y apellido.',
-  cedula: (v) => normalizarCedula(v) ? '' : 'Escribe tu número de cédula (solo números).',
+  nombre: (v) => v.trim().length >= 3 && /\s/.test(v.trim()) ? '' : 'Escribe tu nombre completo.',
   celular: (v) => normalizarCelular(v) ? '' : 'Escribe un celular de 10 dígitos que empiece por 3.',
   departamento: (v) => v ? '' : 'Elige el departamento.',
   ciudad: (v) => v.trim().length >= 2 ? '' : 'Elige la ciudad o municipio.',
@@ -1111,7 +1105,6 @@ async function enviarPedido(e) {
     cupon: cupon ? cupon.codigo : '',
     event_id: eventId,
     nombre: form.nombre.value.trim(),
-    cedula: normalizarCedula(form.cedula.value),
     celular: normalizarCelular(form.celular.value),
     direccion: form.direccion.value.trim(),
     barrio: form.barrio.value.trim(),
@@ -1222,7 +1215,7 @@ async function abrirWompi(datos, r, unidades, eventId) {
     publicKey: w.public_key,
     signature: { integrity: w.signature },
     redirectUrl: location.origin + location.pathname,
-    customerData: { fullName: datos.nombre, phoneNumber: datos.celular.slice(2), phoneNumberPrefix: '+57', legalId: datos.cedula, legalIdType: 'CC' }
+    customerData: { fullName: datos.nombre, phoneNumber: datos.celular.slice(2), phoneNumberPrefix: '+57' }
   });
   // El formulario es un <dialog> modal y quedaría encima de Wompi: se cierra mientras se paga
   // (sin borrar lo escrito) y vuelve si el cliente cierra la ventana de Wompi sin terminar.
@@ -1267,7 +1260,7 @@ async function resultadoWompi(tx) {
 }
 
 async function llenarFormulario(form, datos) {
-  ['nombre', 'cedula', 'direccion', 'barrio', 'indicaciones'].forEach((n) => { form[n].value = datos[n] || ''; });
+  ['nombre', 'direccion', 'barrio', 'indicaciones'].forEach((n) => { form[n].value = datos[n] || ''; });
   form.celular.value = datos.celular.slice(2);
   form.prioritario.checked = !!datos.prioritario;
   $$('[name="metodo_pago"]', form).forEach((x) => { x.checked = x.value === datos.metodo_pago; });
