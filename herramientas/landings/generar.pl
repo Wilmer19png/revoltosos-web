@@ -515,6 +515,35 @@ my @productos = (
     ],
   },
   {
+    id => 'paleta-res', ruta => 'paleta-de-res', nombre => 'Paleta de res deshidratada', corto => 'la paleta de res',
+    foto => 'paleta-res-producto', ancho => 1000, alt_foto => 'Paleta de res deshidratada Revoltosos sobre fondo blanco',
+    miniaturas => [['paleta-res-producto', 'Paleta de res deshidratada Revoltosos sobre fondo blanco']],
+    antetitulo => 'Res · un solo ingrediente',
+    descripcion => 'Paleta de res (el hueso del omoplato), plana, ancha y resistente, deshidratada lentamente. Para perros que muerden con ganas, sin nada agregado: ni sal, ni conservantes, ni colorantes.',
+    meta => 'Paleta de res deshidratada para perros: hueso plano y grande para morder, un solo ingrediente, sin conservantes. Pagas al recibir.',
+    llega => [['paleta-res-producto', 'Paleta de res deshidratada Revoltosos', 'Así es por dentro', 0], ['cajita-escena', 'Caja Revoltosos abierta con snacks deshidratados sobre una mesa de madera', 'Combínala con otros snacks', 1, 'sin600']],
+    checks => ['Plana y resistente', 'Sin conservantes', '100 % natural', 'Hecho en Colombia'],
+    beneficios_titulo => 'Grande, plana y para morder en serio.',
+    beneficios_bajada => 'Hueso de paleta de res, deshidratado despacio y sin nada agregado.',
+    beneficios => [
+      ['textura', 'Fácil de sostener', 'Su forma plana le permite sujetarla con las patas mientras muerde.'],
+      ['duracion', 'Le dura', 'Más grande y firme que la paleta de cerdo: ideal para perros con mucha energía.'],
+      ['calma', 'Lo mantiene ocupado', 'Masticar los calma y ayuda a que no muerdan lo que no deben.'],
+      ['dientes', 'Ayuda a mantener los dientes', 'La masticación ayuda a reducir placa y sarro.'],
+      ['aditivos', 'Sin aditivos', 'Sin conservantes, sin sal añadida, sin colorantes.'],
+    ],
+    para_quien => ['Perros medianos y grandes', 'Adultos', 'Mordedores intensos'],
+    uso => ['Para morder', 'Para los días en casa', 'Enriquecimiento'],
+    como_darlo => [
+      ['Siempre bajo supervisión.', ' No lo dejes solo con el hueso.'],
+      ['Retírala cuando quede pequeña', ' o con puntas, para que no la trague entera.'],
+      ['Agua fresca a la mano', ' y guárdala en un lugar fresco y seco.'],
+    ],
+    preguntas => [
+      ['¿En qué se diferencia de la paleta de cerdo?', 'Las dos son el hueso del omoplato, planas y fáciles de sostener. La de res es más grande y firme, mejor para perros medianos y grandes.'],
+    ],
+  },
+  {
     id => 'mix-visceras', ruta => 'mix-de-visceras', nombre => 'Mix de vísceras de codorniz', corto => 'el mix de vísceras', para => 'para perros y gatos',
     sin_foto => 1, foto => 'codornices-bolsa-50g', empaque => 'codornices-bolsa-50g',
     antetitulo => 'Codorniz · bolsa de 50 g',
@@ -1070,7 +1099,7 @@ COMBINA
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght\@400;500;600;700;800&display=swap">
 $precarga<link rel="stylesheet" href="/assets/css/landing.css?v=7">
-<link rel="stylesheet" href="/assets/css/tienda.css?v=11">
+<link rel="stylesheet" href="/assets/css/tienda.css?v=16">
 
 <!-- Generada con herramientas/landings/generar.pl: los cambios van allá, no aquí. -->
 <script>
@@ -1099,6 +1128,7 @@ $iconos
     <a href="/combos/">Combos</a>
     <a href="/codornices/">Codornices</a>
     <a href="/cajita/">Cajita</a>
+    <a href="/blog/">Blog</a>
     <a href="#beneficios">Beneficios</a>
     <a href="#preguntas">Preguntas</a>
   </nav>
@@ -1113,7 +1143,7 @@ $iconos
         <div class="principal">
           $principal
           <div class="sello-gira" aria-hidden="true">
-            <svg class="anillo" width="92" height="92" viewBox="0 0 150 150"><defs><path id="rv-circulo" d="M75 75m-58 0a58 58 0 1 1 116 0a58 58 0 1 1-116 0"/></defs><circle cx="75" cy="75" r="73" fill="#C2185B"/><text fill="#FFFFFF" font-family="Figtree, sans-serif" font-size="13" font-weight="800" letter-spacing="2.6"><textPath href="#rv-circulo">PAGAS AL RECIBIR • SIN TARJETA • EN TU CASA •</textPath></text></svg>
+            <svg class="anillo" width="92" height="92" viewBox="0 0 150 150"><defs><path id="rv-circulo" d="M75 75m-58 0a58 58 0 1 1 116 0a58 58 0 1 1-116 0"/></defs><circle cx="75" cy="75" r="73" fill="#C2185B"/><text fill="#FFFFFF" font-family="Figtree, sans-serif" font-size="14" font-weight="800"><textPath href="#rv-circulo" textLength="362" lengthAdjust="spacing">PAGAS AL RECIBIR • EN TU CASA •</textPath></text></svg>
             <span><svg width="24" height="24"><use href="#i-casa"/></svg></span>
           </div>
         </div>$bloque_minis
@@ -1307,7 +1337,7 @@ $iconos
   <button type="button" id="cookies-ok">Entendido</button>
 </div>
 
-<script src="/assets/js/tienda.js?v=17"></script>
+<script src="/assets/js/tienda.js?v=18"></script>
 </body>
 </html>
 HTML

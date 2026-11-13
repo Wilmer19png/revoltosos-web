@@ -119,6 +119,8 @@ async function cargarCatalogo(alCambiar) {
 const prodDe = (v) => T.prodPorId[v.producto_id];
 const nombreLargo = (v) => prodDe(v).nombre + ' · ' + v.nombre;
 const urlProducto = (p) => p.ruta || '/producto/?p=' + encodeURIComponent(p.id);
+// Descuento en % frente al precio tachado (0 si no tiene).
+const pctAhorro = (v) => (v.precio_antes > v.precio ? Math.round(100 - (100 * v.precio) / v.precio_antes) : 0);
 const fotoDe = (v) => v.imagen || prodDe(v).imagen || '/assets/img/logo.jpg';
 
 // Tarifa de envío: la de la ciudad (si hay), si no la del departamento, si no la normal.
@@ -370,9 +372,9 @@ function tarjetaProducto(vs) {
   const p = prodDe(v);
   const varios = vs.length > 1;
   const desde = varios ? vs.reduce((a, b) => (b.precio < a.precio ? b : a)) : v;
-  const ahorro = Math.max.apply(null, vs.map((x) => (x.precio_antes > x.precio ? x.precio_antes - x.precio : 0)));
-  const etiqueta = (p.etiqueta ? fuego(p.etiqueta) : '') + (ahorro
-    ? '<span class="prod-etiqueta">Ahorras ' + (varios ? 'hasta ' : '') + pesos(ahorro) + '</span>'
+  const pct = Math.max.apply(null, vs.map(pctAhorro));
+  const etiqueta = (p.etiqueta ? fuego(p.etiqueta) : '') + (pct
+    ? '<span class="prod-etiqueta">' + (vs.some((x) => pctAhorro(x) !== pct) ? 'Hasta ' : '') + '−' + pct + '%</span>'
     : (vs.some((x) => x.envio_gratis || x.precio >= T.ajustes.envio_gratis_desde) ? '<span class="prod-etiqueta rosa">Envío gratis</span>' : ''));
   return '<article class="prod">' +
     '<a class="prod-foto" href="' + esc(urlProducto(p)) + '"><img src="' + esc(fotoDe(v)) + '" alt="' + esc(p.nombre) + '" width="600" height="600" loading="lazy">' + (etiqueta ? '<span class="prod-etiquetas">' + etiqueta + '</span>' : '') + '</a>' +
@@ -419,10 +421,97 @@ function pintarCatalogo() {
     filtros.innerHTML = ['', ...cats].map((c) => '<button type="button" data-cat="' + esc(c) + '" aria-pressed="' + (c === categoria) + '">' + esc(c || 'Todo') + '</button>').join('');
     filtros.hidden = cats.length < 2 || !!P.categoriaFija;
   }
-  const lista = ordenCatalogo(T.variantes.filter((v) => !categoria || prodDe(v).categoria === categoria));
+  const palabras = normal(busqueda).split(/\s+/).filter(Boolean);
+  let lista = ordenCatalogo(T.variantes.filter((v) => (!categoria || prodDe(v).categoria === categoria) && (!palabras.length || coincide(v, palabras))));
+  // Al buscar, primero los productos cuyo nombre tiene lo buscado («fémur» → Fémur de res antes que los combos).
+  if (palabras.length) {
+    const enNombre = (g) => palabras.every((w) => normal(prodDe(g[0]).nombre).indexOf(w.replace(/e?s$/, '')) >= 0);
+    lista = lista.filter(enNombre).concat(lista.filter((g) => !enNombre(g)));
+  }
   const total = $('[data-total-catalogo]');
   if (total) total.textContent = lista.length + (lista.length === 1 ? ' producto' : ' productos');
-  caja.innerHTML = lista.length ? lista.map(tarjetaProducto).join('') : '<p class="catalogo-vacio">' + (P.categoriaFija ? 'Pronto tendremos combos aquí.' : 'Pronto tendremos más snacks aquí.') + ' <a href="/productos/">Ver todos los productos</a></p>';
+  caja.innerHTML = lista.length ? lista.map(tarjetaProducto).join('')
+    : palabras.length
+      ? '<p class="catalogo-vacio">No encontramos «' + esc(busqueda.trim()) + '»' + (categoria ? ' en ' + esc(categoria) : '') + '. Prueba con otra palabra, como «hueso», «codorniz» o «combo». <a href="/productos/">Ver todos los productos</a></p>'
+      : '<p class="catalogo-vacio">' + (P.categoriaFija ? 'Pronto tendremos combos aquí.' : 'Pronto tendremos más snacks aquí.') + ' <a href="/productos/">Ver todos los productos</a></p>';
+}
+
+/* ---------- Buscador ---------- */
+
+// /productos/?q=hueso abre con la búsqueda hecha. Sin tildes ni mayúsculas: «femur» encuentra «Fémur».
+let busqueda = new URLSearchParams(location.search).get('q') || '';
+const normal = (s) => String(s == null ? '' : s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+function coincide(v, palabras) {
+  const p = prodDe(v);
+  const texto = normal([p.nombre, p.descripcion, p.categoria, p.etiqueta].concat(T.variantes.filter((x) => x.producto_id === p.id).map((x) => x.nombre + ' ' + (x.detalle || ''))).join(' '));
+  return palabras.every((w) => texto.indexOf(w) >= 0 || (w.length > 3 && /s$/.test(w) && texto.indexOf(w.replace(/e?s$/, '')) >= 0));
+}
+
+function iniciarBuscador() {
+  $$('[data-buscador]').forEach((form) => {
+    const input = $('input', form);
+    if (!input) return;
+    const enCatalogo = !!$('#catalogo-lista') && form.hasAttribute('data-en-vivo');
+    if (busqueda && enCatalogo) input.value = busqueda;
+    if (enCatalogo) {
+      input.addEventListener('input', () => {
+        busqueda = input.value;
+        pintarCatalogo();
+        const url = new URL(location.href);
+        if (busqueda.trim()) url.searchParams.set('q', busqueda.trim()); else url.searchParams.delete('q');
+        history.replaceState(null, '', url);
+      });
+    }
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const q = input.value.trim();
+      if (enCatalogo) { input.blur(); const sec = $('#catalogo-lista'); if (sec) sec.scrollIntoView({ behavior: reducirMovimiento ? 'auto' : 'smooth', block: 'start' }); return; }
+      location.href = '/productos/' + (q ? '?q=' + encodeURIComponent(q) : '');
+    });
+  });
+}
+
+/* ---------- Menú del celular (3 barritas junto al carrito) ---------- */
+
+function iniciarMenu() {
+  $$('.cab').forEach((cab) => {
+    const nav = $('.cab-nav', cab);
+    const fila = $('.cab-fila', cab);
+    const carrito = fila && $('[data-abrir-carrito]', fila);
+    if (!nav || !fila || !carrito || $('.cab-menu-btn', cab)) return;
+    if (!nav.id) nav.id = 'cab-nav';
+    const acciones = document.createElement('div');
+    acciones.className = 'cab-acciones';
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn-icono cab-menu-btn';
+    btn.setAttribute('aria-label', 'Abrir menú');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.setAttribute('aria-controls', nav.id);
+    btn.innerHTML = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path class="l1" d="M4 7h16"/><path class="l2" d="M4 12h16"/><path class="l3" d="M4 17h16"/></svg>';
+    fila.insertBefore(acciones, carrito);
+    acciones.appendChild(btn);
+    acciones.appendChild(carrito);
+    // Buscador dentro del menú: lleva a /productos/?q=… con la búsqueda hecha.
+    if (!$('[data-buscador]', nav)) {
+      const f = document.createElement('form');
+      f.className = 'buscador buscador--menu';
+      f.setAttribute('role', 'search');
+      f.setAttribute('data-buscador', '');
+      f.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>' +
+        '<input type="search" name="q" placeholder="Buscar snacks: hueso, codorniz…" aria-label="Buscar productos" autocomplete="off" enterkeyhint="search">';
+      nav.insertBefore(f, nav.firstChild);
+    }
+    const cerrar = () => { cab.classList.remove('menu-abierto'); btn.setAttribute('aria-expanded', 'false'); btn.setAttribute('aria-label', 'Abrir menú'); };
+    btn.addEventListener('click', () => {
+      const abierto = cab.classList.toggle('menu-abierto');
+      btn.setAttribute('aria-expanded', String(abierto));
+      btn.setAttribute('aria-label', abierto ? 'Cerrar menú' : 'Abrir menú');
+    });
+    $$('a', nav).forEach((a) => a.addEventListener('click', cerrar));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && cab.classList.contains('menu-abierto')) { cerrar(); btn.focus(); } });
+    document.addEventListener('click', (e) => { if (cab.classList.contains('menu-abierto') && !cab.contains(e.target)) cerrar(); });
+  });
 }
 
 // Carrusel del inicio: un snack por producto, con su precio más bajo. Se duplica para que el giro no tenga corte.
@@ -497,7 +586,7 @@ function pintarCompra() {
   $('#compra-opciones-caja').hidden = vs.length < 2;
   const v = T.porId[compra.variante];
   const ahorra = v.precio_antes > v.precio ? v.precio_antes - v.precio : 0;
-  $('#compra-precio').innerHTML = '<strong>' + pesos(v.precio) + '</strong>' + (ahorra ? '<s>' + pesos(v.precio_antes) + '</s><span class="chip-ahorro">Ahorras ' + pesos(ahorra) + '</span>' : '');
+  $('#compra-precio').innerHTML = '<strong>' + pesos(v.precio) + '</strong>' + (ahorra ? '<s>' + pesos(v.precio_antes) + '</s><span class="chip-ahorro">−' + pctAhorro(v) + '% · Ahorras ' + pesos(ahorra) + '</span>' : '');
   $('#compra-cantidad').textContent = compra.cantidad;
   const gratisTxt = $('[data-envio-gratis-desde]');
   if (gratisTxt) gratisTxt.textContent = pesos(T.ajustes.envio_gratis_desde);
@@ -1443,39 +1532,242 @@ function iniciarCarrusel(nav) {
 $$('.carrusel-nav[data-para]:not([data-tarde])').forEach(iniciarCarrusel);
 
 // Reseñas reales: solo las que se marcaron como Publicadas en el gestor.
-(async function () {
+// En una landing se muestran las de ese producto; si todavía no tiene, las generales de la tienda.
+// Arriba, junto al nombre, van las estrellas con el número de reseñas. Abajo, el formulario para dejar una.
+const ESTRELLA = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="#C2185B"/></svg>';
+const estrellasHtml = (n) => '<span class="resena-estrellas" role="img" aria-label="' + n + ' de 5 estrellas">' + ESTRELLA.repeat(n) + '</span>';
+
+async function pintarResenas() {
   const seccion = $('#opiniones');
   const pista = $('#pista-resenas');
   if (!seccion || !pista) return;
+  const enProducto = P.tipo === 'producto' && !!P.productoId;
+  if (enProducto) { iniciarFormResena(seccion); seccion.hidden = false; }
+  let lista = [];
   try {
-    const lista = await rest('resenas?select=nombre,ciudad,mascota,producto,estrellas,texto,foto_path&estado=eq.Publicada&order=creado_en.desc&limit=12');
-    if (!Array.isArray(lista) || !lista.length) return;
-    if (P.resenas) lista.sort((a, b) => (b.producto === P.resenas) - (a.producto === P.resenas));
-    const estrella = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z" fill="#C2185B"/></svg>';
-    lista.forEach((r) => {
-      const art = document.createElement('article');
-      if (r.foto_path) {
-        const img = document.createElement('img');
-        img.src = CONFIG.SUPABASE_URL + '/storage/v1/object/public/resenas/' + encodeURIComponent(r.foto_path);
-        img.alt = r.mascota ? r.mascota + ', la mascota de ' + r.nombre : 'La mascota de ' + r.nombre;
-        img.loading = 'lazy';
-        img.width = 560;
-        img.height = 420;
-        art.appendChild(img);
+    const campos = 'nombre,ciudad,mascota,producto,estrellas,texto,foto_path';
+    const ruta = (c) => 'resenas?select=' + c + '&estado=eq.Publicada&order=creado_en.desc&limit=60';
+    lista = await rest(ruta(campos + ',producto_id')).catch(() => rest(ruta(campos))); // sin la migración 022 no existe producto_id
+  } catch (e) { lista = []; }
+  if (!Array.isArray(lista)) lista = [];
+  const propias = enProducto ? lista.filter((r) => r.producto_id === P.productoId) : [];
+  let mostrar = propias.length ? propias : lista;
+  if (!propias.length && P.resenas) mostrar = mostrar.slice().sort((a, b) => (b.producto === P.resenas) - (a.producto === P.resenas));
+  mostrar = mostrar.slice(0, 12);
+  if (enProducto) pintarResumenResenas(propias.length ? propias : lista, !propias.length);
+  if (!mostrar.length) {
+    const titulo = $('#t-opiniones');
+    if (enProducto && titulo) titulo.textContent = 'Sé el primero en opinar';
+    pista.hidden = true;
+    return;
+  }
+  mostrar.forEach((r) => {
+    const art = document.createElement('article');
+    if (r.foto_path) {
+      const img = document.createElement('img');
+      img.src = CONFIG.SUPABASE_URL + '/storage/v1/object/public/resenas/' + encodeURIComponent(r.foto_path);
+      img.alt = r.mascota ? r.mascota + ', la mascota de ' + r.nombre : 'La mascota de ' + r.nombre;
+      img.loading = 'lazy';
+      img.width = 560;
+      img.height = 420;
+      art.appendChild(img);
+    }
+    const n = Math.max(1, Math.min(5, Number(r.estrellas) || 5));
+    const cuerpo = document.createElement('div');
+    cuerpo.className = 'resena-cuerpo';
+    cuerpo.innerHTML = estrellasHtml(n) +
+      '<blockquote>' + esc(r.texto) + '</blockquote><div class="resena-pie"><span><strong>' + esc(r.nombre) + '</strong> · ' + esc(r.ciudad) +
+      (r.mascota ? ' · con ' + esc(r.mascota) : '') + '</span><span class="resena-tag">' + esc(r.producto === 'Cajita para perros' ? 'Cajita' : r.producto) + '</span></div>';
+    art.appendChild(cuerpo);
+    pista.appendChild(art);
+  });
+  seccion.hidden = false;
+  iniciarCarrusel($('.carrusel-nav[data-para="pista-resenas"]'));
+}
+
+// Estrellas debajo del nombre del producto: promedio y número de reseñas (lleva a la sección de opiniones).
+function pintarResumenResenas(lista, generales) {
+  const h1 = $('.compra-info h1');
+  if (!h1) return;
+  let caja = $('.resumen-resenas');
+  if (!caja) {
+    caja = document.createElement('a');
+    caja.className = 'resumen-resenas';
+    caja.href = '#opiniones';
+    h1.insertAdjacentElement('afterend', caja);
+  }
+  if (!lista.length) {
+    caja.innerHTML = '<span class="resena-estrellas vacias" aria-hidden="true">' + ESTRELLA.repeat(5) + '</span><span>Sé el primero en opinar</span>';
+    return;
+  }
+  const prom = lista.reduce((s, r) => s + (Number(r.estrellas) || 5), 0) / lista.length;
+  const n = lista.length;
+  const txt = prom.toFixed(1).replace('.', ',');
+  caja.setAttribute('aria-label', 'Calificación ' + txt + ' de 5, ' + n + (n === 1 ? ' reseña' : ' reseñas') + (generales ? ' de clientes Revoltosos' : '') + '. Ver opiniones');
+  caja.innerHTML = '<span class="resena-estrellas" aria-hidden="true">' + ESTRELLA.repeat(Math.round(prom)) + '</span>' +
+    '<strong aria-hidden="true">' + txt + '</strong><span aria-hidden="true">(' + n + (n === 1 ? ' reseña' : ' reseñas') + ')</span>';
+}
+
+// Formulario para dejar una reseña desde la landing: estrellas, comentario, nombre, ciudad, mascota y foto.
+// Entra como Pendiente y se publica desde el gestor › Reseñas.
+function iniciarFormResena(seccion) {
+  const cont = $('.contenedor', seccion);
+  if (!cont || $('#rf-form')) return;
+  const nombreProducto = () => (T.prodPorId[P.productoId] && T.prodPorId[P.productoId].nombre) || ($('.compra-info h1') || {}).textContent || 'Otro snack';
+  const zona = document.createElement('div');
+  zona.className = 'rf';
+  zona.innerHTML =
+    '<button type="button" class="btn btn--oscuro rf-abrir" aria-expanded="false" aria-controls="rf-form">' + ICONO.mas + 'Escribir una reseña</button>' +
+    '<form class="rf-form" id="rf-form" novalidate hidden>' +
+      '<h3>Cuéntanos cómo le fue a tu peludo</h3>' +
+      '<fieldset><legend>¿Qué tanto le gustó?</legend><div class="rf-estrellas" role="radiogroup" aria-label="Calificación"></div></fieldset>' +
+      '<div class="campo"><label for="rf-texto">Tu comentario</label><textarea id="rf-texto" name="texto" maxlength="600" rows="4" placeholder="Ej: apenas oye la bolsa se emociona"></textarea><span class="error" id="rf-e-texto"></span></div>' +
+      '<div class="campos-2">' +
+        '<div class="campo"><label for="rf-nombre">Tu nombre</label><input id="rf-nombre" name="nombre" type="text" autocomplete="given-name" maxlength="60" placeholder="Laura"><span class="error" id="rf-e-nombre"></span></div>' +
+        '<div class="campo"><label for="rf-ciudad">Ciudad</label><input id="rf-ciudad" name="ciudad" type="text" autocomplete="address-level2" maxlength="60" placeholder="Pereira"><span class="error" id="rf-e-ciudad"></span></div>' +
+      '</div>' +
+      '<div class="campo"><label for="rf-mascota">Nombre de tu mascota <small>(opcional)</small></label><input id="rf-mascota" name="mascota" type="text" maxlength="40" placeholder="Toby"></div>' +
+      '<div class="campo"><span class="rf-label">Foto de tu mascota <small>(opcional, pero nos encanta)</small></span>' +
+        '<label class="rf-foto"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>' +
+        '<span id="rf-foto-texto">Toca para subir una foto</span><input type="file" id="rf-foto" accept="image/jpeg,image/png,image/webp,image/heic,image/heif"></label><span class="error" id="rf-e-foto"></span></div>' +
+      '<label class="acepto"><input type="checkbox" id="rf-autoriza"><span>Autorizo a Revoltosos a publicar mi comentario, mi nombre, mi ciudad y la foto de mi mascota en su página y sus redes, según la <a href="/privacidad.html" target="_blank" rel="noopener">política de datos</a>.</span></label>' +
+      '<span class="error" id="rf-e-autoriza"></span>' +
+      '<div class="trampa" aria-hidden="true"><label for="rf-empresa">Empresa</label><input id="rf-empresa" type="text" tabindex="-1" autocomplete="off"></div>' +
+      '<p class="form-error" id="rf-error" role="alert" hidden></p>' +
+      '<button type="submit" class="btn btn--ancho" id="rf-enviar">Enviar mi reseña</button>' +
+      '<p class="seguro">Revisamos cada reseña antes de publicarla.</p>' +
+    '</form>' +
+    '<div class="rf-gracias" id="rf-gracias" role="status" hidden><strong>¡Gracias por tu reseña!</strong><span>La revisamos y aparece aquí en poco tiempo.</span></div>';
+  cont.appendChild(zona);
+
+  const form = $('#rf-form', zona);
+  const abrir = $('.rf-abrir', zona);
+  abrir.addEventListener('click', () => {
+    form.hidden = !form.hidden;
+    abrir.setAttribute('aria-expanded', String(!form.hidden));
+    if (!form.hidden) $('#rf-texto').focus();
+  });
+
+  let nota = 5;
+  const cajaEstrellas = $('.rf-estrellas', form);
+  const pintar = () => $$('button', cajaEstrellas).forEach((b, i) => { b.classList.toggle('on', i < nota); b.setAttribute('aria-checked', String(i + 1 === nota)); });
+  for (let n = 1; n <= 5; n++) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.setAttribute('role', 'radio');
+    b.setAttribute('aria-label', n + (n === 1 ? ' estrella' : ' estrellas'));
+    b.innerHTML = '<svg width="34" height="34" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z"/></svg>';
+    b.addEventListener('click', () => { nota = n; pintar(); });
+    cajaEstrellas.appendChild(b);
+  }
+  pintar();
+
+  // La foto se reduce a 1200 px en el celular antes de subirla.
+  let foto = null;
+  $('#rf-foto').addEventListener('change', async (e) => {
+    const archivo = e.target.files[0];
+    $('#rf-e-foto').textContent = '';
+    foto = null;
+    if (!archivo) return;
+    if (archivo.size > 15 * 1024 * 1024) { $('#rf-e-foto').textContent = 'La foto es muy pesada. Prueba con otra.'; return; }
+    try { foto = await reducirFoto(archivo); } catch (err) {
+      if (archivo.size <= 8 * 1024 * 1024 && /^image\/(jpeg|png|webp)$/.test(archivo.type)) foto = archivo;
+      else { $('#rf-e-foto').textContent = 'No pudimos leer esa foto. Prueba con una JPG o PNG.'; return; }
+    }
+    const lab = $('.rf-foto', form);
+    let prev = $('img', lab);
+    if (!prev) { prev = document.createElement('img'); prev.alt = 'Vista previa de la foto'; lab.insertBefore(prev, lab.firstChild); }
+    prev.src = URL.createObjectURL(foto);
+    $('svg', lab).style.display = 'none';
+    $('#rf-foto-texto').textContent = 'Toca para cambiar la foto';
+  });
+
+  const reglas = {
+    texto: (v) => (v.trim().length >= 5 ? '' : 'Escribe al menos una frase.'),
+    nombre: (v) => (v.trim().length >= 2 ? '' : 'Escribe tu nombre.'),
+    ciudad: (v) => (v.trim().length >= 2 ? '' : 'Escribe tu ciudad.')
+  };
+  const validar = (n) => {
+    const el = $('[name="' + n + '"]', form);
+    const msg = reglas[n](el.value);
+    el.setAttribute('aria-invalid', msg ? 'true' : 'false');
+    $('#rf-e-' + n).textContent = msg;
+    return !msg;
+  };
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    $('#rf-error').hidden = true;
+    const ok = Object.keys(reglas).map(validar);
+    const autoriza = $('#rf-autoriza').checked;
+    $('#rf-e-autoriza').textContent = autoriza ? '' : 'Necesitamos tu autorización para publicarla.';
+    if (ok.indexOf(false) >= 0 || !autoriza) { ($('[aria-invalid="true"]', form) || $('#rf-autoriza')).focus(); return; }
+    const listo = () => { form.hidden = true; abrir.hidden = true; $('#rf-gracias').hidden = false; };
+    if ($('#rf-empresa').value) { listo(); return; }
+    const btn = $('#rf-enviar');
+    btn.disabled = true;
+    btn.textContent = 'Enviando…';
+    const cab = { apikey: CONFIG.SUPABASE_KEY, Authorization: 'Bearer ' + CONFIG.SUPABASE_KEY };
+    try {
+      const id = crypto.randomUUID ? crypto.randomUUID()
+        : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => { const r = (Math.random() * 16) | 0; return (c === 'x' ? r : ((r & 3) | 8)).toString(16); });
+      let fotoPath = null;
+      if (foto) {
+        fotoPath = id + '.jpg';
+        const subida = await fetch(CONFIG.SUPABASE_URL + '/storage/v1/object/resenas/' + fotoPath, {
+          method: 'POST', headers: Object.assign({ 'Content-Type': foto.type || 'image/jpeg', 'x-upsert': 'false' }, cab), body: foto
+        }).catch(() => null);
+        if (!subida || !subida.ok) fotoPath = null; // la reseña se guarda igual, sin foto
       }
-      const n = Math.max(1, Math.min(5, Number(r.estrellas) || 5));
-      const cuerpo = document.createElement('div');
-      cuerpo.className = 'resena-cuerpo';
-      cuerpo.innerHTML = '<span class="resena-estrellas" role="img" aria-label="' + n + ' de 5 estrellas">' + estrella.repeat(n) + '</span>' +
-        '<blockquote>' + esc(r.texto) + '</blockquote><div class="resena-pie"><span><strong>' + esc(r.nombre) + '</strong> · ' + esc(r.ciudad) +
-        (r.mascota ? ' · con ' + esc(r.mascota) : '') + '</span><span class="resena-tag">' + esc(r.producto === 'Cajita para perros' ? 'Cajita' : r.producto) + '</span></div>';
-      art.appendChild(cuerpo);
-      pista.appendChild(art);
-    });
-    seccion.hidden = false;
-    iniciarCarrusel($('.carrusel-nav[data-para="pista-resenas"]'));
-  } catch (e) { /* sin reseñas: la sección sigue escondida */ }
-})();
+      const fila = {
+        id,
+        nombre: $('#rf-nombre').value.trim(),
+        ciudad: $('#rf-ciudad').value.trim(),
+        mascota: $('#rf-mascota').value.trim() || null,
+        producto: nombreProducto().trim().slice(0, 80),
+        producto_id: P.productoId,
+        estrellas: nota,
+        texto: $('#rf-texto').value.trim(),
+        foto_path: fotoPath,
+        autoriza: true
+      };
+      const enviar = (f) => fetch(CONFIG.SUPABASE_URL + '/rest/v1/resenas', {
+        method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json', Prefer: 'return=minimal' }, cab), body: JSON.stringify(f)
+      });
+      let res = await enviar(fila);
+      if (!res.ok) { // sin la migración 022 solo se aceptaba «Otro snack» y no existe producto_id
+        const viejo = Object.assign({}, fila, { producto: 'Otro snack' });
+        delete viejo.producto_id;
+        res = await enviar(viejo);
+      }
+      if (!res.ok) throw new Error('resena ' + res.status);
+      listo();
+    } catch (err) {
+      $('#rf-error').textContent = 'No pudimos enviar tu reseña. Revisa tu conexión e inténtalo de nuevo.';
+      $('#rf-error').hidden = false;
+      btn.disabled = false;
+      btn.textContent = 'Enviar mi reseña';
+    }
+  });
+}
+
+function reducirFoto(archivo) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const s = Math.min(1, 1200 / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * s);
+      c.height = Math.round(img.height * s);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      c.toBlob((b) => (b ? resolve(b) : reject(new Error('blob'))), 'image/jpeg', 0.85);
+      URL.revokeObjectURL(img.src);
+    };
+    img.onerror = reject;
+    img.src = URL.createObjectURL(archivo);
+  });
+}
+pintarResenas();
 
 $$('[data-anio]').forEach((el) => { el.textContent = new Date().getFullYear(); });
 
@@ -1494,6 +1786,8 @@ function pintarTodo() {
   actualizar();
 }
 
+iniciarMenu();
+iniciarBuscador();
 crearDialogos();
 iniciarCarrito();
 iniciarCompra();

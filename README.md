@@ -17,6 +17,7 @@ Tienda con catálogo, carrito, cupones y pago contraentrega, una landing por pro
 | `/patas-de-pollo/`, `/oreja-de-cerdo/`, `/femur-de-cerdo/`, `/femur-de-res/`, `/humero-de-cerdo/`, `/humero-de-res/`, `/paleta-de-cerdo/`, `/codorniz-entera/` | Landings de cada producto, generadas con `herramientas/landings/generar.pl` (textos y fotos en ese archivo; después de cambiarlo: `perl herramientas/landings/generar.pl`) |
 | `/combo-res-codornicitas/`, `/combo-cerdo/`, `/combo-codornicitas-patas/` | Landings de los combos (mismo generador). Al despachar un combo, el inventario baja en cada producto que trae (tabla `variante_componentes`, migración 012) |
 | `/producto/?p=ID` | Página genérica para un producto nuevo que aún no tenga landing |
+| `/blog/` | Blog para posicionar en Google. Artículos en `herramientas/blog/generar.pl` (después de cambiarlo: `perl herramientas/blog/generar.pl`, que también rehace `sitemap.xml`) |
 | `/pedidos/` | Gestor privado: resumen, pedidos, productos, inventario, cupones, ajustes, reseñas |
 | `/opina/` | Formulario de reseñas para clientes |
 | `assets/css/tienda.css`, `assets/js/tienda.js` | Estilos y lógica compartidos de la tienda (carrito, cupón, envío gratis, formulario) |
@@ -41,6 +42,9 @@ Gestor /pedidos ◀── lee y edita todo (solo correos de la tabla admins)
 - **Inventario:** sale solo cuando un pedido pasa a **Despachado** (o En reparto / Entregado). Vuelve a bodega si se cancela, no se confirma o se devuelve. Un combo («2 frascos») descuenta del tamaño que se elija (2 × frasco de 100 g).
 - **Ganancia:** venta − costo de producto − envío real (o el promedio de Ajustes) − comisión de recaudo. Las devoluciones restan el flete de ida y vuelta. La neta resta además el gasto en pauta del mes.
 - **Metas:** en Resumen → «Poner meta» y «Gasto en pauta» por mes. Las ventas cuentan solo pedidos **Entregados**.
+- **Precio tachado:** la tienda muestra el precio normal tachado y el descuento en % (−25 %). Se cambia en Productos › «Precio normal».
+- **Reseñas en las landings:** cada landing tiene «Escribir una reseña» (estrellas, comentario y foto). Entran como Pendiente y se publican en el gestor › Reseñas. Arriba, junto al nombre, salen las estrellas y el número de reseñas del producto; si aún no tiene, se muestran las generales de la tienda.
+- **Buscador:** en el inicio, en /productos/ y en el menú (3 barritas en el celular). `/productos/?q=hueso` abre con la búsqueda hecha.
 - **Avisos de compra** («Juliana de Medellín acaba de pedir…»): salen de pedidos reales de los últimos 7 días (solo primer nombre y ciudad), con la función `compras_recientes`.
 
 ## Puesta en marcha de la tienda (en este orden)
