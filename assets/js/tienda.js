@@ -195,7 +195,8 @@ function nombreRegalo() {
 
 // Caja del regalo para el carrito: avance o «ganaste».
 function cajaRegalo(k) {
-  if (!k.regaloDesde || !k.unidades) return '';
+  // Un letrero a la vez: el del regalo aparece solo cuando el envío ya es gratis.
+  if (!k.regaloDesde || !k.unidades || !(k.gratis || k.regalo)) return '';
   if (k.regalo) {
     return '<div class="caja regalo-caja ganado rv-pop"><p>' + ICONO.regalo + '<span><strong>¡Ganaste un regalo!</strong> Te llevas <b>' + esc(nombreRegalo()) + '</b> GRATIS con tu pedido.</span></p></div>';
   }
@@ -256,7 +257,7 @@ function avisoAgregado(v, n) {
     '<p class="aviso-total">Tu carrito: <b>' + k.unidades + (k.unidades === 1 ? ' producto' : ' productos') + ' · ' + pesos(k.neto) + '</b>' +
     (k.gratis ? ' · <span class="verde">envío GRATIS</span>' : '') + '</p>' +
     (k.regalo ? '<p class="aviso-regalo">' + ICONO.regalo + '<span>¡Ganaste <b>' + esc(nombreRegalo()) + '</b> de regalo!</span></p>'
-      : k.regaloDesde ? '<p class="aviso-regalo">' + ICONO.regalo + '<span>Te faltan <b>' + pesos(k.faltaRegalo) + '</b> para tu regalo</span></p>' : '') +
+      : k.regaloDesde && k.gratis ? '<p class="aviso-regalo">' + ICONO.regalo + '<span>Te faltan <b>' + pesos(k.faltaRegalo) + '</b> para tu regalo</span></p>' : '') +
     '<div class="aviso-botones"><button type="button" class="btn" data-ver-carrito>Ver mi carrito' + ICONO.flecha + '</button>' +
     '<button type="button" class="aviso-seguir" data-cerrar-aviso>Seguir comprando</button></div>';
   t.hidden = false;
@@ -314,7 +315,7 @@ function pintarBarraEnvio(el, k) {
   if (k.regalo) msg.innerHTML = '<strong>¡Envío GRATIS y regalo desbloqueados!</strong>';
   else if (k.gratis && k.regaloDesde) msg.innerHTML = '<strong>¡Envío GRATIS!</strong> Te faltan <strong>' + pesos(k.faltaRegalo) + '</strong> para tu regalo';
   else if (k.gratis) msg.innerHTML = '<strong>¡Desbloqueaste el envío GRATIS!</strong>';
-  else if (!k.unidades) msg.innerHTML = 'Envío <strong>GRATIS</strong> desde ' + meta + (k.regaloDesde ? ' · regalo desde ' + pesos(k.regaloDesde) : '');
+  else if (!k.unidades) msg.innerHTML = 'Envío <strong>GRATIS</strong> desde ' + meta;
   else msg.innerHTML = (k.pct >= 60 ? '¡Ya casi! ' : '') + 'Te faltan <strong>' + pesos(k.falta) + '</strong> para envío GRATIS';
   el.classList.toggle('gratis', k.gratis);
   el.classList.toggle('casi', !k.gratis && k.pct >= 60);
@@ -1116,6 +1117,24 @@ function pintarBoton(form, total) {
     : 'No pagas nada ahora. Te confirmamos por WhatsApp.';
 }
 
+// Lo que va a comprar, arriba del formulario: una fila por producto con foto, tamaño, ×cantidad y precio.
+// Con más de 3 productos distintos se ven 3 y el resto con «Ver N más».
+const MINI_VISIBLES = 3;
+let miniAbierto = false;
+function miniResumen(k) {
+  const extra = Math.max(0, k.ls.length - MINI_VISIBLES);
+  const fila = (l, i) => '<li' + (i >= MINI_VISIBLES && !miniAbierto ? ' hidden' : '') + '>' +
+    '<img src="' + esc(fotoDe(l.v)) + '" alt="" width="40" height="40">' +
+    '<div class="mr-nom"><strong>' + esc(prodDe(l.v).nombre) + '</strong><span>' + esc(l.v.nombre) + '</span></div>' +
+    (l.q > 1 ? '<b class="mr-q">×' + l.q + '</b>' : '') +
+    '<span class="mr-precio">' + pesos(l.v.precio * l.q) + '</span></li>';
+  return '<div class="mr-cab"><strong>Tu pedido</strong><span>' + k.unidades + (k.unidades === 1 ? ' producto' : ' productos') + '</span></div>' +
+    '<ul class="mr-lista">' + k.ls.map(fila).join('') +
+    (k.regalo ? '<li class="mr-regalo">' + ICONO.regalo + '<div class="mr-nom"><strong>Regalo</strong><span>' + esc(nombreRegalo()) + '</span></div><span class="mr-precio">GRATIS</span></li>' : '') +
+    '</ul>' +
+    (extra ? '<button type="button" class="mr-mas" data-mr-mas aria-expanded="' + miniAbierto + '">' + (miniAbierto ? 'Ver menos' : 'Ver ' + extra + (extra === 1 ? ' producto más' : ' productos más')) + '</button>' : '');
+}
+
 function pintarResumenPedido() {
   const d = $('#pedido-modal');
   const form = $('#form-pedido', d);
@@ -1124,10 +1143,7 @@ function pintarResumenPedido() {
   const k = cuentas(dep, form.ciudad.value);
   const prio = form.prioritario.checked ? T.ajustes.prioritario : 0;
   const primera = k.ls[0];
-  $('[data-mini-resumen]', d).innerHTML = primera
-    ? '<img src="' + esc(fotoDe(primera.v)) + '" alt="" width="44" height="44"><div><strong>' + k.unidades + (k.unidades === 1 ? ' producto' : ' productos') + '</strong><span>' +
-      esc(k.ls.map((l) => l.q + ' × ' + nombreLargo(l.v)).join(', ')) + '</span></div><strong>' + pesos(k.neto) + '</strong>'
-    : '<div><strong>Tu carrito está vacío</strong></div>';
+  $('[data-mini-resumen]', d).innerHTML = primera ? miniResumen(k) : '<div class="mr-cab"><strong>Tu carrito está vacío</strong></div>';
   $('[data-valor-prioritario]', d).textContent = pesos(T.ajustes.prioritario);
   $('[data-metodos]', d).hidden = !T.ajustes.wompi_activo;
   const wompi = metodoDe(form) === 'wompi';
@@ -1289,6 +1305,9 @@ function iniciarFormulario() {
   form.ciudad.addEventListener('change', pintarResumenPedido);
   form.prioritario.addEventListener('change', pintarResumenPedido);
   $$('[name="metodo_pago"]', form).forEach((r) => r.addEventListener('change', pintarResumenPedido));
+  form.addEventListener('click', (e) => {
+    if (e.target.closest('[data-mr-mas]')) { miniAbierto = !miniAbierto; pintarResumenPedido(); }
+  });
   // Carrito abandonado (migración 023): se guarda solo con celular válido y la casilla de datos marcada.
   ['input', 'change'].forEach((ev) => form.addEventListener(ev, (e) => {
     if (['nombre', 'celular', 'departamento', 'ciudad', 'acepto'].includes(e.target.name)) programarCarritoGuardado();

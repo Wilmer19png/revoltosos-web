@@ -1099,7 +1099,7 @@ COMBINA
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght\@400;500;600;700;800&display=swap">
 $precarga<link rel="stylesheet" href="/assets/css/landing.css?v=8">
-<link rel="stylesheet" href="/assets/css/tienda.css?v=18">
+<link rel="stylesheet" href="/assets/css/tienda.css?v=19">
 
 <!-- Generada con herramientas/landings/generar.pl: los cambios van allá, no aquí. -->
 <script>
@@ -1337,7 +1337,7 @@ $iconos
   <button type="button" id="cookies-ok">Entendido</button>
 </div>
 
-<script src="/assets/js/tienda.js?v=20"></script>
+<script src="/assets/js/tienda.js?v=22"></script>
 </body>
 </html>
 HTML
