@@ -563,3 +563,17 @@ dialog.panel:focus, dialog.panel:focus-visible { outline: none; }
 .regalo-caja.ganado p svg { color: #FFFFFF; }
 .aviso-regalo { display: flex; align-items: center; gap: 8px; background: #FFF6FA; color: var(--tinta); border-radius: 12px; padding: 8px 12px; font-size: 14px; }
 .aviso-regalo svg { flex: none; color: var(--rosa); }
+
+/* Debajo del botón final: solo con Wompi */
+.seguro[hidden] { display: none; }
+
+/* Precios: siempre en la letra del texto (Figtree), gruesa y con números del mismo ancho,
+   para que se lean igual en todas partes (la letra de títulos queda para los títulos). */
+.etiqueta-precio, .promo-der span:first-child, .paquete-precio,
+.resumen-total span:last-child, .barra-fija a > span:last-child span:first-child {
+  font-family: var(--sans); font-weight: 800; letter-spacing: -0.01em;
+}
+.resumen-total span:last-child { font-size: 26px; }
+.precio, .precio-grande, .valor, .val, .metodo-precio, .cuentas, .resumen, .mr-precio, .aviso-precio, .prod-precio, .item-c strong {
+  font-variant-numeric: tabular-nums;
+}

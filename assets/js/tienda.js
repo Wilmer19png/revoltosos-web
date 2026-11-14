@@ -1087,8 +1087,8 @@ function plantillaFormulario() {
     '<span class="error" id="e-acepto" style="margin-top: -8px"></span>' +
     '<div class="trampa" aria-hidden="true"><label for="f-empresa">Empresa</label><input id="f-empresa" name="empresa" type="text" tabindex="-1" autocomplete="off"></div>' +
     '<p class="form-error" id="form-error" role="alert" hidden></p>' +
-    '<button type="submit" class="btn btn-confirmar rv-pulso" id="btn-pagar"><span>Confirmar pedido · Pago al recibir</span><span>Sin tarjeta · pagas cuando te llegue</span></button>' +
-    '<p class="seguro">' + ICONO.candado + '<span data-seguro>No pagas nada ahora. Te confirmamos por WhatsApp.</span></p>' +
+    '<button type="submit" class="btn btn-confirmar rv-pulso" id="btn-pagar"><span>Confirmar pedido</span><span>Pago al recibir</span></button>' +
+    '<p class="seguro" hidden>' + ICONO.candado + '<span data-seguro></span></p>' +
     '<p class="wa-salida"><a data-wa-pedido href="https://wa.me/' + CONFIG.WHATSAPP + '" target="_blank" rel="noopener">' + ICONO.whatsapp + '<span>¿Prefieres pedir por WhatsApp? <b>Escríbenos y te lo tomamos en 1 minuto.</b></span></a></p>' +
     '</form>';
 }
@@ -1109,12 +1109,13 @@ const metodoDe = (form) => (T.ajustes.wompi_activo && form.metodo_pago && form.m
 function pintarBoton(form, total) {
   const wompi = metodoDe(form) === 'wompi';
   $('#btn-pagar').innerHTML = wompi
-    ? '<span>Confirmar pedido · Pagar ' + pesos(total) + '</span><span>Tarjeta, PSE, Nequi o Bancolombia</span>'
-    : '<span>Confirmar pedido · Pago al recibir</span><span>Sin tarjeta · pagas cuando te llegue</span>';
+    ? '<span>Pagar ' + pesos(total) + '</span><span>Tarjeta, PSE, Nequi o Bancolombia</span>'
+    : '<span>Confirmar pedido</span><span>Pago al recibir</span>';
   $('#pedido-titulo + p').textContent = wompi ? 'Tarda 1 minuto. Al final pagas con Wompi.' : 'Tarda 1 minuto. No pagas nada ahora.';
-  $('[data-seguro]', form).textContent = wompi
-    ? 'Pago seguro con Wompi, de Bancolombia. No guardamos los datos de tu tarjeta.'
-    : 'No pagas nada ahora. Te confirmamos por WhatsApp.';
+  // Debajo del botón, solo con Wompi (la nota de seguridad del pago en línea).
+  const seguro = $('.seguro', form);
+  seguro.hidden = !wompi;
+  $('[data-seguro]', form).textContent = 'Pago seguro con Wompi, de Bancolombia. No guardamos los datos de tu tarjeta.';
 }
 
 // Lo que va a comprar, arriba del formulario: una fila por producto con foto, tamaño, ×cantidad y precio.
