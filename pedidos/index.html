@@ -304,6 +304,7 @@ td.der, th.der { text-align: right; font-variant-numeric: tabular-nums; }
       <button type="button" class="pestana" role="tab" data-tab="productos" aria-selected="false">Productos</button>
       <button type="button" class="pestana" role="tab" data-tab="inventario" aria-selected="false">Inventario <span class="contador" id="bajos" hidden></span></button>
       <button type="button" class="pestana" role="tab" data-tab="pauta" aria-selected="false">Pauta</button>
+      <button type="button" class="pestana" role="tab" data-tab="carritos" aria-selected="false">Carritos <span class="contador" id="carritos-pendientes" hidden></span></button>
       <button type="button" class="pestana" role="tab" data-tab="cupones" aria-selected="false">Cupones</button>
       <button type="button" class="pestana" role="tab" data-tab="ajustes" aria-selected="false">Ajustes</button>
       <button type="button" class="pestana" role="tab" data-tab="resenas" aria-selected="false">Reseñas <span class="contador" id="resenas-pendientes" hidden></span></button>
@@ -561,6 +562,16 @@ td.der, th.der { text-align: right; font-variant-numeric: tabular-nums; }
   </main>
 
   <!-- Reseñas -->
+  <main class="contenido" id="tab-carritos" role="tabpanel" hidden>
+    <div class="pedido">
+      <strong>Carritos sin terminar</strong>
+      <p style="margin: 0; font-size: 14px; color: var(--tinta-2)">Personas que escribieron su celular y aceptaron el tratamiento de datos, pero no enviaron el pedido. Toca el mensaje que toca según el tiempo (el resaltado): se abre tu WhatsApp con el texto listo y solo le das enviar. Si después piden con ese celular, el carrito pasa solo a <strong>Recuperados</strong>.</p>
+    </div>
+    <div class="filtros" id="filtros-carritos" role="group" aria-label="Filtrar carritos"></div>
+    <p class="estado-carga" id="c-estado" aria-live="polite">Cargando carritos…</p>
+    <div class="lista" id="lista-carritos"></div>
+  </main>
+
   <main class="contenido" id="tab-resenas" role="tabpanel" hidden>
     <div class="pedido">
       <strong>Pide reseñas a tus clientes</strong>
@@ -685,7 +696,7 @@ let cargando = false;
 async function cargar() {
   if (cargando) return;
   cargando = true;
-  const [rp, rprod, rvar, rcup, raj, rmov, rr, rpa, rcomp] = await Promise.all([
+  const [rp, rprod, rvar, rcup, raj, rmov, rr, rpa, rcomp, rcar] = await Promise.all([
     sb.from('pedidos').select('*').order('creado_en', { ascending: false }).limit(3000),
     sb.from('productos').select('*').order('orden'),
     sb.from('variantes').select('*').order('orden'),
@@ -694,7 +705,8 @@ async function cargar() {
     sb.from('movimientos').select('*').order('creado_en', { ascending: false }).limit(150),
     sb.from('resenas').select('*').order('creado_en', { ascending: false }).limit(300),
     sb.from('pauta_anuncios').select('*').gte('fecha', sumarDias(hoy(), -100)).order('fecha').limit(20000),
-    sb.from('variante_componentes').select('*')
+    sb.from('variante_componentes').select('*'),
+    sb.from('carritos').select('*').order('actualizado_en', { ascending: false }).limit(500)
   ]);
   cargando = false;
   if (rp.error) {
@@ -711,6 +723,7 @@ async function cargar() {
   D.ajustes = raj.data || { envio_gratis_desde: 70000, envio_base: 12000, envio_departamentos: {}, prioritario: 5000, costo_envio_promedio: 12000, comision_recaudo: 0, metas: {} };
   D.resenas = rr.error ? null : rr.data;
   D.componentes = rcomp.error ? [] : rcomp.data;
+  D.carritos = rcar.error ? null : rcar.data;
   D.pautaLista = !rpa.error;
   D.pauta = rpa.error ? [] : rpa.data;
   pintarTodo();
@@ -760,6 +773,7 @@ function pintarTodo() {
   pintarPauta();
   pintarCupones();
   pintarAjustes();
+  pintarCarritos();
   pintarResenas();
 }
 
@@ -2057,6 +2071,158 @@ $('#form-ajustes').addEventListener('submit', async (e) => {
   pintarTodo();
   avisar('Ajustes guardados');
 });
+
+/* ---------- Carritos abandonados (migración 023) ---------- */
+let filtroCarrito = 'Pendientes';
+const MENSAJES_CARRITO = [
+  { k: '1h', etiqueta: '1 hora', horas: 1 },
+  { k: '24h', etiqueta: '24 horas', horas: 24 },
+  { k: '72h', etiqueta: '72 horas', horas: 72 }
+];
+const estadoCarrito = (c) => (c.pedido_id || c.recuperado_en ? 'Recuperados' : c.descartado ? 'Descartados' : 'Pendientes');
+
+// «Codornices», «Codornices y Patas de pollo», «Codornices, Patas de pollo y 2 más».
+function productosDeCarrito(c) {
+  const nombres = [];
+  (c.items || []).forEach((i) => {
+    const n = String(i.nombre || '').split(' · ')[0];
+    if (n && !nombres.includes(n)) nombres.push(n);
+  });
+  if (!nombres.length) return 'tus snacks';
+  if (nombres.length === 1) return nombres[0];
+  if (nombres.length === 2) return nombres[0] + ' y ' + nombres[1];
+  return nombres[0] + ', ' + nombres[1] + ' y ' + (nombres.length - 2) + ' más';
+}
+
+function mensajeCarrito(c, k) {
+  const nombre = String(c.nombre || '').trim().split(/\s+/)[0] || '';
+  const hola = nombre ? 'Hola ' + nombre : 'Hola';
+  const prod = productosDeCarrito(c);
+  const gratis = pesos((D.ajustes && D.ajustes.envio_gratis_desde) || 70000);
+  if (k === '1h') return hola + ', vimos que dejaste ' + prod + ' en tu carrito. Si te quedó alguna duda sobre el envío o el pago, respóndenos aquí. Recuerda que pagas al recibir.';
+  if (k === '24h') return hola + ', tu ' + prod + ' sigue apartado. Es un solo ingrediente, sin sal ni conservantes. ¿Te lo enviamos? Solo responde SÍ y confirmamos tu dirección.';
+  return 'Último recordatorio de tu carrito' + (nombre ? ', ' + nombre : '') + '. Si le sumas otro snack y llegas a ' + gratis + ', el envío es gratis. ¿Te ayudamos a armarlo?';
+}
+
+// El mensaje que toca: el más reciente cuyo tiempo ya pasó y que aún no se ha enviado.
+function mensajeQueToca(c) {
+  const horas = (Date.now() - Date.parse(c.actualizado_en)) / 3600000;
+  const env = c.enviados || {};
+  const vencidos = MENSAJES_CARRITO.filter((m) => horas >= m.horas);
+  const ultimo = vencidos[vencidos.length - 1];
+  return ultimo && !env[ultimo.k] ? ultimo.k : null;
+}
+
+function haceCuanto(fecha) {
+  const min = Math.max(0, Math.round((Date.now() - Date.parse(fecha)) / 60000));
+  if (min < 60) return 'hace ' + min + ' min';
+  const h = Math.round(min / 60);
+  if (h < 48) return 'hace ' + h + (h === 1 ? ' hora' : ' horas');
+  return 'hace ' + Math.round(h / 24) + ' días';
+}
+
+async function guardarCarrito(c, cambios, texto) {
+  const { error } = await sb.from('carritos').update(cambios).eq('sesion', c.sesion);
+  if (error) { avisar('No se pudo guardar'); return false; }
+  Object.assign(c, cambios);
+  if (texto) avisar(texto);
+  pintarCarritos();
+  return true;
+}
+
+function pintarCarritos() {
+  const estado = $('#c-estado');
+  const lista = $('#lista-carritos');
+  const filtros = $('#filtros-carritos');
+  lista.textContent = '';
+  filtros.textContent = '';
+  const carritos = D.carritos;
+  const badge = $('#carritos-pendientes');
+  if (carritos == null) {
+    badge.hidden = true;
+    estado.hidden = false;
+    estado.textContent = 'Falta la tabla de carritos. Ejecuta supabase/migraciones/023-carritos-abandonados.sql en Supabase.';
+    return;
+  }
+  const porTocar = carritos.filter((c) => estadoCarrito(c) === 'Pendientes' && mensajeQueToca(c)).length;
+  badge.hidden = !porTocar;
+  badge.textContent = porTocar;
+
+  ['Pendientes', 'Recuperados', 'Descartados'].forEach((est) => {
+    const b = el('button', 'filtro', est + ' ');
+    b.type = 'button';
+    b.setAttribute('aria-pressed', String(filtroCarrito === est));
+    b.append(el('span', null, String(carritos.filter((c) => estadoCarrito(c) === est).length)));
+    b.addEventListener('click', () => { filtroCarrito = est; pintarCarritos(); });
+    filtros.append(b);
+  });
+
+  const visibles = carritos.filter((c) => estadoCarrito(c) === filtroCarrito);
+  estado.hidden = visibles.length > 0;
+  estado.textContent = carritos.length ? 'No hay carritos en esta lista.' : 'Todavía no hay carritos guardados. Aparecen cuando alguien escribe su celular, acepta los datos y no termina el pedido.';
+
+  visibles.forEach((c) => {
+    const art = el('article', 'pedido');
+    const top = el('div', 'pedido-top');
+    top.append(el('span', 'pedido-fecha', fechaCorta.format(new Date(c.actualizado_en)) + ' · ' + haceCuanto(c.actualizado_en)), el('span', 'estado', estadoCarrito(c).replace(/s$/, '')));
+    top.lastChild.dataset.e = c.pedido_id ? 'Entregado' : c.descartado ? 'Devuelto' : 'Nuevo';
+    top.lastChild.style.cssText = 'display: inline-flex; align-items: center; min-height: 28px; background-image: none; padding: 0 12px';
+
+    const quien = el('div');
+    quien.append(el('strong', null, c.nombre || 'Sin nombre'));
+    const tel = el('a', null, ' · ' + String(c.celular).replace(/^57/, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'));
+    tel.href = 'tel:+' + c.celular;
+    tel.style.color = 'inherit';
+    quien.append(tel);
+    if (c.ciudad || c.departamento) quien.append(el('span', null, ' · ' + [c.ciudad, c.departamento].filter(Boolean).join(', ')));
+
+    const items = el('p', null, (c.items || []).map((i) => i.cantidad + ' × ' + i.nombre).join(', '));
+    items.style.cssText = 'margin: 0; font-size: 14px; color: var(--tinta-2)';
+    const total = el('strong', null, 'Total productos: ' + pesos(c.total || 0));
+
+    art.append(top, quien, items, total);
+
+    if (estadoCarrito(c) === 'Pendientes') {
+      const toca = mensajeQueToca(c);
+      const env = c.enviados || {};
+      const acc = el('div', 'acciones');
+      MENSAJES_CARRITO.forEach((m) => {
+        const a = el('a', m.k === toca ? 'btn' : 'btn-sec', (env[m.k] ? '✓ ' : '') + m.etiqueta);
+        a.href = 'https://wa.me/' + c.celular + '?text=' + encodeURIComponent(mensajeCarrito(c, m.k));
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.title = mensajeCarrito(c, m.k);
+        if (m.k === toca) a.style.background = 'var(--salvia)';
+        a.setAttribute('aria-label', 'Enviar mensaje de ' + m.etiqueta + ' a ' + (c.nombre || 'este cliente') + (env[m.k] ? ' (ya enviado)' : ''));
+        a.addEventListener('click', () => {
+          // Se abre WhatsApp y queda anotado como enviado.
+          guardarCarrito(c, { enviados: Object.assign({}, env, { [m.k]: new Date().toISOString() }) }, 'Mensaje de ' + m.etiqueta + ' marcado como enviado');
+        });
+        acc.append(a);
+      });
+      const descartar = el('button', 'btn-sec', 'Descartar');
+      descartar.type = 'button';
+      descartar.addEventListener('click', () => guardarCarrito(c, { descartado: true }, 'Carrito descartado'));
+      acc.append(descartar);
+      const nota = el('p', null, toca
+        ? 'Toca enviar el mensaje de ' + MENSAJES_CARRITO.find((m) => m.k === toca).etiqueta + '.'
+        : (Date.now() - Date.parse(c.actualizado_en) < 3600000 ? 'Aún es pronto: el primer mensaje va a la hora.' : 'Al día: ya enviaste el mensaje que tocaba.'));
+      nota.style.cssText = 'margin: 0; font-size: 13px; color: var(--tinta-2)';
+      art.append(nota, acc);
+    } else if (c.descartado && !c.pedido_id) {
+      const acc = el('div', 'acciones');
+      const volver = el('button', 'btn-sec', 'Volver a pendientes');
+      volver.type = 'button';
+      volver.addEventListener('click', () => guardarCarrito(c, { descartado: false }, 'Carrito de vuelta en pendientes'));
+      acc.append(volver);
+      art.append(acc);
+    } else if (c.pedido_id) {
+      const p = D.pedidos.find((x) => x.id === c.pedido_id);
+      if (p) art.append(el('p', 'pedido-fecha', 'Pidió: ' + p.order_id + ' · ' + pesos(p.total)));
+    }
+    lista.append(art);
+  });
+}
 
 /* ---------- Reseñas ---------- */
 let filtroResena = 'Pendiente';

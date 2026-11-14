@@ -526,3 +526,19 @@ dialog.panel:focus, dialog.panel:focus-visible { outline: none; }
   .blog-tarjeta img { width: 160px; height: 160px; }
   .blog-prods { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
+
+/* Formulario: salida por WhatsApp debajo del botón final */
+.wa-salida { text-align: center; font-size: 14px; }
+.wa-salida a { display: inline-flex; align-items: center; gap: 8px; padding: 8px 4px; color: var(--tinta-2); text-decoration: none; }
+.wa-salida a svg { flex: none; color: #1F8F4E; }
+.wa-salida a b { color: #1F8F4E; text-decoration: underline; text-underline-offset: 3px; }
+.wa-salida a:hover b { color: #176F3C; }
+
+/* Producto mientras carga el catálogo */
+.cargando-txt { color: var(--tinta-2); font-weight: 700; }
+
+/* Aviso al intentar salir (computador) */
+.salida .panel-cab { align-items: flex-start; }
+.salida-txt { font-size: 17px; line-height: 1.45; }
+.salida-txt b { color: var(--rosa); }
+.salida-botones .btn { min-height: 56px; font-size: 18px; }

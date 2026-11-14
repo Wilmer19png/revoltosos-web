@@ -935,7 +935,7 @@ for my $p (@productos) {
   my $miniaturas = join "\n          ", map {
     $i++;
     '<button type="button" aria-pressed="' . ($i == 1 ? 'true' : 'false') . '"' . ($_->[2] ? ' data-variante="' . $_->[2] . '"' : '')
-    . ' data-src="' . "$IMG/$_->[0].jpg" . '" data-alt="' . esc($_->[1]) . '" aria-label="Ver foto ' . $i . '"><img src="' . "$IMG/$_->[0]-600.jpg" . '" alt="" width="64" height="64"' . ($i > 1 ? ' loading="lazy"' : '') . '></button>'
+    . ' data-src="' . "$IMG/$_->[0].jpg" . '" data-alt="' . esc($_->[1]) . '" aria-label="Ver foto ' . $i . '"><img src="' . "$IMG/$_->[0]-600.jpg" . '" alt="' . esc($_->[1]) . '" width="64" height="64"' . ($i > 1 ? ' loading="lazy"' : '') . '></button>'
   } @minis;
 
   # "Así llega a tu casa": [archivo base, alt, texto, vertical (1) o cuadrada (0)]
@@ -1014,7 +1014,7 @@ ANAT
     my $tarjetas = join "\n        ", map {
       my ($nombre, $foto, $puntos) = @{ $BONDADES{$_} or die "No existe la bondad $_" };
       my $img = defined $foto
-        ? '<img src="' . "$IMG/$foto-600.jpg" . '" width="84" height="84" loading="lazy" alt="">'
+        ? '<img src="' . "$IMG/$foto-600.jpg" . '" width="84" height="84" loading="lazy" alt="' . esc($nombre) . '">'
         : '<span class="pendiente">Foto pronto</span>';
       '<article class="cada-item">' . $img . '<div><strong>' . esc($nombre) . '</strong><ul>'
       . join('', map { '<li>' . esc($_) . '</li>' } @$puntos) . '</ul></div></article>'
@@ -1098,8 +1098,8 @@ COMBINA
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght\@400;500;600;700;800&display=swap">
-$precarga<link rel="stylesheet" href="/assets/css/landing.css?v=7">
-<link rel="stylesheet" href="/assets/css/tienda.css?v=16">
+$precarga<link rel="stylesheet" href="/assets/css/landing.css?v=8">
+<link rel="stylesheet" href="/assets/css/tienda.css?v=17">
 
 <!-- Generada con herramientas/landings/generar.pl: los cambios van allá, no aquí. -->
 <script>
@@ -1116,7 +1116,7 @@ $iconos
 
 <header class="cab">
   <div class="cab-fila">
-    <a class="cab-logo" href="/" aria-label="Revoltosos, ir a la tienda"><img src="/assets/img/logo.jpg" width="150" height="150" alt=""><span>Revoltosos</span></a>
+    <a class="cab-logo" href="/" aria-label="Revoltosos, ir a la tienda"><img src="/assets/img/logo.jpg" width="150" height="150" alt="Logo de Revoltosos"><span>Revoltosos</span></a>
     <a class="btn-icono" href="#carrito" data-abrir-carrito aria-label="Abrir carrito">
       <svg width="25" height="25" aria-hidden="true"><use href="#i-bolsa"/></svg>
       <span class="contador-carrito" data-contador data-n="0">0</span>
@@ -1307,7 +1307,7 @@ $iconos
 <footer class="pie">
   <div class="contenedor pie-grid">
     <div class="pie-marca">
-      <span><img src="/assets/img/logo.jpg" width="150" height="150" alt="" loading="lazy"></span>
+      <span><img src="/assets/img/logo.jpg" width="150" height="150" alt="Logo de Revoltosos" loading="lazy"></span>
       <span><strong>Revoltosos</strong><br><span style="font-size: 14px">Hecho en Colombia con amor</span></span>
     </div>
     <div class="pie-redes">
@@ -1333,11 +1333,11 @@ $iconos
 </div>
 
 <div class="cookies" id="cookies" hidden>
-  <span>Usamos cookies para medir nuestros anuncios y mejorar la página. <a href="/privacidad.html">Más información</a></span>
+  <span>Usamos cookies para medir anuncios. <a href="/privacidad.html">Más info</a></span>
   <button type="button" id="cookies-ok">Entendido</button>
 </div>
 
-<script src="/assets/js/tienda.js?v=18"></script>
+<script src="/assets/js/tienda.js?v=19"></script>
 </body>
 </html>
 HTML

@@ -112,9 +112,12 @@ async function cargarCatalogo(alCambiar) {
     const datos = await descargarCatalogo();
     guardar('rv-catalogo', JSON.stringify({ en: Date.now(), datos }));
     indexar(datos);
-    alCambiar();
   } catch (e) { /* se queda con lo que había */ }
+  catalogoListo = true;
+  alCambiar();
 }
+// Mientras llega el catálogo, un producto que no está en lo guardado dice «Cargando…», no «no disponible».
+let catalogoListo = false;
 
 const prodDe = (v) => T.prodPorId[v.producto_id];
 const nombreLargo = (v) => prodDe(v).nombre + ' · ' + v.nombre;
@@ -197,6 +200,13 @@ function cambiar(id, q) {
 
 // Tarjeta "Agregado al carrito": qué entró, cuánto vale, cómo va el carrito y botón para verlo.
 // Se queda mientras el cliente tenga el mouse o el dedo encima.
+// «Frasco 100 g · 2 unidades», pero sin repetir cuando el tamaño ya se llama «1 unidad».
+function nombreConCantidad(v, n) {
+  const cant = n + (n === 1 ? ' unidad' : ' unidades');
+  if (n === 1 && /\bunidad(es)?\b/i.test(v.nombre)) return v.nombre;
+  return v.nombre.trim().toLowerCase() === cant ? v.nombre : v.nombre + ' · ' + cant;
+}
+
 function avisoAgregado(v, n) {
   let t = $('#aviso-carrito');
   if (!t) {
@@ -217,7 +227,7 @@ function avisoAgregado(v, n) {
   t.innerHTML = '<div class="aviso-cab">' + ICONO.check + '<strong>¡Agregado a tu carrito!</strong>' +
     '<button type="button" class="aviso-x" data-cerrar-aviso aria-label="Cerrar aviso">' + ICONO.cerrar + '</button></div>' +
     '<div class="aviso-prod"><img src="' + esc(fotoDe(v)) + '" alt="" width="64" height="64">' +
-    '<div><strong>' + esc(prodDe(v).nombre) + '</strong><span>' + esc(v.nombre) + ' · ' + n + (n === 1 ? ' unidad' : ' unidades') + '</span></div>' +
+    '<div><strong>' + esc(prodDe(v).nombre) + '</strong><span>' + esc(nombreConCantidad(v, n)) + '</span></div>' +
     '<strong class="aviso-precio">' + pesos(v.precio * n) + '</strong></div>' +
     '<p class="aviso-total">Tu carrito: <b>' + k.unidades + (k.unidades === 1 ? ' producto' : ' productos') + ' · ' + pesos(k.neto) + '</b>' +
     (k.gratis ? ' · <span class="verde">envío GRATIS</span>' : '') + '</p>' +
@@ -290,6 +300,7 @@ let estabaGratis = leer('rv-gratis') === '1';
 
 function actualizar() {
   const k = cuentas();
+  programarCarritoGuardado();
   $$('[data-contador]').forEach((c) => { c.textContent = k.unidades; c.dataset.n = String(k.unidades); });
   $$('[data-envio-barra]').forEach((el) => pintarBarraEnvio(el, k));
   $$('[data-agregar]').forEach((b) => {
@@ -563,8 +574,14 @@ function pintarCompra() {
   const vs = variantesDelProducto();
   const caja = $('#comprar');
   const agotado = $('#compra-no-disponible');
+  if (agotado && !agotado.dataset.texto) agotado.dataset.texto = agotado.innerHTML;
   if (!vs.length) {
-    if (agotado) agotado.hidden = false;
+    if (agotado) {
+      agotado.hidden = false;
+      agotado.classList.toggle('form-error', catalogoListo);
+      agotado.classList.toggle('cargando-txt', !catalogoListo);
+      agotado.innerHTML = catalogoListo ? agotado.dataset.texto : 'Cargando…';
+    }
     $$('[data-solo-disponible]').forEach((el) => { el.hidden = true; });
     return;
   }
@@ -713,8 +730,8 @@ function pintarFotosSubidas() {
 function pintarProductoGenerico() {
   if (!P.generico) return;
   const p = T.prodPorId[P.productoId];
-  $$('[data-p-nombre]').forEach((el) => { el.textContent = p ? p.nombre : 'Producto no disponible'; });
-  $$('[data-p-desc]').forEach((el) => { el.textContent = p ? (p.descripcion || '') : 'Este snack no está disponible por ahora. Mira los demás en la tienda.'; });
+  $$('[data-p-nombre]').forEach((el) => { el.textContent = p ? p.nombre : (catalogoListo ? 'Producto no disponible' : 'Cargando…'); });
+  $$('[data-p-desc]').forEach((el) => { el.textContent = p ? (p.descripcion || '') : (catalogoListo ? 'Este snack no está disponible por ahora. Mira los demás en la tienda.' : ''); });
   $$('[data-p-img]').forEach((el) => { if (p && p.imagen) { el.src = p.imagen; el.alt = p.nombre; } });
   if (p) document.title = p.nombre + ' · Revoltosos';
 }
@@ -799,6 +816,40 @@ function crearDialogos() {
   });
   $('[data-finalizar]', c).addEventListener('click', () => { cerrarDialogo(c); abrirPedido(); });
   iniciarFormulario();
+  iniciarAvisoSalida();
+}
+
+/* Aviso al intentar salir: solo en computador, una vez por visita y con algo en el carrito. */
+function iniciarAvisoSalida() {
+  if (!matchMedia('(hover: hover) and (pointer: fine) and (min-width: 900px)').matches) return;
+  if (leer('rv-salida')) return;
+  const s = document.createElement('dialog');
+  s.id = 'salida';
+  s.className = 'panel elegir salida';
+  s.setAttribute('aria-labelledby', 'salida-titulo');
+  s.innerHTML = '<div class="elegir-in"><div class="panel-cab"><div><h2 id="salida-titulo">¿Te vas?</h2><p>Tu carrito queda guardado.</p></div>' +
+    '<button type="button" class="btn-icono" data-cerrar aria-label="Cerrar">' + ICONO.cerrar + '</button></div>' +
+    '<div class="panel-cuerpo"><p class="salida-txt">Recuerda: <b>pagas al recibir</b> y el envío es <b>gratis desde <span data-salida-gratis></span></b>.</p></div>' +
+    '<div class="panel-pie salida-botones"><button type="button" class="btn" data-salida-pedido>Terminar mi pedido' + ICONO.flecha + '</button>' +
+    '<a class="btn btn--verde" data-salida-wa target="_blank" rel="noopener">' + ICONO.whatsapp + 'Preguntar por WhatsApp</a></div></div>';
+  document.body.appendChild(s);
+  s.addEventListener('click', (e) => {
+    if (e.target === s || e.target.closest('[data-cerrar]') || e.target.closest('[data-salida-wa]')) cerrarDialogo(s);
+    else if (e.target.closest('[data-salida-pedido]')) { cerrarDialogo(s); abrirPedido(); }
+  });
+  s.addEventListener('close', () => {
+    if (!$$('dialog.panel').some((x) => x.open)) document.documentElement.style.overflow = '';
+  });
+  const alSalir = (e) => {
+    if (e.relatedTarget || e.clientY > 0) return;
+    if (!cuentas().unidades || $$('dialog').some((x) => x.open)) return;
+    document.removeEventListener('mouseout', alSalir);
+    guardar('rv-salida', '1');
+    $('[data-salida-gratis]', s).textContent = pesos(T.ajustes.envio_gratis_desde);
+    $('[data-salida-wa]', s).href = linkWhatsappCarrito('');
+    abrirDialogo(s);
+  };
+  document.addEventListener('mouseout', alSalir);
 }
 
 function abrirDialogo(d) {
@@ -853,7 +904,7 @@ function pintarCarrito() {
   const k = cuentas();
   $('[data-carrito-n]', d).textContent = k.unidades ? '(' + k.unidades + ')' : '';
   $('[data-carrito-pie]', d).hidden = !k.unidades;
-  $('[data-carrito-pie] p', d).innerHTML = T.ajustes.wompi_activo ? '<b>Paga en línea</b> con Wompi o al recibir' : '<b>Pagas al recibir</b> · no pagas nada hoy';
+  $('[data-carrito-pie] p', d).innerHTML = T.ajustes.wompi_activo ? '<b>Pagas al recibir</b> o en línea con Wompi' : '<b>Pagas al recibir</b> · no pagas nada hoy';
   const cuerpo = $('[data-carrito-cuerpo]', d);
   if (!k.unidades) {
     cuerpo.innerHTML = '<div class="carrito-vacio"><p>Tu carrito está vacío.</p><a class="btn" href="/#catalogo">Ver los snacks</a></div>';
@@ -990,16 +1041,25 @@ function plantillaFormulario() {
     '<div class="mascotas"><button type="button" class="mascota" aria-pressed="false">Perro pequeño</button><button type="button" class="mascota" aria-pressed="false">Perro mediano</button><button type="button" class="mascota" aria-pressed="false">Perro grande</button><button type="button" class="mascota" aria-pressed="false">Gato</button></div></fieldset>' +
     '<label class="prioritario"><input type="checkbox" id="f-prioritario" name="prioritario"><span><strong>Envío prioritario: +<span data-valor-prioritario></span></strong><br><span>Despachamos tu pedido primero.</span></span></label>' +
     '<fieldset class="metodos" data-metodos hidden><legend style="font-size: 15px; margin-bottom: 8px">¿Cómo quieres pagar?</legend>' +
-    '<label class="metodo"><input type="radio" name="metodo_pago" value="wompi" checked><span><strong>Pagar ahora</strong><span>Tarjeta, PSE, Nequi o Bancolombia, con Wompi.</span></span><b class="metodo-precio" data-precio-metodo></b></label>' +
-    '<label class="metodo"><input type="radio" name="metodo_pago" value="contraentrega"><span><strong>Contra entrega</strong><span>Pagas en efectivo cuando te llegue.</span></span><b class="metodo-precio" data-precio-metodo></b></label></fieldset>' +
+    '<label class="metodo"><input type="radio" name="metodo_pago" value="contraentrega" checked><span><strong>Pagar al recibir</strong><span>Pagas en efectivo cuando te llegue.</span></span><b class="metodo-precio" data-precio-metodo></b></label>' +
+    '<label class="metodo"><input type="radio" name="metodo_pago" value="wompi"><span><strong>Pagar ahora</strong><span>Tarjeta, PSE, Nequi o Bancolombia, con Wompi.</span></span><b class="metodo-precio" data-precio-metodo></b></label></fieldset>' +
     '<div class="resumen cuentas" aria-live="polite" data-cuentas-pedido></div>' +
     '<label class="acepto"><input type="checkbox" id="f-acepto" name="acepto" required aria-describedby="e-acepto"><span>Autorizo el tratamiento de mis datos para gestionar mi pedido, según la <a href="/privacidad.html" target="_blank" rel="noopener">política de datos</a> (Ley 1581 de 2012).</span></label>' +
     '<span class="error" id="e-acepto" style="margin-top: -8px"></span>' +
     '<div class="trampa" aria-hidden="true"><label for="f-empresa">Empresa</label><input id="f-empresa" name="empresa" type="text" tabindex="-1" autocomplete="off"></div>' +
     '<p class="form-error" id="form-error" role="alert" hidden></p>' +
-    '<button type="submit" class="btn btn-confirmar rv-pulso" id="btn-pagar"><span>Confirmar pedido</span><span>Pago contraentrega · sin tarjeta</span></button>' +
+    '<button type="submit" class="btn btn-confirmar rv-pulso" id="btn-pagar"><span>Confirmar pedido · Pago al recibir</span><span>Sin tarjeta · pagas cuando te llegue</span></button>' +
     '<p class="seguro">' + ICONO.candado + '<span data-seguro>No pagas nada ahora. Te confirmamos por WhatsApp.</span></p>' +
+    '<p class="wa-salida"><a data-wa-pedido href="https://wa.me/' + CONFIG.WHATSAPP + '" target="_blank" rel="noopener">' + ICONO.whatsapp + '<span>¿Prefieres pedir por WhatsApp? <b>Escríbenos y te lo tomamos en 1 minuto.</b></span></a></p>' +
     '</form>';
+}
+
+// Link de WhatsApp con el carrito ya escrito (formulario y aviso al salir).
+function linkWhatsappCarrito(ciudad) {
+  const k = cuentas();
+  const lista = k.ls.map((l) => l.q + ' × ' + nombreLargo(l.v)).join(', ');
+  const texto = 'Hola Revoltosos, quiero pedir: ' + (lista || '') + '. Mi ciudad es: ' + (ciudad || '');
+  return 'https://wa.me/' + CONFIG.WHATSAPP + '?text=' + encodeURIComponent(texto);
 }
 
 let enviando = false;
@@ -1010,8 +1070,8 @@ const metodoDe = (form) => (T.ajustes.wompi_activo && form.metodo_pago && form.m
 function pintarBoton(form, total) {
   const wompi = metodoDe(form) === 'wompi';
   $('#btn-pagar').innerHTML = wompi
-    ? '<span>Pagar ' + pesos(total) + '</span><span>Tarjeta, PSE, Nequi o Bancolombia</span>'
-    : '<span>Confirmar pedido</span><span>Pago contraentrega · sin tarjeta</span>';
+    ? '<span>Confirmar pedido · Pagar ' + pesos(total) + '</span><span>Tarjeta, PSE, Nequi o Bancolombia</span>'
+    : '<span>Confirmar pedido · Pago al recibir</span><span>Sin tarjeta · pagas cuando te llegue</span>';
   $('#pedido-titulo + p').textContent = wompi ? 'Tarda 1 minuto. Al final pagas con Wompi.' : 'Tarda 1 minuto. No pagas nada ahora.';
   $('[data-seguro]', form).textContent = wompi
     ? 'Pago seguro con Wompi, de Bancolombia. No guardamos los datos de tu tarjeta.'
@@ -1056,6 +1116,8 @@ function pintarResumenPedido() {
     '<hr class="perforado"><div class="resumen-total"><strong>' + (wompi ? 'Total a pagar ahora' : 'Total a pagar al recibir') + '</strong><span>' + totalTxt + '</span></div>' +
     (k.ahorro ? '<div class="ahorro-caja" style="margin-top: 10px"><span>' + ICONO.etiqueta + 'Estás ahorrando</span><strong>' + pesos(k.ahorro) + '</strong></div>' : '');
   if (!enviando) pintarBoton(form, total);
+  const wa = $('[data-wa-pedido]', d);
+  if (wa) wa.href = linkWhatsappCarrito(form.ciudad.value);
   return total;
 }
 
@@ -1113,6 +1175,48 @@ const cargarMunicipios = () => cargandoMunicipios || (cargandoMunicipios = fetch
   .then((d) => { municipios = d; return d; })
   .catch(() => null));
 
+/* Carrito abandonado: el gestor lo ve en la pestaña Carritos y escribe por WhatsApp con un clic.
+   Cada navegador tiene su código de sesión; al terminar un pedido se cambia por uno nuevo. */
+function sesionCarrito() {
+  let s = leerL('rv-sesion-carrito');
+  if (!s) {
+    s = (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2)).replace(/-/g, '');
+    guardarL('rv-sesion-carrito', s);
+  }
+  return s;
+}
+var temporizadorCarrito = null; // var: actualizar() puede correr antes de esta línea
+var ultimoCarritoGuardado = '';
+function programarCarritoGuardado() {
+  clearTimeout(temporizadorCarrito);
+  temporizadorCarrito = setTimeout(guardarCarritoAbandonado, 1200);
+}
+function guardarCarritoAbandonado() {
+  const form = $('#form-pedido');
+  if (!form || enviando || !form.acepto.checked) return;
+  const celular = normalizarCelular(form.celular.value);
+  const k = cuentas();
+  if (!celular || !k.unidades) return;
+  const cuerpo = {
+    p_sesion: sesionCarrito(),
+    p_nombre: form.nombre.value.trim(),
+    p_celular: celular,
+    p_departamento: form.departamento.value,
+    p_ciudad: form.ciudad.value,
+    p_items: k.ls.map((l) => ({ variante_id: l.v.id, nombre: nombreLargo(l.v), cantidad: l.q, precio: l.v.precio })),
+    p_total: k.neto
+  };
+  const firma = JSON.stringify(cuerpo);
+  if (firma === ultimoCarritoGuardado) return;
+  ultimoCarritoGuardado = firma;
+  fetch(CONFIG.SUPABASE_URL + '/rest/v1/rpc/guardar_carrito', {
+    method: 'POST',
+    headers: { apikey: CONFIG.SUPABASE_KEY, 'Content-Type': 'application/json' },
+    body: firma,
+    keepalive: true
+  }).catch(() => { ultimoCarritoGuardado = ''; });
+}
+
 function iniciarFormulario() {
   const form = $('#form-pedido');
   const dep = form.departamento;
@@ -1145,6 +1249,10 @@ function iniciarFormulario() {
   form.ciudad.addEventListener('change', pintarResumenPedido);
   form.prioritario.addEventListener('change', pintarResumenPedido);
   $$('[name="metodo_pago"]', form).forEach((r) => r.addEventListener('change', pintarResumenPedido));
+  // Carrito abandonado (migración 023): se guarda solo con celular válido y la casilla de datos marcada.
+  ['input', 'change'].forEach((ev) => form.addEventListener(ev, (e) => {
+    if (['nombre', 'celular', 'departamento', 'ciudad', 'acepto'].includes(e.target.name)) programarCarritoGuardado();
+  }));
   $$('.mascota', form).forEach((btn) => btn.addEventListener('click', () => {
     const on = btn.getAttribute('aria-pressed') !== 'true';
     btn.setAttribute('aria-pressed', String(on));
@@ -1273,6 +1381,10 @@ function pedidoListo(datos, r, unidades, eventId, pago) {
   }
   // rv-wompi se deja: si Wompi recarga la página con ?id= después de aprobar, se vuelve a mostrar este mismo resultado.
   try { sessionStorage.removeItem('rv-event-id'); } catch (err) {}
+  // El carrito de este pedido ya quedó recuperado (trigger en pedidos); el próximo será otro.
+  clearTimeout(temporizadorCarrito);
+  try { localStorage.removeItem('rv-sesion-carrito'); } catch (err) {}
+  ultimoCarritoGuardado = '';
   mostrarGracias(datos, r, pago);
   carrito = {};
   cupon = null;
@@ -1482,6 +1594,8 @@ if (CONFIG.PIXEL_ID) {
 (function () {
   const aviso = $('#cookies');
   if (!aviso) return;
+  // Franja delgada arriba de todo, dentro de la página: así no tapa el botón fijo de abajo.
+  document.body.prepend(aviso);
   if (!leerL('rv-cookies')) aviso.hidden = false;
   $('#cookies-ok').addEventListener('click', () => { aviso.hidden = true; guardarL('rv-cookies', '1'); });
 })();
