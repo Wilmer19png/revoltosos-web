@@ -54,7 +54,7 @@ type Cupon = {
   codigo: string; tipo: 'porcentaje' | 'valor'; valor: number; minimo: number; producto_id: string | null;
   vence: string | null; usos_max: number | null; usos: number; activo: boolean;
 };
-type Item = { variante_id: string; producto_id: string; nombre: string; cantidad: number; precio: number; costo: number };
+type Item = { variante_id: string; producto_id: string; nombre: string; cantidad: number; precio: number; costo: number; regalo?: boolean };
 
 const origen = Deno.env.get('ALLOWED_ORIGIN') ?? '*';
 const CORS = {
@@ -124,7 +124,7 @@ function generarOrderId(): string {
   return `REV-${fecha}-${String(n).padStart(4, '0')}`;
 }
 
-async function enviarAMeta(pedido: Record<string, unknown>, extra: { fbp: string; fbc: string; ua: string; ip: string; url: string }) {
+async function enviarAMeta(pedido: Record<string, unknown>, extra: { fbp: string; fbc: string; ua: string; ip: string; url: string; visitante?: string }) {
   const pixel = Deno.env.get('META_PIXEL_ID')?.trim();
   const token = Deno.env.get('META_ACCESS_TOKEN')?.trim();
   if (!pixel || !token) {
@@ -143,7 +143,8 @@ async function enviarAMeta(pedido: Record<string, unknown>, extra: { fbp: string
     ct: [await sha256(normalizar(String(pedido.ciudad)))],
     st: [await sha256(normalizar(String(pedido.departamento)))],
     country: [await sha256('co')],
-    external_id: [await sha256(String(pedido.order_id))],
+    // El visitante (código anónimo del navegador) primero: es el mismo external_id que usa el Pixel.
+    external_id: [...(extra.visitante ? [await sha256(extra.visitante)] : []), await sha256(String(pedido.order_id))],
     client_user_agent: extra.ua,
   };
   if (extra.ip) user_data.client_ip_address = extra.ip;
@@ -302,6 +303,25 @@ Deno.serve(async (req) => {
   const valorPrioritario = prioritario ? a.prioritario : 0;
   const total = productosNeto + envio + valorPrioritario;
 
+  // Regalo (migración 024): desde ajustes.regalo_desde en productos (ya con cupón) va gratis
+  // el tamaño ajustes.regalo_variante. Precio $0; su costo sí cuenta y sale del inventario.
+  let regalo: Item | null = null;
+  if (a.regalo_desde && a.regalo_variante && productosNeto >= a.regalo_desde) {
+    const { data: rv } = await supabase.from('variantes').select('*, productos(nombre)').eq('id', a.regalo_variante).maybeSingle();
+    if (rv) {
+      regalo = {
+        variante_id: rv.id,
+        producto_id: rv.producto_id,
+        nombre: `${rv.productos?.nombre ?? 'Regalo'} · ${rv.nombre} (regalo)`,
+        cantidad: 1,
+        precio: 0,
+        costo: rv.costo ?? 0,
+        regalo: true,
+      };
+      items.push(regalo);
+    }
+  }
+
   const ip = (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim();
   const extra = {
     fbp: texto(b.fbp, 200),
@@ -309,6 +329,7 @@ Deno.serve(async (req) => {
     ua: req.headers.get('user-agent') ?? '',
     ip,
     url: texto(b.event_source_url, 500),
+    visitante: /^[0-9a-f]{32}$/.test(texto(b.visitante, 64)) ? texto(b.visitante, 64) : '',
   };
 
   // Idempotencia: si el mismo event_id ya llegó (doble clic o reintento), se devuelve ese pedido.
@@ -337,14 +358,14 @@ Deno.serve(async (req) => {
     event_id: eventId,
     nombre, cedula: cedula || null, celular, direccion, barrio, ciudad, departamento,
     indicaciones: indicaciones || null,
-    cantidad: unidades,
+    cantidad: unidades + (regalo ? 1 : 0),
     prioritario: prioritario,
     items,
     subtotal,
     descuento,
     cupon: descuento ? cupon!.codigo : null,
     envio_cobrado: envio,
-    costo_productos: costoProductos,
+    costo_productos: costoProductos + (regalo ? regalo.costo : 0),
     total,
     producto: resumen.slice(0, 300),
     para_quien: paraQuien,

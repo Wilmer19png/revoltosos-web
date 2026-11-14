@@ -46,6 +46,8 @@ Gestor /pedidos ◀── lee y edita todo (solo correos de la tabla admins)
 - **Reseñas en las landings:** cada landing tiene «Escribir una reseña» (estrellas, comentario y foto). Entran como Pendiente y se publican en el gestor › Reseñas. Arriba, junto al nombre, salen las estrellas y el número de reseñas del producto; si aún no tiene, se muestran las generales de la tienda.
 - **Buscador:** en el inicio, en /productos/ y en el menú (3 barritas en el celular). `/productos/?q=hueso` abre con la búsqueda hecha.
 - **Avisos de compra** («Juliana de Medellín acaba de pedir…»): salen de pedidos reales de los últimos 7 días (solo primer nombre y ciudad), con la función `compras_recientes`.
+- **Regalo por compras grandes** (migración 024): desde $100.000 en productos (ya con cupón) el pedido lleva gratis la bolsa de codornices de 50 g. crear-pedido la agrega con precio $0 (su costo cuenta en la ganancia y sale del inventario). Monto y regalo se cambian en Ajustes. La tienda muestra «Te faltan $X para tu regalo» en el carrito, la barra y el formulario.
+- **Coincidencias avanzadas de Meta:** el Pixel arranca con un código anónimo del navegador (external_id, el mismo que manda crear-pedido) y, después de marcar la casilla de datos, con celular, nombre, ciudad y departamento cifrados.
 - **Carritos abandonados** (migración 023): si alguien escribe un celular válido y marca «Autorizo el tratamiento de mis datos» pero no envía el pedido, el carrito queda en el gestor › Carritos. Cada uno tiene los mensajes de 1 hora, 24 horas y 72 horas (el que toca sale resaltado): al tocarlo se abre WhatsApp con el texto listo y queda marcado como enviado. Si luego entra un pedido con ese celular, pasa solo a Recuperados.
 
 ## Puesta en marcha de la tienda (en este orden)

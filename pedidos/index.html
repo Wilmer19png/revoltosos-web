@@ -477,6 +477,14 @@ td.der, th.der { text-align: right; font-variant-numeric: tabular-nums; }
   <main class="contenido" id="tab-ajustes" role="tabpanel" hidden>
     <div class="cabeza-sec"><div><h2>Ajustes</h2><p>Lo que cambies aquí se aplica de inmediato en la tienda y en los pedidos nuevos.</p></div></div>
     <form id="form-ajustes" style="display: flex; flex-direction: column; gap: 16px">
+      <section class="caja" id="sec-regalo" hidden>
+        <h3>Regalo por compras grandes</h3>
+        <p class="nota" style="margin: 4px 0 10px">Desde este monto en productos (ya con cupón, sin contar el envío) el pedido lleva este regalo gratis. La tienda muestra «Te faltan $X para tu regalo». Deja el monto vacío para apagarlo.</p>
+        <div class="rejilla">
+          <div class="campo"><label for="a-regalo-desde">Regalo desde ($ en productos)</label><input id="a-regalo-desde" type="number" min="0" step="1000" placeholder="Apagado"></div>
+          <div class="campo"><label for="a-regalo-var">Qué se regala</label><select id="a-regalo-var"></select></div>
+        </div>
+      </section>
       <section class="caja">
         <h3>Envío al cliente</h3>
         <div class="rejilla">
@@ -1930,6 +1938,17 @@ function pintarAjustes() {
   $('#a-costo-envio').value = A.costo_envio_promedio;
   $('#a-comision').value = A.comision_recaudo;
   $('#sec-wompi').hidden = !('wompi_activo' in A);
+  $('#sec-regalo').hidden = !('regalo_desde' in A);
+  if ('regalo_desde' in A) {
+    const sel = $('#a-regalo-var');
+    sel.textContent = '';
+    D.variantes.forEach((v) => {
+      const p = D.productos.find((x) => x.id === v.producto_id);
+      sel.add(new Option((p ? p.nombre + ' · ' : '') + v.nombre, v.id));
+    });
+    sel.value = A.regalo_variante || '';
+    $('#a-regalo-desde').value = A.regalo_desde == null ? '' : A.regalo_desde;
+  }
   if ('wompi_activo' in A) {
     $('#a-wompi').checked = !!A.wompi_activo;
     $('#a-wompi-pct').value = A.comision_wompi;
@@ -2045,6 +2064,11 @@ $('#form-ajustes').addEventListener('submit', async (e) => {
     actualizado_en: new Date().toISOString()
   };
   if ('envio_ciudades' in D.ajustes) cambios.envio_ciudades = tarifasCiudadEnPantalla();
+  if ('regalo_desde' in D.ajustes) {
+    const desde = $('#a-regalo-desde').value;
+    cambios.regalo_desde = desde === '' ? null : Math.max(0, Math.round(Number(desde)));
+    cambios.regalo_variante = $('#a-regalo-var').value || null;
+  }
   if ('wompi_activo' in D.ajustes) {
     cambios.wompi_activo = $('#a-wompi').checked;
     cambios.comision_wompi = Number($('#a-wompi-pct').value);

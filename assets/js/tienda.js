@@ -31,6 +31,7 @@ const leerL = (k) => { try { return localStorage.getItem(k); } catch (e) { retur
 const reducirMovimiento = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const ICONO = {
+  regalo: '<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg>',
   camion: '<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/></svg>',
   casa: '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg>',
   flecha: '<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
@@ -95,7 +96,8 @@ async function descargarCatalogo() {
       .catch(() => pedir('productos?select=id,nombre,categoria,descripcion,imagen,ruta,orden{extra}&order=orden', ',etiqueta')),
     rest('variantes?select=id,producto_id,nombre,detalle,precio,precio_antes,orden,imagen,envio_gratis&order=orden')
       .catch(() => pedir('variantes?select=id,producto_id,nombre,detalle,precio,precio_antes,orden{extra}&order=orden', ',imagen')),
-    rest('ajustes?select=envio_gratis_desde,envio_base,envio_departamentos,prioritario,envio_ciudades,wompi_activo&id=eq.1')
+    rest('ajustes?select=envio_gratis_desde,envio_base,envio_departamentos,prioritario,envio_ciudades,wompi_activo,regalo_desde,regalo_variante&id=eq.1')
+      .catch(() => rest('ajustes?select=envio_gratis_desde,envio_base,envio_departamentos,prioritario,envio_ciudades,wompi_activo&id=eq.1'))
       .catch(() => pedir('ajustes?select=envio_gratis_desde,envio_base,envio_departamentos,prioritario{extra}&id=eq.1', ',envio_ciudades'))
   ]);
   if (!productos.length || !variantes.length) throw new Error('catálogo vacío');
@@ -170,13 +172,35 @@ function cuentas(departamento, ciudad) {
   const porCombo = ls.some((l) => l.v.envio_gratis);
   const gratis = unidades > 0 && (porCombo || neto >= meta);
   const tarifa = departamento ? tarifaEnvio(departamento, ciudad || '') : null;
+  // Regalo (migración 024): mismo cálculo que crear-pedido (productos ya con cupón).
+  const regaloDesde = T.ajustes.regalo_variante ? Number(T.ajustes.regalo_desde) || 0 : 0;
+  const regalo = !!regaloDesde && unidades > 0 && neto >= regaloDesde;
   return {
     ls, subtotal, unidades, descuento, neto, gratis, porCombo,
+    regaloDesde, regalo,
+    faltaRegalo: regaloDesde && !regalo ? Math.max(0, regaloDesde - neto) : 0,
+    pctRegalo: regaloDesde ? Math.min(100, Math.round(neto / regaloDesde * 100)) : 0,
     ahorro: ahorroPromo + descuento,
     falta: gratis ? 0 : Math.max(0, meta - neto),
     pct: gratis ? 100 : (meta ? Math.min(100, Math.round(neto / meta * 100)) : 100),
     envio: gratis ? 0 : tarifa
   };
+}
+
+// «Codornices · Bolsa 50 g» (o un nombre genérico si ese tamaño no está a la venta en la tienda).
+function nombreRegalo() {
+  const v = T.porId[T.ajustes.regalo_variante];
+  return v ? nombreLargo(v) : 'Codornices de 50 g';
+}
+
+// Caja del regalo para el carrito: avance o «ganaste».
+function cajaRegalo(k) {
+  if (!k.regaloDesde || !k.unidades) return '';
+  if (k.regalo) {
+    return '<div class="caja regalo-caja ganado rv-pop"><p>' + ICONO.regalo + '<span><strong>¡Ganaste un regalo!</strong> Te llevas <b>' + esc(nombreRegalo()) + '</b> GRATIS con tu pedido.</span></p></div>';
+  }
+  return '<div class="caja regalo-caja"><p>' + ICONO.regalo + '<span>Te faltan <strong>' + pesos(k.faltaRegalo) + '</strong> para llevarte de regalo <b>' + esc(nombreRegalo()) + '</b>.</span></p>' +
+    '<div class="riel" role="progressbar" aria-label="Avance hacia el regalo" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + k.pctRegalo + '"><span style="width:' + Math.max(4, k.pctRegalo) + '%"></span></div></div>';
 }
 
 function agregar(id, n, opciones) {
@@ -231,6 +255,8 @@ function avisoAgregado(v, n) {
     '<strong class="aviso-precio">' + pesos(v.precio * n) + '</strong></div>' +
     '<p class="aviso-total">Tu carrito: <b>' + k.unidades + (k.unidades === 1 ? ' producto' : ' productos') + ' · ' + pesos(k.neto) + '</b>' +
     (k.gratis ? ' · <span class="verde">envío GRATIS</span>' : '') + '</p>' +
+    (k.regalo ? '<p class="aviso-regalo">' + ICONO.regalo + '<span>¡Ganaste <b>' + esc(nombreRegalo()) + '</b> de regalo!</span></p>'
+      : k.regaloDesde ? '<p class="aviso-regalo">' + ICONO.regalo + '<span>Te faltan <b>' + pesos(k.faltaRegalo) + '</b> para tu regalo</span></p>' : '') +
     '<div class="aviso-botones"><button type="button" class="btn" data-ver-carrito>Ver mi carrito' + ICONO.flecha + '</button>' +
     '<button type="button" class="aviso-seguir" data-cerrar-aviso>Seguir comprando</button></div>';
   t.hidden = false;
@@ -284,8 +310,11 @@ function pintarBarraEnvio(el, k) {
   }
   const meta = pesos(T.ajustes.envio_gratis_desde);
   const msg = $('[data-msg]', el);
-  if (k.gratis) msg.innerHTML = '<strong>¡Desbloqueaste el envío GRATIS!</strong>';
-  else if (!k.unidades) msg.innerHTML = 'Envío <strong>GRATIS</strong> desde ' + meta;
+  // Ya con envío gratis, la barra empuja hacia el regalo.
+  if (k.regalo) msg.innerHTML = '<strong>¡Envío GRATIS y regalo desbloqueados!</strong>';
+  else if (k.gratis && k.regaloDesde) msg.innerHTML = '<strong>¡Envío GRATIS!</strong> Te faltan <strong>' + pesos(k.faltaRegalo) + '</strong> para tu regalo';
+  else if (k.gratis) msg.innerHTML = '<strong>¡Desbloqueaste el envío GRATIS!</strong>';
+  else if (!k.unidades) msg.innerHTML = 'Envío <strong>GRATIS</strong> desde ' + meta + (k.regaloDesde ? ' · regalo desde ' + pesos(k.regaloDesde) : '');
   else msg.innerHTML = (k.pct >= 60 ? '¡Ya casi! ' : '') + 'Te faltan <strong>' + pesos(k.falta) + '</strong> para envío GRATIS';
   el.classList.toggle('gratis', k.gratis);
   el.classList.toggle('casi', !k.gratis && k.pct >= 60);
@@ -916,6 +945,7 @@ function pintarCarrito() {
     ? '<p class="rv-pop"><strong>¡Desbloqueaste el envío GRATIS!</strong> Te ahorraste el envío.</p>'
     : '<p>' + (k.pct >= 60 ? '¡Ya casi! ' : '') + 'Te faltan <strong style="color: var(--rosa)">' + pesos(k.falta) + '</strong> para que tu envío sea totalmente <strong>GRATIS</strong>.</p>';
   html += '<div class="riel" role="progressbar" aria-label="Avance hacia el envío gratis" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + k.pct + '"><span style="width:' + Math.max(4, k.pct) + '%"></span></div></div>';
+  html += cajaRegalo(k);
 
   k.ls.forEach((l) => {
     html += '<div class="item-c"><img src="' + esc(fotoDe(l.v)) + '" alt="" width="72" height="72">' +
@@ -930,6 +960,14 @@ function pintarCarrito() {
     if (sug) {
       html += '<div class="sugerencia"><img src="' + esc(fotoDe(sug)) + '" alt="" width="56" height="56"><div><strong>' +
         (sug.precio >= k.falta ? 'Agrega ' + esc(prodDe(sug).nombre) + ' y el envío es GRATIS' : 'Súmale ' + esc(prodDe(sug).nombre) + ' y te acercas al envío gratis') +
+        '</strong><span>' + esc(sug.nombre) + ' · ' + pesos(sug.precio) + '</span></div><button type="button" data-agregar-sug="' + esc(sug.id) + '">Agregar</button></div>';
+    }
+  } else if (k.faltaRegalo) {
+    // Con envío gratis ya ganado, la sugerencia apunta al regalo.
+    const sug = sugerencia({ falta: k.faltaRegalo });
+    if (sug) {
+      html += '<div class="sugerencia"><img src="' + esc(fotoDe(sug)) + '" alt="" width="56" height="56"><div><strong>' +
+        (sug.precio >= k.faltaRegalo ? 'Agrega ' + esc(prodDe(sug).nombre) + ' y te llevas el regalo' : 'Súmale ' + esc(prodDe(sug).nombre) + ' y te acercas al regalo') +
         '</strong><span>' + esc(sug.nombre) + ' · ' + pesos(sug.precio) + '</span></div><button type="button" data-agregar-sug="' + esc(sug.id) + '">Agregar</button></div>';
     }
   }
@@ -1111,6 +1149,7 @@ function pintarResumenPedido() {
     '<h3 class="resumen-titulo">Resumen de tu pago</h3>' +
     '<div><span>Productos (' + k.unidades + ')</span><span>' + pesos(k.subtotal) + '</span></div>' +
     (k.descuento ? '<div class="verde"><span>Cupón ' + esc(cupon.codigo) + '</span><span>−' + pesos(k.descuento) + '</span></div>' : '') +
+    (k.regalo ? '<div class="verde"><span>Regalo: ' + esc(nombreRegalo()) + '</span><span>GRATIS</span></div>' : '') +
     '<div><span>Envío</span>' + envioTxt + '</div>' +
     (prio ? '<div><span>Envío prioritario</span><span>' + pesos(prio) + '</span></div>' : '') +
     '<hr class="perforado"><div class="resumen-total"><strong>' + (wompi ? 'Total a pagar ahora' : 'Total a pagar al recibir') + '</strong><span>' + totalTxt + '</span></div>' +
@@ -1215,6 +1254,7 @@ function guardarCarritoAbandonado() {
     body: firma,
     keepalive: true
   }).catch(() => { ultimoCarritoGuardado = ''; });
+  actualizarDatosMeta({ celular, nombre: cuerpo.p_nombre, ciudad: cuerpo.p_ciudad, departamento: cuerpo.p_departamento }).catch(() => {});
 }
 
 function iniciarFormulario() {
@@ -1318,6 +1358,7 @@ async function enviarPedido(e) {
     utm_term: leer('rv-utm_term') || '',
     fbclid: leer('rv-fbclid') || '',
     fbp: cookie('_fbp'),
+    visitante: leerL('rv-visitante') || '',
     fbc: fbc(),
     event_source_url: location.href.split('#')[0],
     empresa: form.empresa.value
@@ -1376,7 +1417,8 @@ async function enviarPedido(e) {
 function pedidoListo(datos, r, unidades, eventId, pago) {
   if (window.fbq && pago !== 'pendiente') {
     const [fn, ...resto] = datos.nombre.toLowerCase().split(/\s+/);
-    fbq('init', CONFIG.PIXEL_ID, { ph: datos.celular, fn: fn, ln: resto.join(' '), ct: datos.ciudad.toLowerCase(), st: datos.departamento.toLowerCase(), country: 'co', external_id: r.order_id });
+    // Mismo external_id (visitante) que el resto de eventos y que el Purchase del servidor.
+    fbq('init', CONFIG.PIXEL_ID, Object.assign({}, datosMeta(), { ph: datos.celular, fn: fn, ln: resto.join(''), ct: normalizarMeta(datos.ciudad), st: normalizarMeta(datos.departamento), country: 'co' }));
     track('Purchase', { value: r.total, currency: 'COP', content_ids: datos.items.map((i) => i.variante_id), contents: datos.items.map((i) => ({ id: i.variante_id, quantity: i.cantidad })), content_type: 'product', num_items: unidades }, { eventID: eventId });
   }
   // rv-wompi se deja: si Wompi recarga la página con ?id= después de aprobar, se vuelve a mostrar este mismo resultado.
@@ -1504,7 +1546,9 @@ function mostrarGracias(datos, r, pago) {
       : pago === 'pendiente' ? 'Tu pago está en verificación con el banco. Apenas se confirme te escribimos por WhatsApp.'
       : 'Te escribiremos por WhatsApp en breve para confirmar tus datos y despacharlo.') + '</p>' +
     '<div class="resumen cuentas"><div><span style="color: var(--tinta-2)">Pedido</span><strong>' + esc(r.order_id) + '</strong></div><hr class="perforado">' +
-    items.map((i) => '<div><span>' + i.cantidad + ' × ' + esc(i.nombre) + '</span><span>' + pesos(i.precio * i.cantidad) + '</span></div>').join('') +
+    items.map((i) => (i.regalo
+      ? '<div class="verde"><span>' + i.cantidad + ' × ' + esc(i.nombre) + '</span><span>GRATIS</span></div>'
+      : '<div><span>' + i.cantidad + ' × ' + esc(i.nombre) + '</span><span>' + pesos(i.precio * i.cantidad) + '</span></div>')).join('') +
     (r.descuento ? '<div class="verde"><span>Cupón</span><span>−' + pesos(r.descuento) + '</span></div>' : '') +
     '<div><span>Envío</span><span' + (r.envio ? '' : ' class="verde"') + '>' + (r.envio ? pesos(r.envio) : 'GRATIS') + '</span></div>' +
     (r.prioritario ? '<div><span>Envío prioritario</span><span>' + pesos(r.prioritario) + '</span></div>' : '') +
@@ -1574,13 +1618,71 @@ function fbc() {
   const id = leer('rv-fbclid');
   return id ? 'fb.1.' + Date.now() + '.' + id : '';
 }
+// Los eventos que salen antes de que el Pixel arranque (init espera el hash del visitante) se guardan y se mandan después.
+let pixelListo = false;
+const pendientesPixel = [];
 function track(evento, datos, opciones) {
-  if (window.fbq) window.fbq('track', evento, datos || {}, opciones || {});
+  if (!window.fbq) return;
+  if (!pixelListo) { pendientesPixel.push([evento, datos, opciones]); return; }
+  window.fbq('track', evento, datos || {}, opciones || {});
 }
+
+/* Coincidencias avanzadas manuales de Meta: el Pixel arranca con los datos del cliente ya cifrados
+   (SHA-256, misma normalización que crear-pedido) para que Meta reconozca a la persona en todas las páginas.
+   · external_id: un código anónimo de este navegador (también va en el Purchase del servidor).
+   · Celular, nombre, ciudad y departamento: solo después de marcar «Autorizo el tratamiento de mis datos»;
+     se guardan cifrados en este navegador (nunca en texto plano). */
+const normalizarMeta = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+async function sha256Hex(texto) {
+  const h = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(texto));
+  return Array.from(new Uint8Array(h)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+function visitante() {
+  let v = leerL('rv-visitante');
+  if (!v) {
+    v = Array.from(crypto.getRandomValues(new Uint8Array(16))).map((b) => b.toString(16).padStart(2, '0')).join('');
+    guardarL('rv-visitante', v);
+  }
+  return v;
+}
+function datosMeta() {
+  try { return JSON.parse(leerL('rv-meta-am') || 'null') || {}; } catch (e) { return {}; }
+}
+async function datosMetaIniciales() {
+  const d = datosMeta();
+  if (!d.external_id) {
+    d.external_id = await sha256Hex(visitante());
+    d.country = d.country || await sha256Hex('co');
+    guardarL('rv-meta-am', JSON.stringify(d));
+  }
+  return d;
+}
+// Se llama con el formulario lleno y la casilla de datos marcada.
+async function actualizarDatosMeta(f) {
+  if (!window.fbq || !CONFIG.PIXEL_ID || !(window.crypto && crypto.subtle)) return;
+  const [nombre, ...apellidos] = String(f.nombre || '').trim().split(/\s+/);
+  const nuevos = {};
+  if (f.celular) nuevos.ph = await sha256Hex(f.celular);
+  if (normalizarMeta(nombre)) nuevos.fn = await sha256Hex(normalizarMeta(nombre));
+  if (normalizarMeta(apellidos.join(''))) nuevos.ln = await sha256Hex(normalizarMeta(apellidos.join('')));
+  if (normalizarMeta(f.ciudad)) nuevos.ct = await sha256Hex(normalizarMeta(f.ciudad));
+  if (normalizarMeta(f.departamento)) nuevos.st = await sha256Hex(normalizarMeta(f.departamento));
+  const d = Object.assign(await datosMetaIniciales(), nuevos);
+  const antes = leerL('rv-meta-am');
+  guardarL('rv-meta-am', JSON.stringify(d));
+  if (antes !== JSON.stringify(d)) window.fbq('init', CONFIG.PIXEL_ID, d);
+}
+
 if (CONFIG.PIXEL_ID) {
   !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init', CONFIG.PIXEL_ID);
-  fbq('track', 'PageView');
+  const arrancar = (datos) => {
+    fbq('init', CONFIG.PIXEL_ID, datos || {});
+    pixelListo = true;
+    fbq('track', 'PageView');
+    pendientesPixel.splice(0).forEach(([e, d, o]) => fbq('track', e, d || {}, o || {}));
+  };
+  if (window.crypto && crypto.subtle) datosMetaIniciales().then(arrancar, () => arrancar(datosMeta()));
+  else arrancar({});
 }
 
 /* ---------- Pantalla de carga, cookies, videos, carruseles y reseñas ---------- */

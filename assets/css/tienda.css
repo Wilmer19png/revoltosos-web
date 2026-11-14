@@ -542,3 +542,13 @@ dialog.panel:focus, dialog.panel:focus-visible { outline: none; }
 .salida-txt { font-size: 17px; line-height: 1.45; }
 .salida-txt b { color: var(--rosa); }
 .salida-botones .btn { min-height: 56px; font-size: 18px; }
+
+/* Regalo desde cierto monto (migración 024) */
+.regalo-caja { border: 2px dashed var(--rosa); background: #FFF6FA; }
+.regalo-caja p { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 8px; font-size: 15px; }
+.regalo-caja p svg { flex: none; color: var(--rosa); margin-top: 1px; }
+.regalo-caja.ganado { border-style: solid; background: var(--rosa); color: #FFFFFF; }
+.regalo-caja.ganado p { margin: 0; }
+.regalo-caja.ganado p svg { color: #FFFFFF; }
+.aviso-regalo { display: flex; align-items: center; gap: 8px; background: #FFF6FA; color: var(--tinta); border-radius: 12px; padding: 8px 12px; font-size: 14px; }
+.aviso-regalo svg { flex: none; color: var(--rosa); }

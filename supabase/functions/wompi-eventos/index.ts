@@ -64,7 +64,8 @@ async function enviarAMeta(p: Record<string, any>) {
     ct: [await sha256(normalizar(String(p.ciudad)))],
     st: [await sha256(normalizar(String(p.departamento)))],
     country: [await sha256('co')],
-    external_id: [await sha256(String(p.order_id))],
+    // El visitante (código anónimo del navegador) primero: es el mismo external_id que usa el Pixel.
+    external_id: [...(extra.visitante ? [await sha256(String(extra.visitante))] : []), await sha256(String(p.order_id))],
     client_user_agent: extra.ua ?? '',
   };
   if (extra.ip) user_data.client_ip_address = extra.ip;
