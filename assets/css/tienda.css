@@ -600,3 +600,7 @@ dialog.panel:focus, dialog.panel:focus-visible { outline: none; }
 .galeria-p .principal img { transition: filter .2s ease; }
 .galeria-p .principal img.foto-cargando { filter: blur(2px); }
 @media (prefers-reduced-motion: reduce) { .galeria-p .principal img { transition: none; } }
+/* Envío prioritario: misma línea y tamaño que «Autorizo el tratamiento de mis datos». */
+.prio-linea { color: var(--tinta); }
+.prio-linea strong { color: var(--rosa); }
+.prio-linea input { accent-color: var(--rosa); }

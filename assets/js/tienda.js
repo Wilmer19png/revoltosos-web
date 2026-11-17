@@ -1107,7 +1107,7 @@ function plantillaFormulario() {
     '<fieldset class="metodos" data-metodos hidden><legend style="font-size: 15px; margin-bottom: 8px">¿Cómo quieres pagar?</legend>' +
     '<label class="metodo"><input type="radio" name="metodo_pago" value="contraentrega" checked><span><strong>Pagar al recibir <em class="recomendado">Recomendado</em></strong><span>Pagas en efectivo cuando te llegue.</span></span><b class="metodo-precio" data-precio-metodo></b></label>' +
     '<label class="metodo"><input type="radio" name="metodo_pago" value="wompi"><span><strong>Pagar ahora</strong><span>Tarjeta, PSE, Nequi o Bancolombia, con Wompi.</span></span><b class="metodo-precio" data-precio-metodo></b></label></fieldset>' +
-    '<label class="prioritario"><input type="checkbox" id="f-prioritario" name="prioritario"><span><strong>Agrega Envío Prioritario por solo <span data-valor-prioritario></span> COP</strong><br><span>Despachamos tu pedido primero.</span></span></label>' +
+    '<label class="acepto prio-linea"><input type="checkbox" id="f-prioritario" name="prioritario"><span>Agrega <strong>Envío Prioritario</strong> por solo <strong data-valor-prioritario></strong> COP</span></label>' +
     '<label class="acepto"><input type="checkbox" id="f-acepto" name="acepto" required aria-describedby="e-acepto"><span>Autorizo el tratamiento de mis datos para gestionar mi pedido, según la <a href="/privacidad.html" target="_blank" rel="noopener">política de datos</a> (Ley 1581 de 2012).</span></label>' +
     '<span class="error" id="e-acepto" style="margin-top: -8px"></span>' +
     '<div class="trampa" aria-hidden="true"><label for="f-empresa">Empresa</label><input id="f-empresa" name="empresa" type="text" tabindex="-1" autocomplete="off"></div>' +
