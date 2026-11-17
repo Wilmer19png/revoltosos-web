@@ -2120,12 +2120,12 @@ function productosDeCarrito(c) {
 
 function mensajeCarrito(c, k) {
   const nombre = String(c.nombre || '').trim().split(/\s+/)[0] || '';
-  const hola = nombre ? 'Hola ' + nombre : 'Hola';
+  const hola = nombre ? '¡Hola ' + nombre + '!' : '¡Hola!';
   const prod = productosDeCarrito(c);
   const gratis = pesos((D.ajustes && D.ajustes.envio_gratis_desde) || 70000);
-  if (k === '1h') return hola + ', vimos que dejaste ' + prod + ' en tu carrito. Si te quedó alguna duda sobre el envío o el pago, respóndenos aquí. Recuerda que pagas al recibir.';
-  if (k === '24h') return hola + ', tu ' + prod + ' sigue apartado. Es un solo ingrediente, sin sal ni conservantes. ¿Te lo enviamos? Solo responde SÍ y confirmamos tu dirección.';
-  return 'Último recordatorio de tu carrito' + (nombre ? ', ' + nombre : '') + '. Si le sumas otro snack y llegas a ' + gratis + ', el envío es gratis. ¿Te ayudamos a armarlo?';
+  if (k === '1h') return hola + ' 🐾 Te saluda el equipo de servicio al cliente de Revoltosos. Vimos que estabas armando tu pedido con ' + prod + ' y no alcanzaste a terminarlo. ¿Sucedió algo o te podemos ayudar con alguna duda? Con gusto te asesoramos para que elijas lo mejor para tu peludito.';
+  if (k === '24h') return hola + ' 🐾 Somos Revoltosos. Queríamos saber cómo estás y si te quedó alguna pregunta sobre ' + prod + ', el envío o la forma de pago. Estamos aquí para ayudarte en lo que necesites, y si quieres, terminamos tu pedido juntos por este chat.';
+  return hola + ' 🐾 Te escribimos de Revoltosos una última vez para no dejarte sin respuesta. Si hay algo que te frenó (el precio, el envío o no saber qué snack elegir), cuéntanos y con mucho gusto lo resolvemos. Por si te sirve: desde ' + gratis + ' el envío es gratis. ¡Quedamos atentos!';
 }
 
 // El mensaje que toca: el más reciente cuyo tiempo ya pasó y que aún no se ha enviado.
