@@ -650,14 +650,41 @@ function pintarCompra() {
   }
 }
 
+// Cambiar de foto se siente al instante: si la grande ya está descargada se pone de una; si no,
+// primero se muestra la miniatura (ya está en el celular) y la grande la reemplaza apenas llega.
+// Las fotos grandes de la galería se bajan en segundo plano cuando la página termina de cargar.
+const precargadas = {};
+function precargar(src) {
+  if (!precargadas[src]) { const i = new Image(); i.decoding = 'async'; i.src = src; precargadas[src] = i; }
+  return precargadas[src];
+}
+let fotoPedida = '';
 function mostrarFoto(src, alt, mini) {
   const img = $('.galeria-p .principal img');
   if (!img || !src) return;
-  img.removeAttribute('srcset'); // si no, el navegador sigue mostrando la foto del srcset
-  img.removeAttribute('sizes');
-  img.src = src;
+  fotoPedida = src;
   if (alt) img.alt = alt;
   $$('.miniaturas button').forEach((b) => b.setAttribute('aria-pressed', String(b === mini)));
+  img.removeAttribute('srcset'); // si no, el navegador sigue mostrando la foto del srcset
+  img.removeAttribute('sizes');
+  const pre = precargar(src);
+  const poner = () => { if (fotoPedida !== src) return; img.src = src; img.classList.remove('foto-cargando'); };
+  if (pre.complete && pre.naturalWidth) { poner(); return; }
+  const miniImg = mini && $('img', mini);
+  if (miniImg && miniImg.complete && miniImg.naturalWidth) img.src = miniImg.currentSrc || miniImg.src;
+  img.classList.add('foto-cargando');
+  if (pre.decode) pre.decode().then(poner, poner);
+  else { pre.addEventListener('load', poner); pre.addEventListener('error', poner); }
+}
+function precargarGaleria() {
+  if (!$('.miniaturas') || (navigator.connection && navigator.connection.saveData)) return;
+  const todas = () => $$('.miniaturas button[data-src]').forEach((b) => precargar(b.dataset.src));
+  const luego = () => (window.requestIdleCallback ? requestIdleCallback(todas, { timeout: 2500 }) : setTimeout(todas, 1200));
+  if (document.readyState === 'complete') luego(); else window.addEventListener('load', luego, { once: true });
+  // Si la persona va a tocar una miniatura antes, se bajan ya.
+  const minis = $('.miniaturas');
+  minis.addEventListener('pointerover', todas, { once: true });
+  minis.addEventListener('touchstart', todas, { once: true, passive: true });
 }
 
 // Tamaño pedido en el link del anuncio: ?t=50g, ?t=100g, ?t=10-unidades o el id completo.
@@ -1070,7 +1097,6 @@ function plantillaFormulario() {
     DEPARTAMENTOS.map((d) => '<option>' + d + '</option>').join('') + '</select><span class="error" id="e-departamento"></span></div>' +
     '<div class="campo"><label for="f-ciudad">Ciudad o municipio</label><select id="f-ciudad" name="ciudad" autocomplete="address-level2" required disabled aria-describedby="e-ciudad"><option value="">Primero el departamento</option></select><span class="error" id="e-ciudad"></span></div>' +
     '</div>' +
-    '<div class="cotiza" data-cotiza hidden></div>' +
     '<div class="campos-2">' +
     '<div class="campo"><label for="f-direccion">Dirección</label><input id="f-direccion" name="direccion" type="text" autocomplete="address-line1" placeholder="Calle 2 #5-20" required maxlength="200" aria-describedby="e-direccion"><span class="error" id="e-direccion"></span></div>' +
     '<div class="campo"><label for="f-barrio">Barrio</label><input id="f-barrio" name="barrio" type="text" placeholder="Barrio La Sultana" required maxlength="120" aria-describedby="e-barrio"><span class="error" id="e-barrio"></span></div>' +
@@ -1078,11 +1104,10 @@ function plantillaFormulario() {
     '<div class="campo"><label for="f-indicaciones">Indicaciones <small>(opcional)</small></label><input id="f-indicaciones" name="indicaciones" type="text" placeholder="Apto, torre, casa, punto de referencia" maxlength="300"></div>' +
     '<fieldset><legend style="font-size: 15px; margin-bottom: 8px">¿Para quién es? <small style="font-weight: 500; color: var(--tinta-2); font-size: inherit">(opcional)</small></legend>' +
     '<div class="mascotas"><button type="button" class="mascota" aria-pressed="false">Perro pequeño</button><button type="button" class="mascota" aria-pressed="false">Perro mediano</button><button type="button" class="mascota" aria-pressed="false">Perro grande</button><button type="button" class="mascota" aria-pressed="false">Gato</button></div></fieldset>' +
-    '<label class="prioritario"><input type="checkbox" id="f-prioritario" name="prioritario"><span><strong>Envío prioritario: +<span data-valor-prioritario></span></strong><br><span>Despachamos tu pedido primero.</span></span></label>' +
     '<fieldset class="metodos" data-metodos hidden><legend style="font-size: 15px; margin-bottom: 8px">¿Cómo quieres pagar?</legend>' +
-    '<label class="metodo"><input type="radio" name="metodo_pago" value="contraentrega" checked><span><strong>Pagar al recibir</strong><span>Pagas en efectivo cuando te llegue.</span></span><b class="metodo-precio" data-precio-metodo></b></label>' +
+    '<label class="metodo"><input type="radio" name="metodo_pago" value="contraentrega" checked><span><strong>Pagar al recibir <em class="recomendado">Recomendado</em></strong><span>Pagas en efectivo cuando te llegue.</span></span><b class="metodo-precio" data-precio-metodo></b></label>' +
     '<label class="metodo"><input type="radio" name="metodo_pago" value="wompi"><span><strong>Pagar ahora</strong><span>Tarjeta, PSE, Nequi o Bancolombia, con Wompi.</span></span><b class="metodo-precio" data-precio-metodo></b></label></fieldset>' +
-    '<div class="resumen cuentas" aria-live="polite" data-cuentas-pedido></div>' +
+    '<label class="prioritario"><input type="checkbox" id="f-prioritario" name="prioritario"><span><strong>Agrega Envío Prioritario por solo <span data-valor-prioritario></span> COP</strong><br><span>Despachamos tu pedido primero.</span></span></label>' +
     '<label class="acepto"><input type="checkbox" id="f-acepto" name="acepto" required aria-describedby="e-acepto"><span>Autorizo el tratamiento de mis datos para gestionar mi pedido, según la <a href="/privacidad.html" target="_blank" rel="noopener">política de datos</a> (Ley 1581 de 2012).</span></label>' +
     '<span class="error" id="e-acepto" style="margin-top: -8px"></span>' +
     '<div class="trampa" aria-hidden="true"><label for="f-empresa">Empresa</label><input id="f-empresa" name="empresa" type="text" tabindex="-1" autocomplete="off"></div>' +
@@ -1122,7 +1147,7 @@ function pintarBoton(form, total) {
 // Con más de 3 productos distintos se ven 3 y el resto con «Ver N más».
 const MINI_VISIBLES = 3;
 let miniAbierto = false;
-function miniResumen(k) {
+function miniResumen(k, envio) {
   const extra = Math.max(0, k.ls.length - MINI_VISIBLES);
   const fila = (l, i) => '<li' + (i >= MINI_VISIBLES && !miniAbierto ? ' hidden' : '') + '>' +
     '<img src="' + esc(fotoDe(l.v)) + '" alt="" width="40" height="40">' +
@@ -1133,7 +1158,28 @@ function miniResumen(k) {
     '<ul class="mr-lista">' + k.ls.map(fila).join('') +
     (k.regalo ? '<li class="mr-regalo">' + ICONO.regalo + '<div class="mr-nom"><strong>Regalo</strong><span>' + esc(nombreRegalo()) + '</span></div><span class="mr-precio">GRATIS</span></li>' : '') +
     '</ul>' +
-    (extra ? '<button type="button" class="mr-mas" data-mr-mas aria-expanded="' + miniAbierto + '">' + (miniAbierto ? 'Ver menos' : 'Ver ' + extra + (extra === 1 ? ' producto más' : ' productos más')) + '</button>' : '');
+    (extra ? '<button type="button" class="mr-mas" data-mr-mas aria-expanded="' + miniAbierto + '">' + (miniAbierto ? 'Ver menos' : 'Ver ' + extra + (extra === 1 ? ' producto más' : ' productos más')) + '</button>' : '') +
+    (envio || '');
+}
+
+// Debajo de los productos: cupón, envío (gratis o cuánto, y cuánto falta para que sea gratis),
+// prioritario y el total. Reemplaza el viejo «Resumen de tu pago».
+function cuentasArriba(k, ciudad, prio, wompi) {
+  const fila = (a, b, clase) => '<div class="mr-fila' + (clase ? ' ' + clase : '') + '"><span>' + a + '</span><span>' + b + '</span></div>';
+  const envio = k.gratis
+    ? fila(ICONO.camion + 'Envío' + (ciudad ? ' a ' + esc(ciudad) : ''), '<b class="mr-gratis">GRATIS</b>', 'mr-envio')
+    : fila(ICONO.camion + 'Envío' + (ciudad ? ' a ' + esc(ciudad) : ''), k.envio != null ? pesos(k.envio) : '<small>Según tu ciudad</small>', 'mr-envio');
+  const nota = k.gratis
+    ? '<p class="mr-nota ok">' + (k.porCombo ? 'Tu combo incluye el envío.' : 'Tu pedido supera ' + pesos(T.ajustes.envio_gratis_desde) + ': no pagas envío.') + '</p>'
+    : '<p class="mr-nota">Agrega <strong>' + pesos(k.falta) + '</strong> más en productos y tu envío es <strong>GRATIS</strong>.</p>';
+  const total = k.neto + (k.gratis ? 0 : (k.envio || 0)) + prio;
+  return '<div class="mr-cuentas">' +
+    (k.descuento ? fila('Cupón ' + esc(cupon.codigo), '−' + pesos(k.descuento), 'mr-verde') : '') +
+    envio + nota +
+    (prio ? fila('Envío prioritario', pesos(prio)) : '') +
+    fila('<strong>' + (wompi ? 'Total a pagar' : 'Total a pagar al recibir') + '</strong>', '<strong>' + pesos(total) + (k.gratis || k.envio != null ? '' : ' <small>+ envío</small>') + '</strong>', 'mr-total') +
+    (k.ahorro ? '<p class="mr-nota ok">' + ICONO.etiqueta + 'Estás ahorrando <strong>' + pesos(k.ahorro) + '</strong></p>' : '') +
+    '</div>';
 }
 
 function pintarResumenPedido() {
@@ -1144,33 +1190,15 @@ function pintarResumenPedido() {
   const k = cuentas(dep, form.ciudad.value);
   const prio = form.prioritario.checked ? T.ajustes.prioritario : 0;
   const primera = k.ls[0];
-  $('[data-mini-resumen]', d).innerHTML = primera ? miniResumen(k) : '<div class="mr-cab"><strong>Tu carrito está vacío</strong></div>';
   $('[data-valor-prioritario]', d).textContent = pesos(T.ajustes.prioritario);
   $('[data-metodos]', d).hidden = !T.ajustes.wompi_activo;
   const wompi = metodoDe(form) === 'wompi';
+  // Arriba, de una vez: si el envío es gratis o cuánto cuesta, y el total.
+  $('[data-mini-resumen]', d).innerHTML = primera ? miniResumen(k, cuentasArriba(k, form.ciudad.value, prio, wompi)) : '<div class="mr-cab"><strong>Tu carrito está vacío</strong></div>';
 
-  const cotiza = $('[data-cotiza]', d);
-  if (dep && form.ciudad.value) {
-    cotiza.hidden = false;
-    cotiza.innerHTML = '<span class="cotiza-titulo">' + ICONO.camion + 'Detalles del envío</span>' + (k.gratis
-      ? '<div class="fila"><span>Envío a ' + esc(form.ciudad.value) + '</span><span>GRATIS</span></div><span>' + (k.porCombo ? 'Tu combo incluye el envío.' : 'Tu pedido supera ' + pesos(T.ajustes.envio_gratis_desde) + '.') + '</span>'
-      : '<div class="fila"><span>Envío a ' + esc(form.ciudad.value) + '</span><span>' + pesos(k.envio) + '</span></div>' +
-        '<span class="falta">Agrega ' + pesos(k.falta) + ' más en productos y no pagas envío.</span>');
-  } else cotiza.hidden = true;
-
-  const envioTxt = k.gratis ? '<span class="verde">GRATIS</span>' : (dep ? pesos(k.envio) : '<span style="color: var(--tinta-2)">Elige tu departamento</span>');
   const total = k.neto + (k.gratis ? 0 : (k.envio || 0)) + prio;
   const totalTxt = pesos(total) + (dep || k.gratis ? '' : ' + envío');
   $$('[data-precio-metodo]', d).forEach((b) => { b.textContent = totalTxt; });
-  $('[data-cuentas-pedido]', d).innerHTML =
-    '<h3 class="resumen-titulo">Resumen de tu pago</h3>' +
-    '<div><span>Productos (' + k.unidades + ')</span><span>' + pesos(k.subtotal) + '</span></div>' +
-    (k.descuento ? '<div class="verde"><span>Cupón ' + esc(cupon.codigo) + '</span><span>−' + pesos(k.descuento) + '</span></div>' : '') +
-    (k.regalo ? '<div class="verde"><span>Regalo: ' + esc(nombreRegalo()) + '</span><span>GRATIS</span></div>' : '') +
-    '<div><span>Envío</span>' + envioTxt + '</div>' +
-    (prio ? '<div><span>Envío prioritario</span><span>' + pesos(prio) + '</span></div>' : '') +
-    '<hr class="perforado"><div class="resumen-total"><strong>' + (wompi ? 'Total a pagar ahora' : 'Total a pagar al recibir') + '</strong><span>' + totalTxt + '</span></div>' +
-    (k.ahorro ? '<div class="ahorro-caja" style="margin-top: 10px"><span>' + ICONO.etiqueta + 'Estás ahorrando</span><strong>' + pesos(k.ahorro) + '</strong></div>' : '');
   if (!enviando) pintarBoton(form, total);
   const wa = $('[data-wa-pedido]', d);
   if (wa) wa.href = linkWhatsappCarrito(form.ciudad.value);
@@ -2007,6 +2035,39 @@ pintarResenas();
 
 $$('[data-anio]').forEach((el) => { el.textContent = new Date().getFullYear(); });
 
+/* ---------- Clics a WhatsApp (migración 025) ----------
+   Cada toque a un enlace de wa.me se cuenta en el gestor (Resumen → Clics al botón de WhatsApp)
+   y se manda a Meta como «Contact». keepalive: el registro sale aunque se abra WhatsApp. */
+function lugarWhatsapp(a) {
+  if (a.dataset.waLugar) return a.dataset.waLugar;
+  if (a.classList.contains('wa-flotante')) return 'flotante';
+  if (a.hasAttribute('data-wa-pedido')) return 'formulario';
+  if (a.hasAttribute('data-salida-wa')) return 'salida';
+  if (a.closest('.gracias-t, [data-gracias]')) return 'gracias';
+  if (a.closest('.form-error, #form-error')) return 'error';
+  if (a.closest('footer')) return 'pie';
+  return 'contacto';
+}
+function iniciarClicsWhatsapp() {
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href*="wa.me/"]');
+    if (!a) return;
+    const lugar = lugarWhatsapp(a);
+    track('Contact', { content_name: 'whatsapp-' + lugar });
+    try {
+      fetch(CONFIG.SUPABASE_URL + '/rest/v1/rpc/registrar_clic_whatsapp', {
+        method: 'POST',
+        keepalive: true,
+        headers: { apikey: CONFIG.SUPABASE_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          p_lugar: lugar, p_pagina: location.pathname, p_visitante: visitante(),
+          p_utm_source: leer('rv-utm_source') || null, p_utm_campaign: leer('rv-utm_campaign') || null, p_utm_content: leer('rv-utm_content') || null
+        })
+      }).catch(() => {});
+    } catch (err) { /* nunca debe impedir que se abra WhatsApp */ }
+  }, true);
+}
+
 /* ---------- Arranque ---------- */
 
 function pintarTodo() {
@@ -2022,13 +2083,16 @@ function pintarTodo() {
   actualizar();
 }
 
+iniciarClicsWhatsapp();
 iniciarMenu();
 iniciarBuscador();
 crearDialogos();
 iniciarCarrito();
 iniciarCompra();
 iniciarBarraFija();
+precargarGaleria();
 cargarCatalogo(pintarTodo).then(() => {
+  precargarGaleria(); // por si el catálogo sumó fotos subidas desde el gestor
   if (P.tipo === 'producto' && P.productoId) {
     const vs = variantesDelProducto();
     if (vs.length) track('ViewContent', { content_ids: vs.map((v) => v.id), content_type: 'product', content_name: P.productoId, value: vs[0].precio, currency: 'COP' });

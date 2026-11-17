@@ -126,3 +126,15 @@ El sitio usa rutas que empiezan con `/`, así que no se ve bien abriendo el arch
 - Proyecto: `https://jlvnrxmardcnarzspccs.supabase.co`
 - Clave pública (publishable, se puede ver en la web): `sb_publishable_Jca2aMrjHOFVBrDnZpMj-Q_lDK6BWLF`
 - Correos con acceso al gestor: tabla `admins` (hoy `mariajosecastano81@gmail.com`). Para dar acceso a alguien más: agregar su correo en esa tabla **y** crearle usuario en Authentication.
+
+## Contabilidad real, ventas de WhatsApp y avisos al celular (migración 025)
+
+1. Supabase › SQL Editor: correr `supabase/migraciones/025-contabilidad-whatsapp-avisos.sql`
+   (activa pg_net y pg_cron; si pg_cron falla, actívalo en Integrations › Cron y vuelve a correrla).
+2. Supabase › Edge Functions › Secrets: agregar `VAPID_PUBLIC_KEY` y `VAPID_PRIVATE_KEY`
+   (par de llaves P-256; si se pierden, se genera otro par y cada celular vuelve a «Activar avisos»).
+3. Publicar la función nueva **sin** Verify JWT: `supabase functions deploy avisar-admin --no-verify-jwt`.
+   Si usas Envía, volver a publicar `envia` (ya no cobra contra entrega a ventas pagadas por transferencia).
+4. Gestor › Ajustes › «Avisos en este celular» › Activar avisos (en iPhone, primero «Agregar a inicio»
+   desde Safari y abrir el gestor desde ese ícono). Luego «Mandar aviso de prueba».
+5. Gestor › Ajustes › «Sueldos y gastos fijos»: revisar los valores (vienen 2.000.000 admin + 2.000.000 marketing).

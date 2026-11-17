@@ -111,7 +111,8 @@ async function paquete(sb: SupabaseClient, p: Pedido, caja: Record<string, numbe
     weight: Math.max(0.1, Math.round(gramos / 10) / 100),
     dimensions: { length: caja.largo || 20, width: caja.ancho || 15, height: caja.alto || 12 },
     // Contraentrega: la transportadora cobra el total del pedido al entregar (si ya se pagó con Wompi, nada).
-    additionalServices: p.metodo_pago === 'wompi' ? [] : [{ service: 'cash_on_delivery', data: { amount: p.total } }],
+    // Solo se cobra al recibir si el pedido es contra entrega (Wompi y transferencia ya están pagados).
+    additionalServices: (p.metodo_pago || 'contraentrega') !== 'contraentrega' ? [] : [{ service: 'cash_on_delivery', data: { amount: p.total } }],
   };
 }
 

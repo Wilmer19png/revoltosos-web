@@ -7,6 +7,10 @@
 <title>Gestor · Revoltosos</title>
 <meta name="theme-color" content="#12110F">
 <link rel="icon" href="../assets/img/logo.jpg">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="../assets/img/logo.jpg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Gestor">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700;800&display=swap">
@@ -89,7 +93,7 @@ a:hover { color: var(--rosa-hover); }
 .kpi { background: #FFFFFF; border-radius: 18px; padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; border: 1px solid var(--hueso-2); }
 .kpi.destacado { border: 2px solid var(--salvia); }
 .kpi span { font-size: 13px; font-weight: 700; color: var(--tinta-2); }
-.kpi strong { font-size: 25px; line-height: 1.15; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.kpi strong { font-size: 25px; line-height: 1.15; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; white-space: nowrap; }
 .kpi small { font-size: 12px; color: var(--tinta-2); }
 .kpi .sube { color: var(--verde); font-weight: 700; }
 .kpi .baja { color: var(--error); font-weight: 700; }
@@ -227,6 +231,63 @@ td.der, th.der { text-align: right; font-variant-numeric: tabular-nums; }
 .foto-tam { display: flex; gap: 6px; align-items: center; min-width: 260px; }
 .foto-tam img { flex: none; width: 40px; height: 40px; border-radius: 8px; object-fit: cover; background: #FFFFFF; border: 1px solid var(--linea); }
 
+/* Rentabilidad y tarjetas de tamaño (Productos) */
+.margen { display: inline-block; min-width: 52px; text-align: center; padding: 3px 8px; border-radius: 999px; font-weight: 800; font-size: 13px; font-variant-numeric: tabular-nums; }
+.margen.bien { background: var(--verde-claro); color: var(--verde); }
+.margen.medio { background: var(--ambar-claro); color: var(--ambar); }
+.margen.mal { background: var(--error-claro); color: #8C2A1F; }
+.margen.nada { background: var(--hueso-2); color: #5A5148; }
+.renta td { white-space: nowrap; }
+.renta td:first-child { white-space: normal; min-width: 170px; }
+.renta tr.combo td:first-child strong::after { content: 'Combo'; margin-left: 6px; padding: 1px 7px; border-radius: 999px; background: #F6ECD6; color: #6E5110; font-size: 11px; vertical-align: 2px; }
+.renta .resta { color: var(--tinta-2); }
+.renta tfoot td { font-weight: 800; border-top: 2px solid var(--hueso-2); }
+.prod-buscar { display: flex; flex-direction: column; gap: 8px; }
+.prod-grupo { font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--tinta-2); margin: 6px 2px 0; }
+.prod-fila .margen { flex: none; }
+.tams { display: flex; flex-direction: column; gap: 12px; }
+.tam { border: 1.5px solid var(--hueso-2); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 12px; background: #FDFBF7; }
+.tam.oculta { opacity: .7; }
+.tam-cab { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+.tam-cab .campo { flex: 1 1 160px; }
+.tam-precios { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.tam-precios .campo input { font-variant-numeric: tabular-nums; }
+.tam-precios .venta input { border-color: var(--rosa); font-weight: 800; }
+.cuenta { background: #FFFFFF; border: 1px solid var(--hueso-2); border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; font-variant-numeric: tabular-nums; }
+.cuenta div { display: flex; justify-content: space-between; gap: 10px; }
+.cuenta .resta { color: var(--tinta-2); }
+.cuenta .fin { border-top: 1px dashed var(--linea); margin-top: 4px; padding-top: 6px; font-weight: 800; font-size: 15px; align-items: center; }
+.sugerido { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 13px; color: var(--tinta-2); }
+.sugerido button { min-height: 32px; padding: 0 10px; font-size: 13px; }
+.tam details summary { cursor: pointer; font-weight: 800; font-size: 14px; min-height: 32px; display: flex; align-items: center; }
+.tam-mas { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 8px; }
+.tam-mas .campo input, .tam-mas .campo select { min-height: 42px; font-size: 15px; }
+.check { display: flex; gap: 8px; align-items: center; font-weight: 700; font-size: 14px; cursor: pointer; min-height: 42px; }
+.check input { width: 20px; height: 20px; accent-color: var(--salvia); }
+.gastos-lista { display: flex; flex-direction: column; gap: 8px; }
+.gastos-lista .gasto { display: flex; gap: 8px; align-items: center; }
+.gastos-lista .gasto input { min-height: 42px; padding: 0 10px; border-radius: 10px; border: 1.5px solid var(--campo); font: inherit; font-size: 15px; background: #FFFFFF; }
+.gastos-lista .gasto input[type="text"] { flex: 1 1 auto; min-width: 0; }
+.gastos-lista .gasto input[type="number"] { width: 140px; text-align: right; }
+.canales { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+.canal { border-radius: 14px; padding: 12px 14px; background: var(--hueso); display: flex; flex-direction: column; gap: 2px; font-size: 14px; }
+.canal strong { font-size: 22px; font-variant-numeric: tabular-nums; }
+.barras-wa { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; font-size: 14px; }
+.barras-wa div { display: grid; grid-template-columns: 130px 1fr 40px; gap: 8px; align-items: center; font-variant-numeric: tabular-nums; }
+.barras-wa i { display: block; height: 8px; border-radius: 4px; background: #25D366; }
+.chip-wa { background: #DDF6E6; color: #146C3A; }
+
+/* Venta por WhatsApp (ventana) */
+dialog.ventana { border: 0; border-radius: 20px; padding: 0; width: min(640px, calc(100vw - 24px)); max-height: calc(100vh - 24px); color: var(--tinta); background: #FFFFFF; }
+dialog.ventana::backdrop { background: rgba(18,17,15,.55); }
+.ventana form { padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.ventana-cab { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.ventana-cab h3 { font-family: var(--serif); font-weight: 400; font-size: 24px; }
+.wa-items { display: flex; flex-direction: column; gap: 8px; }
+.wa-item { display: flex; gap: 8px; align-items: center; }
+.wa-item select { flex: 1 1 auto; min-width: 0; min-height: 44px; border-radius: 10px; border: 1.5px solid var(--campo); font: inherit; font-size: 15px; padding: 0 8px; background: #FFFFFF; }
+.wa-item input { width: 70px; min-height: 44px; border-radius: 10px; border: 1.5px solid var(--campo); font: inherit; font-size: 15px; text-align: center; }
+
 /* Reseñas */
 .landing-link { display: flex; gap: 8px; align-items: center; background: var(--hueso); border-radius: 12px; padding: 6px 6px 6px 12px; }
 .landing-link code { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
@@ -346,13 +407,25 @@ td.der, th.der { text-align: right; font-variant-numeric: tabular-nums; }
       <section class="caja" aria-labelledby="t-cascada">
         <h3 id="t-cascada">De dónde sale la ganancia</h3>
         <div class="cascada" id="r-cascada"></div>
-        <p class="nota" style="margin-top: 10px">El envío lo pagas tú aunque al cliente le salga gratis. Las devoluciones restan el flete de ida y de vuelta.</p>
+        <p class="nota" style="margin-top: 10px">El envío lo pagas tú aunque al cliente le salga gratis (combos y pedidos grandes). Las devoluciones restan el flete de ida y de vuelta. Los sueldos y gastos fijos se cambian en <strong>Ajustes</strong>.</p>
+        <p class="nota" id="r-equilibrio" style="margin-top: 8px"></p>
+      </section>
+    </div>
+    <div class="fila-cajas">
+      <section class="caja ancha" aria-labelledby="t-canales">
+        <h3 id="t-canales">Ventas por canal</h3>
+        <div class="canales" id="r-canales"></div>
+        <p class="nota" style="margin-top: 10px">Las ventas de WhatsApp se anotan en <strong>Pedidos → + Venta por WhatsApp</strong>. Así cuentan en la ganancia y el inventario.</p>
+      </section>
+      <section class="caja" aria-labelledby="t-clics">
+        <h3 id="t-clics">Clics al botón de WhatsApp</h3>
+        <div id="r-clics"></div>
       </section>
     </div>
     <div class="fila-cajas">
       <section class="caja ancha" aria-labelledby="t-top">
         <h3 id="t-top">Qué se está vendiendo</h3>
-        <div class="tabla-caja"><table><thead><tr><th>Producto</th><th class="der">Unidades</th><th class="der">Ventas</th><th class="der">Ganancia bruta</th><th class="der">Margen</th></tr></thead><tbody id="r-top"></tbody></table></div>
+        <div class="tabla-caja"><table><thead><tr><th>Producto</th><th class="der">Unidades</th><th class="der">Ventas</th><th class="der">Ganancia sin envío</th><th class="der">Margen</th></tr></thead><tbody id="r-top"></tbody></table></div>
       </section>
       <section class="caja" aria-labelledby="t-estados">
         <h3 id="t-estados">Pedidos del mes</h3>
@@ -375,7 +448,34 @@ td.der, th.der { text-align: right; font-variant-numeric: tabular-nums; }
       <label for="p-buscar" class="oculto">Buscar pedido</label>
       <input id="p-buscar" class="buscar" type="search" placeholder="Buscar por nombre, celular, cédula, guía o pedido">
       <button type="button" class="btn-sec" id="p-rastrear" hidden>Actualizar rastreo</button>
+      <button type="button" class="btn" id="p-venta-wa" style="min-height: 44px; flex: none">+ Venta por WhatsApp</button>
     </div>
+    <dialog class="ventana" id="venta-wa" aria-labelledby="t-venta-wa">
+      <form id="form-venta-wa" novalidate>
+        <div class="ventana-cab"><h3 id="t-venta-wa">Venta por WhatsApp</h3><button type="button" class="btn-sec" data-cerrar-venta aria-label="Cerrar">✕</button></div>
+        <p class="nota" style="margin-top: -8px">Anota aquí lo que vendes por chat: cuenta en la ganancia, el inventario sale al despachar y puedes generar la guía como cualquier pedido.</p>
+        <div class="rejilla">
+          <div class="campo"><label for="w-nombre">Nombre del cliente</label><input id="w-nombre" required maxlength="120" autocomplete="off"></div>
+          <div class="campo"><label for="w-celular">Celular</label><input id="w-celular" required inputmode="numeric" maxlength="16" placeholder="300 123 4567" autocomplete="off"></div>
+          <div class="campo"><label for="w-dep">Departamento</label><select id="w-dep" required><option value="">Elige</option></select></div>
+          <div class="campo"><label for="w-ciudad">Ciudad</label><select id="w-ciudad" required><option value="">Primero el departamento</option></select></div>
+          <div class="campo"><label for="w-dir">Dirección</label><input id="w-dir" required maxlength="200"></div>
+          <div class="campo"><label for="w-barrio">Barrio <small style="font-weight: 500">(opcional)</small></label><input id="w-barrio" maxlength="120"></div>
+        </div>
+        <div><span class="etiqueta-campo">Productos</span><div class="wa-items" id="w-items"></div>
+          <button type="button" class="btn-sec" id="w-mas" style="margin-top: 8px">+ Otro producto</button></div>
+        <div class="rejilla">
+          <div class="campo"><label for="w-envio">Envío que le cobraste</label><input id="w-envio" type="number" min="0" step="500" value="0"></div>
+          <div class="campo"><label for="w-desc">Descuento <small style="font-weight: 500">(opcional)</small></label><input id="w-desc" type="number" min="0" step="100" value="0"></div>
+          <div class="campo"><label for="w-pago">Cómo paga</label><select id="w-pago"><option value="contraentrega">Al recibir (contra entrega)</option><option value="transferencia">Transferencia / Nequi (ya pagó)</option><option value="efectivo">Efectivo en persona</option></select></div>
+          <div class="campo"><label for="w-estado">Estado</label><select id="w-estado"><option>Confirmado</option><option>Despachado</option><option>Entregado</option></select></div>
+        </div>
+        <div class="campo"><label for="w-notas">Nota <small style="font-weight: 500">(opcional)</small></label><input id="w-notas" maxlength="300" placeholder="Ej.: pidió que llegue antes del viernes"></div>
+        <div class="cuenta" id="w-cuenta"></div>
+        <p class="mensaje error" id="w-msg" role="alert"></p>
+        <button type="submit" class="btn btn--oscuro">Guardar venta</button>
+      </form>
+    </dialog>
     <p class="estado-carga" id="p-estado" aria-live="polite">Cargando pedidos…</p>
     <div class="lista" id="lista"></div>
   </main>
@@ -383,11 +483,27 @@ td.der, th.der { text-align: right; font-variant-numeric: tabular-nums; }
   <!-- Productos -->
   <main class="contenido" id="tab-productos" role="tabpanel" hidden>
     <div class="cabeza-sec">
-      <div><h2>Productos</h2><p>El interruptor oculta un producto de la tienda sin borrarlo. Un producto sin precio no se muestra.</p></div>
+      <div><h2>Productos</h2><p>Toca un producto para cambiar precios, costos y fotos. El interruptor lo oculta de la tienda sin borrarlo.</p></div>
       <button type="button" class="btn" id="prod-nuevo">+ Nuevo producto</button>
     </div>
+    <section class="caja" aria-labelledby="t-renta">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; align-items: flex-start">
+        <div><h3 id="t-renta" style="margin-bottom: 2px">¿Cuánto te deja cada producto?</h3>
+          <p class="nota" id="renta-sub"></p></div>
+        <div class="filtros" id="renta-filtros" role="group" aria-label="Filtrar tabla"></div>
+      </div>
+      <div class="tabla-caja" style="margin-top: 10px"><table class="renta">
+        <thead><tr><th>Producto</th><th class="der">Precio</th><th class="der">Costo producción</th><th class="der" id="renta-th-gastos">Gastos</th><th class="der">Envío que pagas</th><th class="der">Comisión</th><th class="der">Te queda</th><th class="der">Margen</th></tr></thead>
+        <tbody id="renta-tabla"></tbody>
+      </table></div>
+      <p class="nota" style="margin-top: 8px">Igual que tu Excel: <strong>costo con gastos incluidos</strong> = costo de producción + el % de sueldos, marketing y pauta (se cambia en Ajustes). Los combos y los tamaños con envío gratis restan lo que te cobra la transportadora. Margen: <span class="margen bien">30 %+</span> <span class="margen medio">15–30 %</span> <span class="margen mal">menos de 15 %</span></p>
+    </section>
     <div class="fila-cajas">
-      <div class="prod-lista" id="prod-lista" style="flex: 1 1 300px"></div>
+      <div class="prod-buscar" style="flex: 1 1 300px">
+        <label for="prod-q" class="oculto">Buscar producto</label>
+        <input id="prod-q" class="buscar" type="search" placeholder="Buscar producto">
+        <div class="prod-lista" id="prod-lista"></div>
+      </div>
       <div id="prod-editor" class="ancha"></div>
     </div>
   </main>
@@ -476,6 +592,19 @@ td.der, th.der { text-align: right; font-variant-numeric: tabular-nums; }
   <!-- Ajustes -->
   <main class="contenido" id="tab-ajustes" role="tabpanel" hidden>
     <div class="cabeza-sec"><div><h2>Ajustes</h2><p>Lo que cambies aquí se aplica de inmediato en la tienda y en los pedidos nuevos.</p></div></div>
+    <section class="caja" aria-labelledby="t-avisos">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; align-items: flex-start">
+        <div><h3 id="t-avisos" style="margin-bottom: 2px">Avisos en este celular</h3>
+          <p class="nota">Te llega una notificación cuando entra un pedido, una reseña o queda un carrito sin terminar. Solo a los celulares del equipo donde actives esto; los clientes nunca la ven.</p></div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px">
+          <button type="button" class="btn" id="av-activar">Activar avisos</button>
+          <button type="button" class="btn-sec" id="av-probar" hidden>Mandar aviso de prueba</button>
+          <button type="button" class="btn-sec btn-peligro" id="av-apagar" hidden>Apagar en este celular</button>
+        </div>
+      </div>
+      <p class="mensaje" id="av-msg" role="status" style="margin-top: 8px"></p>
+      <p class="nota" id="av-iphone" hidden style="margin-top: 6px">En iPhone: abre el gestor en Safari → botón Compartir → <strong>Agregar a inicio</strong>. Abre el gestor desde ese ícono y toca «Activar avisos» ahí.</p>
+    </section>
     <form id="form-ajustes" style="display: flex; flex-direction: column; gap: 16px">
       <section class="caja" id="sec-regalo" hidden>
         <h3>Regalo por compras grandes</h3>
@@ -527,6 +656,16 @@ td.der, th.der { text-align: right; font-variant-numeric: tabular-nums; }
           <div class="campo"><label for="a-comision">Comisión por recaudo contraentrega (%)</label><input id="a-comision" type="number" min="0" max="30" step="0.1" required></div>
         </div>
         <p class="nota" style="margin-top: 8px">Se usa el promedio mientras no anotes el envío real de cada pedido. Si generas la guía con Envía, el envío real se anota solo (y ya incluye la comisión de recaudo: en ese caso deja la comisión en 0).</p>
+      </section>
+      <section class="caja" id="sec-gastos" hidden>
+        <h3>Sueldos y gastos fijos del mes</h3>
+        <p class="nota" style="margin: 4px 0 10px">Lo que pagas cada mes vendas o no (administración, marketing…). El Resumen los resta de la ganancia para darte la <strong>utilidad real</strong>. La pauta no va aquí: sale sola de Meta (o la anotas en el Resumen). Los gastos de producción (trabajadora, gas, luz) ya están en el costo de cada producto.</p>
+        <div class="gastos-lista" id="a-gastos"></div>
+        <button type="button" class="btn-sec" id="a-gasto-mas" style="margin-top: 8px">+ Otro gasto</button>
+        <div class="rejilla" style="margin-top: 14px">
+          <div class="campo"><label for="a-pct-gastos">% de gastos sobre el costo (como tu Excel)</label><input id="a-pct-gastos" type="number" min="0" max="300" step="0.1"></div>
+        </div>
+        <p class="nota" style="margin-top: 6px">Solo para ver cada producto «con gastos incluidos» en la pestaña Productos. Tu hoja usa 46,5 % (sueldos + pauta repartidos en 186 pedidos al mes). El Resumen te muestra cuánto es de verdad cada mes.</p>
       </section>
       <section class="caja" id="sec-wompi" hidden>
         <h3>Pago en línea con Wompi</h3>
@@ -704,7 +843,7 @@ let cargando = false;
 async function cargar() {
   if (cargando) return;
   cargando = true;
-  const [rp, rprod, rvar, rcup, raj, rmov, rr, rpa, rcomp, rcar] = await Promise.all([
+  const [rp, rprod, rvar, rcup, raj, rmov, rr, rpa, rcomp, rcar, rclic] = await Promise.all([
     sb.from('pedidos').select('*').order('creado_en', { ascending: false }).limit(3000),
     sb.from('productos').select('*').order('orden'),
     sb.from('variantes').select('*').order('orden'),
@@ -714,7 +853,8 @@ async function cargar() {
     sb.from('resenas').select('*').order('creado_en', { ascending: false }).limit(300),
     sb.from('pauta_anuncios').select('*').gte('fecha', sumarDias(hoy(), -100)).order('fecha').limit(20000),
     sb.from('variante_componentes').select('*'),
-    sb.from('carritos').select('*').order('actualizado_en', { ascending: false }).limit(500)
+    sb.from('carritos').select('*').order('actualizado_en', { ascending: false }).limit(500),
+    sb.from('clics_whatsapp').select('creado_en, lugar, pagina, utm_source').gte('creado_en', sumarDias(hoy(), -400) + 'T00:00:00Z').order('creado_en', { ascending: false }).limit(20000)
   ]);
   cargando = false;
   if (rp.error) {
@@ -732,6 +872,7 @@ async function cargar() {
   D.resenas = rr.error ? null : rr.data;
   D.componentes = rcomp.error ? [] : rcomp.data;
   D.carritos = rcar.error ? null : rcar.data;
+  D.clics = rclic.error ? null : rclic.data; // migración 025
   D.pautaLista = !rpa.error;
   D.pauta = rpa.error ? [] : rpa.data;
   pintarTodo();
@@ -793,7 +934,11 @@ function mostrarPestana(cual) {
   if (cual === 'pauta' && typeof sincronizarSiHaceFalta === 'function') sincronizarSiHaceFalta();
 }
 $$('.pestana').forEach((b) => b.addEventListener('click', () => mostrarPestana(b.dataset.tab)));
-try { const t = sessionStorage.getItem('rv-gestor-tab'); if (t && $('#tab-' + t)) mostrarPestana(t); } catch (e) {}
+try {
+  // ?tab=pedidos llega desde las notificaciones; si no, la última pestaña abierta.
+  const t = new URLSearchParams(location.search).get('tab') || sessionStorage.getItem('rv-gestor-tab');
+  if (t && $('#tab-' + t)) mostrarPestana(t);
+} catch (e) {}
 $('#p-recargar').addEventListener('click', () => { cargar(); avisar('Datos actualizados'); });
 setInterval(() => { if (!document.hidden && !$('#vista-panel').hidden && !document.activeElement.matches('input, select, textarea')) cargar(); }, 90000);
 
@@ -810,9 +955,10 @@ function cuentasPedido(p) {
   }
   const costoProd = p.costo_productos || 0;
   // Wompi cobra % + valor fijo, más IVA; contra entrega, el % de recaudo.
+  // Transferencia o efectivo (ventas de WhatsApp): sin comisión.
   const comision = p.metodo_pago === 'wompi'
     ? Math.round((p.total * Number(A.comision_wompi ?? 2.65) / 100 + Number(A.comision_wompi_fija ?? 700)) * 1.19)
-    : Math.round(p.total * (Number(A.comision_recaudo) || 0) / 100);
+    : (p.metodo_pago || 'contraentrega') === 'contraentrega' ? Math.round(p.total * (Number(A.comision_recaudo) || 0) / 100) : 0;
   return { devuelto: false, costoProd, envioReal, comision, ganancia: p.total - costoProd - envioReal - comision };
 }
 const fechaVenta = (p) => p.entregado_en || p.creado_en;
@@ -849,8 +995,20 @@ function datosMes(mes) {
   entregados.forEach((p) => { porDia[Number(diaCO(fechaVenta(p)).slice(8, 10)) - 1] += p.total; });
   let acc = 0;
   const acumulado = porDia.map((v) => (acc += v));
-  return { entregados, devueltos, ventas, costoProd, envios, comision, devol, bruta, neta: bruta - pauta, pauta, pautaDeMeta, meta, acumulado };
+  // Sueldos y gastos fijos del mes (migración 025): se pagan vendas o no.
+  const fijos = gastosFijosMes();
+  // Por canal: tienda (web) o ventas anotadas de WhatsApp.
+  const canal = (c) => { const ls = entregados.filter((p) => (p.canal || 'web') === c); return { n: ls.length, ventas: ls.reduce((s, p) => s + p.total, 0), bruta: ls.reduce((s, p) => s + cuentasPedido(p).ganancia, 0) }; };
+  return {
+    entregados, devueltos, ventas, costoProd, envios, comision, devol, bruta, neta: bruta - pauta, pauta, pautaDeMeta, meta, acumulado,
+    fijos, utilidad: bruta - pauta - fijos, web: canal('web'), wa: canal('whatsapp'),
+    // Lo que de verdad pesaron pauta + sueldos sobre el costo de producción (tu Excel asume pct_gastos).
+    pctReal: costoProd ? Math.round((pauta + fijos) / costoProd * 1000) / 10 : null
+  };
 }
+const gastosFijos = () => (Array.isArray(D.ajustes.gastos_fijos) ? D.ajustes.gastos_fijos : []);
+const gastosFijosMes = () => gastosFijos().reduce((s, g) => s + (Number(g.valor) || 0), 0);
+const pctGastos = () => (D.ajustes.pct_gastos != null ? Number(D.ajustes.pct_gastos) : 46.5);
 
 function pintarResumen() {
   const sel = $('#r-mes');
@@ -891,21 +1049,51 @@ function pintarResumen() {
   $('#r-kpis').innerHTML =
     kpi('Ventas entregadas', pesos(A.ventas), flecha(pct(A.ventas, B.ventas)) || (A.entregados.length + ' pedidos')) +
     kpi('Pedidos entregados', String(A.entregados.length), 'Ticket promedio ' + pesos(ticket)) +
-    kpi('Ganancia bruta', pesos(A.bruta), flecha(pct(A.bruta, B.bruta)) || 'Ventas − costos − envíos') +
+    kpi('Ganancia bruta', pesos(A.bruta), flecha(pct(A.bruta, B.bruta)) || 'Ventas − producción − envíos − comisiones') +
     kpi('Devoluciones', String(A.devueltos.length), tasaDev + ' % de los pedidos · ' + pesos(A.devol)) +
-    kpi('Ganancia neta', pesos(A.neta), A.pauta ? 'Ya restada la pauta (' + pesos(A.pauta) + (A.pautaDeMeta ? ', desde Meta' : '') + ')' : 'Sin gasto en pauta registrado', true);
+    kpi('Después de pauta', pesos(A.neta), A.pauta ? 'Pauta ' + pesos(A.pauta) + (A.pautaDeMeta ? ' (desde Meta)' : '') : 'Sin gasto en pauta registrado') +
+    kpi('Utilidad real', pesos(A.utilidad), A.fijos ? 'Ya restados pauta y sueldos (' + pesos(A.fijos) + ')' : 'Anota los sueldos en Ajustes', true);
 
   // Cascada
   const filas = [
     ['Ventas entregadas', A.ventas, '#2A231D'],
-    ['− Costo de producto', -A.costoProd],
+    ['− Costo de producción', -A.costoProd],
     ['− Envíos que pagamos', -A.envios],
-    ['− Comisión de recaudo', -A.comision],
+    ['− Comisión de recaudo / Wompi', -A.comision],
     ['− Devoluciones (' + A.devueltos.length + ')', -A.devol],
     ['= Ganancia bruta', A.bruta, null, true],
     ['− Pauta', -A.pauta],
-    ['= Ganancia neta', A.neta, null, true]
+    ['− Sueldos y gastos fijos', -A.fijos],
+    ['= Utilidad real', A.utilidad, null, true]
   ];
+  // Cuántos pedidos hacen falta para cubrir pauta + sueldos, con la ganancia bruta promedio del mes.
+  const brutaPorPedido = A.entregados.length ? A.bruta / A.entregados.length : 0;
+  const necesarios = brutaPorPedido > 0 ? Math.ceil((A.pauta + A.fijos) / brutaPorPedido) : null;
+  $('#r-equilibrio').innerHTML = (necesarios != null
+    ? 'Cada pedido entregado te deja en promedio <strong>' + pesos(brutaPorPedido) + '</strong>. Para cubrir pauta y sueldos necesitas <strong>' + necesarios + ' pedidos entregados</strong> este mes' + (A.entregados.length >= necesarios ? ' (ya los pasaste).' : ' (llevas ' + A.entregados.length + ').')
+    : '') +
+    (A.pctReal != null && A.entregados.length >= 5 ? ' Este mes pauta + sueldos fueron el <strong>' + String(A.pctReal).replace('.', ',') + ' %</strong> del costo de producción vendido (tu Excel asume ' + String(pctGastos()).replace('.', ',') + ' %).' : '');
+
+  // Ventas por canal
+  const caja = (titulo, c, extra) => '<div class="canal"><span>' + titulo + '</span><strong>' + pesos(c.ventas) + '</strong><span>' + c.n + (c.n === 1 ? ' pedido' : ' pedidos') + ' · ganancia bruta ' + pesos(c.bruta) + '</span>' + (extra || '') + '</div>';
+  const clicsMes = (D.clics || []).filter((c) => diaCO(c.creado_en).slice(0, 7) === mesSel);
+  $('#r-canales').innerHTML = caja('Tienda web', A.web) +
+    caja('WhatsApp', A.wa, clicsMes.length ? '<span>' + clicsMes.length + ' clics al botón · ' + (A.wa.n ? Math.round(A.wa.n / clicsMes.length * 100) + ' % terminan en venta entregada' : 'aún sin ventas anotadas') + '</span>' : '');
+
+  // Clics a WhatsApp
+  if (!D.clics) $('#r-clics').innerHTML = '<p class="nota">Corre la migración 025 para empezar a contar los clics.</p>';
+  else {
+    const NOMBRES = { flotante: 'Botón flotante', formulario: 'En el formulario', salida: 'Aviso al salir', error: 'Error al pedir', gracias: 'Después de pedir', pie: 'Pie de página', contacto: 'Otros enlaces' };
+    const porLugar = {};
+    clicsMes.forEach((c) => { porLugar[c.lugar] = (porLugar[c.lugar] || 0) + 1; });
+    const lista = Object.entries(porLugar).sort((a, b) => b[1] - a[1]);
+    const max = lista.length ? lista[0][1] : 1;
+    const ant = (D.clics || []).filter((c) => diaCO(c.creado_en).slice(0, 7) === mesAnterior(mesSel)).length;
+    const hoyN = (D.clics || []).filter((c) => diaCO(c.creado_en) === hoy()).length;
+    $('#r-clics').innerHTML = '<div class="canales"><div class="canal"><span>Este mes</span><strong>' + clicsMes.length + '</strong><span>' + (esActual ? hoyN + ' hoy · ' : '') + ant + ' el mes anterior</span></div></div>' +
+      (lista.length ? '<div class="barras-wa">' + lista.map(([l, n]) => '<div><span>' + esc(NOMBRES[l] || l) + '</span><i style="width:' + Math.max(4, n / max * 100) + '%"></i><strong class="der">' + n + '</strong></div>').join('') + '</div>'
+        : '<p class="nota" style="margin-top: 8px">Todavía nadie ha tocado WhatsApp este mes.</p>');
+  }
   const base = Math.max(1, A.ventas);
   $('#r-cascada').innerHTML = filas.map(([n, v, color, total]) => '<div class="' + (total ? 'total' : '') + '"><div class="fila"><span>' + n + '</span><span>' + pesos(v) + '</span></div>' +
     '<div class="barra"><span style="width:' + Math.min(100, Math.abs(v) / base * 100) + '%' + (color ? ';background:' + color : '') + '"></span></div></div>').join('');
@@ -1071,7 +1259,7 @@ function mensajeWhatsApp(p) {
     p.descuento ? '• Cupón ' + (p.cupon || '') + ': −' + pesos(p.descuento) : '',
     '• Envío: ' + (p.envio_cobrado ? pesos(p.envio_cobrado) : 'GRATIS') + (p.prioritario ? ' + prioritario' : ''),
     pagadoWompi(p) ? '• Total pagado con Wompi: ' + pesos(p.total) : '• Total a pagar al recibir: ' + pesos(p.total),
-    '📍 ' + p.direccion + ', ' + p.barrio + ', ' + p.ciudad + ' - ' + p.departamento,
+    '📍 ' + [p.direccion, p.barrio].filter(Boolean).join(', ') + ', ' + p.ciudad + ' - ' + p.departamento,
     p.indicaciones || '',
     '¿Nos confirmas que los datos están correctos para despacharlo? ✅'
   ].filter(Boolean).join('\n');
@@ -1098,6 +1286,7 @@ function tarjeta(p) {
   const top = el('div', 'pedido-top');
   const ids = el('div');
   ids.append(el('div', 'pedido-id', p.order_id), el('div', 'pedido-fecha', fechaCorta.format(new Date(p.creado_en))));
+  if (p.canal === 'whatsapp') ids.append(el('span', 'chip chip-wa', 'WhatsApp' + (p.metodo_pago === 'transferencia' ? ' · ya pagó' : p.metodo_pago === 'efectivo' ? ' · efectivo' : '')));
   const lab = el('label');
   lab.append(el('span', 'oculto', 'Estado del pedido ' + p.order_id));
   const sel = el('select', 'estado');
@@ -1129,7 +1318,7 @@ function tarjeta(p) {
   quien.append(tel);
 
   const dir = el('div', 'pedido-dir');
-  dir.append(document.createTextNode(p.direccion + ', ' + p.barrio), el('strong', null, p.ciudad + ' · ' + p.departamento));
+  dir.append(document.createTextNode([p.direccion, p.barrio].filter(Boolean).join(', ')), el('strong', null, p.ciudad + ' · ' + p.departamento));
   if (p.indicaciones) dir.append(el('span', null, p.indicaciones));
 
   const items = el('div', 'pedido-items');
@@ -1201,7 +1390,7 @@ function tarjeta(p) {
   copiar.type = 'button';
   copiar.setAttribute('aria-label', 'Copiar datos de envío de ' + p.nombre);
   copiar.addEventListener('click', async () => {
-    const t = [p.nombre, p.cedula ? 'C.C. ' + p.cedula : '', p.celular.slice(2), p.direccion + ', ' + p.barrio, p.ciudad + ' - ' + p.departamento, p.indicaciones || '', lineasPedido(p).map((l) => l.txt).join(' + '), pagadoWompi(p) ? 'Pagado con Wompi: no cobrar' : 'Cobrar: ' + pesos(p.total)].filter(Boolean).join('\n');
+    const t = [p.nombre, p.cedula ? 'C.C. ' + p.cedula : '', p.celular.slice(2), [p.direccion, p.barrio].filter(Boolean).join(', '), p.ciudad + ' - ' + p.departamento, p.indicaciones || '', lineasPedido(p).map((l) => l.txt).join(' + '), pagadoWompi(p) ? 'Pagado con Wompi: no cobrar' : p.metodo_pago === 'transferencia' ? 'Ya pagó por transferencia: no cobrar' : 'Cobrar: ' + pesos(p.total)].filter(Boolean).join('\n');
     try { await navigator.clipboard.writeText(t); avisar('Datos copiados'); } catch (e) { avisar('No se pudo copiar'); }
   });
   acc.append(wa, copiar);
@@ -1260,7 +1449,7 @@ function mensajeReparto(p) {
 }
 function mensajeNovedad(p) {
   return '¡Hola ' + primerNombre(p) + '! Somos Revoltosos. La transportadora reporta una novedad con tu pedido #' + p.order_id + ' (' + p.novedad + ').\n' +
-    '¿Nos confirmas la dirección (' + p.direccion + ', ' + p.barrio + ', ' + p.ciudad + ') y a qué hora te podemos entregar? Así evitamos que se devuelva 🙏';
+    '¿Nos confirmas la dirección (' + [p.direccion, p.barrio].filter(Boolean).join(', ') + ', ' + p.ciudad + ') y a qué hora te podemos entregar? Así evitamos que se devuelva 🙏';
 }
 
 function bloqueEnvia(p) {
@@ -1365,14 +1554,84 @@ function bloqueEnvia(p) {
 /* ---------- Productos ---------- */
 let abierto = null;
 
+/* ---------- Cuánto deja cada tamaño (como el Excel «Costos y ganancias») ----------
+   Precio − costo de producción − gastos (% de sueldos, marketing y pauta sobre el costo)
+   − envío que pagamos (combos y tamaños con envío gratis) − comisión de recaudo. */
+function rentaDe(v, precio, costo, envioGratis) {
+  const A = D.ajustes;
+  precio = precio != null ? precio : (v.precio || 0);
+  costo = costo != null ? costo : (v.costo || 0);
+  const gratis = envioGratis != null ? envioGratis : !!v.envio_gratis;
+  const gastos = Math.round(costo * pctGastos() / 100);
+  const envio = gratis ? Number(A.costo_envio_promedio) || 0 : 0;
+  const comision = Math.round(precio * (Number(A.comision_recaudo) || 0) / 100);
+  const queda = precio - costo - gastos - envio - comision;
+  return { precio, costo, gastos, envio, comision, queda, margen: precio && costo ? queda / precio * 100 : null };
+}
+const chipMargen = (m) => m == null ? '<span class="margen nada">—</span>'
+  : '<span class="margen ' + (m >= 30 ? 'bien' : m >= 15 ? 'medio' : 'mal') + '">' + Math.round(m) + ' %</span>';
+// Combo: lo que cuesta producir lo que trae.
+const costoComponentes = (id) => componentesDe(id).reduce((s, c) => s + ((varianteDe(c.componente_id) || {}).costo || 0) * c.cantidad, 0);
+
+let filtroRenta = 'Todo';
+function pintarRentabilidad() {
+  const cuerpo = $('#renta-tabla');
+  if (!D.tienda) { cuerpo.innerHTML = ''; return; }
+  const esCombo = (v) => componentesDe(v.id).length > 0 || /combo/i.test((productoDe(v.producto_id) || {}).categoria || '');
+  const filas = [];
+  D.productos.forEach((p) => D.variantes.filter((v) => v.producto_id === p.id && v.precio).forEach((v) => filas.push({ p, v, combo: esCombo(v) })));
+  $('#renta-filtros').innerHTML = ['Todo', 'Productos', 'Combos'].map((f) => '<button type="button" class="filtro" data-renta="' + f + '" aria-pressed="' + (f === filtroRenta) + '">' + f + '</button>').join('');
+  const lista = filas.filter((f) => filtroRenta === 'Todo' || (filtroRenta === 'Combos') === f.combo);
+  $('#renta-th-gastos').textContent = 'Gastos ' + String(pctGastos()).replace('.', ',') + ' %';
+  const sinCosto = filas.filter((f) => !f.v.costo).length;
+  $('#renta-sub').innerHTML = 'Por cada unidad vendida. Envío promedio ' + pesos(Number(D.ajustes.costo_envio_promedio) || 0) + ' · comisión ' + String(Number(D.ajustes.comision_recaudo) || 0).replace('.', ',') + ' %' +
+    (sinCosto ? ' · <strong style="color: var(--error)">' + sinCosto + ' sin costo</strong>' : '');
+  cuerpo.innerHTML = lista.map(({ p, v, combo }) => {
+    const r = rentaDe(v);
+    return '<tr class="' + (combo ? 'combo' : '') + '"' + (p.visible && v.visible !== false ? '' : ' style="opacity: .55"') + '>' +
+      '<td><button type="button" data-abrir-prod="' + esc(p.id) + '" style="border: 0; background: none; padding: 0; font: inherit; color: inherit; text-align: left; cursor: pointer"><strong>' + esc(p.nombre) + '</strong><br><span class="nota">' + esc(v.nombre) + (v.envio_gratis ? ' · envío gratis' : '') + '</span></button></td>' +
+      '<td class="der"><strong>' + pesos(r.precio) + '</strong></td>' +
+      '<td class="der">' + (v.costo ? pesos(r.costo) : '<span style="color: var(--error); font-weight: 800">Falta</span>') + '</td>' +
+      '<td class="der resta">' + pesos(r.gastos) + '</td>' +
+      '<td class="der resta">' + (r.envio ? pesos(r.envio) : '—') + '</td>' +
+      '<td class="der resta">' + (r.comision ? pesos(r.comision) : '—') + '</td>' +
+      '<td class="der"><strong' + (r.queda < 0 ? ' style="color: var(--error)"' : '') + '>' + (v.costo ? pesos(r.queda) : '—') + '</strong></td>' +
+      '<td class="der">' + chipMargen(r.margen) + '</td></tr>';
+  }).join('') || '<tr><td colspan="8" class="nota">No hay tamaños con precio.</td></tr>';
+}
+$('#renta-filtros').addEventListener('click', (e) => { const b = e.target.closest('[data-renta]'); if (b) { filtroRenta = b.dataset.renta; pintarRentabilidad(); } });
+$('#renta-tabla').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-abrir-prod]');
+  if (!b) return;
+  abierto = b.dataset.abrirProd;
+  pintarProductos();
+  $('#prod-editor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+let buscarProd = '';
+$('#prod-q').addEventListener('input', (e) => { buscarProd = slug(e.target.value); pintarListaProductos(); });
+
 function pintarProductos() {
+  pintarRentabilidad();
+  pintarListaProductos();
+  pintarEditor();
+}
+
+function pintarListaProductos() {
   const caja = $('#prod-lista');
   caja.textContent = '';
   if (!D.tienda) { caja.append(el('p', 'nota', 'Corre la migración 007 para ver los productos.')); $('#prod-editor').textContent = ''; return; }
-  D.productos.forEach((p) => {
+  let grupo = null;
+  const lista = D.productos.filter((p) => !buscarProd || slug(p.nombre + ' ' + p.categoria).indexOf(buscarProd) >= 0)
+    .slice().sort((a, b) => ((/combo/i.test(a.categoria) ? 1 : 0) - (/combo/i.test(b.categoria) ? 1 : 0)) || ((a.orden || 0) - (b.orden || 0)));
+  if (!lista.length) caja.append(el('p', 'nota', 'Ningún producto se llama así.'));
+  lista.forEach((p) => {
+    const g = /combo/i.test(p.categoria) ? 'Combos' : 'Productos';
+    if (g !== grupo) { grupo = g; caja.append(el('p', 'prod-grupo', g)); }
     const vs = D.variantes.filter((v) => v.producto_id === p.id);
     const conPrecio = vs.filter((v) => v.precio && v.visible);
-    const stock = vs.filter((v) => !v.descuenta_de).reduce((s, v) => s + v.stock, 0);
+    const stock = vs.filter((v) => !v.descuenta_de && !componentesDe(v.id).length).reduce((s, v) => s + v.stock, 0);
+    const margenes = conPrecio.map((v) => rentaDe(v).margen).filter((m) => m != null);
     const f = el('div', 'prod-fila' + (abierto === p.id ? ' abierto' : '') + (p.visible ? '' : ' apagado'));
     const img = el('img');
     img.src = verFoto(p.imagen);
@@ -1381,8 +1640,14 @@ function pintarProductos() {
     info.type = 'button';
     info.className = 'info';
     info.style.cssText = 'text-align: left; border: 0; background: transparent; padding: 0; font: inherit; color: inherit; cursor: pointer';
-    info.append(el('strong', null, p.nombre), el('span', null, (p.visible ? '' : 'Oculto · ') + vs.length + (vs.length === 1 ? ' tamaño' : ' tamaños') + ' · ' + stock + ' und.' + (!conPrecio.length ? ' · sin precio' : '')));
-    info.addEventListener('click', () => { abierto = p.id; pintarProductos(); });
+    const precios = conPrecio.map((v) => v.precio);
+    info.append(el('strong', null, p.nombre), el('span', null, (p.visible ? '' : 'Oculto · ') +
+      (precios.length ? (Math.min(...precios) === Math.max(...precios) ? pesos(precios[0]) : pesos(Math.min(...precios)) + ' a ' + pesos(Math.max(...precios))) : 'Sin precio') +
+      (vs.length > 1 ? ' · ' + vs.length + ' tamaños' : '') + (g === 'Combos' ? '' : ' · ' + stock + ' und.')));
+    info.addEventListener('click', () => { abierto = p.id; pintarProductos(); if (matchMedia('(max-width: 860px)').matches) $('#prod-editor').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+    const chip = document.createElement('span');
+    chip.innerHTML = chipMargen(margenes.length ? Math.min(...margenes) : null);
+    chip.title = 'Margen (el menor de sus tamaños)';
     const sw = el('button', 'interruptor');
     sw.type = 'button';
     sw.setAttribute('role', 'switch');
@@ -1395,10 +1660,9 @@ function pintarProductos() {
       avisar(p.nombre + (p.visible ? ' visible en la tienda' : ' oculto de la tienda'));
       pintarProductos();
     });
-    f.append(img, info, sw);
+    f.append(img, info, chip.firstChild, sw);
     caja.append(f);
   });
-  pintarEditor();
 }
 
 /* ---------- Fotos de productos (Storage › productos, migración 017) ---------- */
@@ -1463,27 +1727,57 @@ function pintarEditor() {
   const alias = (v) => v.id.indexOf(p.id + '-') === 0 ? v.id.slice(p.id.length + 1) : v.id;
   const linksTamanos = vs.length > 1 && !p.nuevo ? '<div><h3 style="margin-bottom: 4px">Links para pautar cada tamaño</h3><p class="nota" style="margin-bottom: 8px">Úsalo como URL del anuncio: la landing abre con ese tamaño ya seleccionado.</p>' +
     vs.map((v) => { const u = url + (url.indexOf('?') >= 0 ? '&' : '?') + 't=' + encodeURIComponent(alias(v)); return '<div class="link-copiar" style="margin-bottom: 6px"><code>' + esc(v.nombre) + ' → ' + esc(u.replace('https://', '')) + '</code><button type="button" class="btn-sec" data-copiar="' + esc(u) + '">Copiar</button></div>'; }).join('') + '</div>' : '';
-  const filaVar = (v) => '<tr data-var="' + esc(v.id || '') + '">' +
-    '<td><input class="ancho" name="nombre" value="' + esc(v.nombre) + '" aria-label="Nombre del tamaño" required></td>' +
-    '<td><input class="ancho" name="detalle" value="' + esc(v.detalle || '') + '" aria-label="Detalle" placeholder="Opcional"></td>' +
-    '<td><input type="number" name="precio_antes" min="0" step="100" value="' + (v.precio_antes || '') + '" aria-label="Precio normal (tachado)" placeholder="—"></td>' +
-    '<td><input type="number" name="precio" min="0" step="100" value="' + (v.precio || '') + '" aria-label="Precio de venta" style="border-color: var(--rosa); font-weight: 700"></td>' +
-    '<td><input type="number" name="costo" min="0" step="100" value="' + (v.costo || 0) + '" aria-label="Costo"></td>' +
-    '<td class="der"><strong>' + (v.precio && v.costo ? Math.round((v.precio - v.costo) / v.precio * 100) + ' %' : '—') + '</strong></td>' +
-    '<td><input type="number" name="stock_minimo" min="0" step="1" value="' + (v.stock_minimo != null ? v.stock_minimo : 5) + '" aria-label="Stock mínimo" style="width: 70px"></td>' +
-    (conPeso ? '<td><input type="number" name="peso_g" min="1" step="10" value="' + (v.peso_g || '') + '" aria-label="Peso empacado en gramos" placeholder="—" style="width: 80px"></td>' : '') +
-    (conFoto ? '<td><div class="foto-tam"><img src="' + esc(verFoto(v.imagen || p.imagen)) + '" alt="" width="40" height="40"' + (v.imagen ? '' : ' style="opacity: .4"') + '>' +
-      '<input class="ancho" name="imagen" maxlength="300" value="' + esc(v.imagen || '') + '" aria-label="Foto propia de este tamaño" placeholder="La del producto">' +
-      (conGaleria ? '<button type="button" class="btn-sec" data-subir-var style="min-height: 36px; padding: 0 10px">Subir</button>' : '') + '</div></td>' : '') +
-    (v.id && componentesDe(v.id).length
-      ? '<td style="font-size: 13px; min-width: 200px">Combo: descuenta ' + esc(componentesDe(v.id).map((c) => c.cantidad + ' × ' + nombreVariante(c.componente_id)).join(', ')) +
-        '<input type="hidden" name="descuenta_de" value=""><input type="hidden" name="descuenta_cantidad" value="1"></td>'
-      : '<td><select name="descuenta_de" aria-label="Descuenta inventario de"><option value="">Su propio stock</option>' +
-        otrasVariantes.filter((o) => o.id !== v.id).map((o) => '<option value="' + esc(o.id) + '"' + (v.descuenta_de === o.id ? ' selected' : '') + '>' + esc((productoDe(o.producto_id) || {}).nombre + ' · ' + o.nombre) + '</option>').join('') + '</select>' +
-        ' × <input type="number" name="descuenta_cantidad" min="1" max="20" step="1" value="' + (v.descuenta_cantidad || 1) + '" aria-label="Cuántas unidades descuenta" style="width: 60px"></td>') +
-    (conEnvioGratis ? '<td style="text-align: center"><input type="checkbox" name="envio_gratis"' + (v.envio_gratis ? ' checked' : '') + ' aria-label="Envío gratis siempre"></td>' : '') +
-    '<td style="text-align: center"><input type="checkbox" name="visible"' + (v.visible !== false ? ' checked' : '') + ' aria-label="Visible"></td>' +
-    '<td><button type="button" class="btn-sec btn-peligro" data-quitar-var aria-label="Quitar tamaño" style="min-height: 36px; padding: 0 10px">Quitar</button></td></tr>';
+  // Una tarjeta por tamaño: precio y costo arriba, la cuenta de lo que deja, y lo demás plegado.
+  let nTam = 0;
+  const filaVar = (v) => {
+    const k = 'tv' + (++nTam);
+    const comps = v.id ? componentesDe(v.id) : [];
+    const sugerido = comps.length ? costoComponentes(v.id) : 0;
+    return '<div class="tam' + (v.visible === false ? ' oculta' : '') + '" data-var="' + esc(v.id || '') + '">' +
+    '<div class="tam-cab">' +
+      '<div class="campo"><label for="' + k + '-n">Tamaño</label><input id="' + k + '-n" name="nombre" value="' + esc(v.nombre) + '" required maxlength="60" placeholder="Bolsa 50 g"></div>' +
+      '<div class="campo"><label for="' + k + '-d">Detalle <small style="font-weight: 500">(opcional)</small></label><input id="' + k + '-d" name="detalle" value="' + esc(v.detalle || '') + '" maxlength="80" placeholder="Envío gratis incluido"></div>' +
+      '<label class="check"><input type="checkbox" name="visible"' + (v.visible !== false ? ' checked' : '') + '>Visible</label>' +
+      '<button type="button" class="btn-sec btn-peligro" data-quitar-var style="min-height: 40px; padding: 0 12px">Quitar</button>' +
+    '</div>' +
+    '<div class="tam-precios">' +
+      '<div class="campo venta"><label for="' + k + '-p">Precio de venta</label><input id="' + k + '-p" type="number" name="precio" min="0" step="100" inputmode="numeric" value="' + (v.precio || '') + '"></div>' +
+      '<div class="campo"><label for="' + k + '-a">Precio antes <small style="font-weight: 500">(tachado)</small></label><input id="' + k + '-a" type="number" name="precio_antes" min="0" step="100" inputmode="numeric" value="' + (v.precio_antes || '') + '" placeholder="—"></div>' +
+      '<div class="campo"><label for="' + k + '-c">Costo de producción</label><input id="' + k + '-c" type="number" name="costo" min="0" step="1" inputmode="numeric" value="' + (v.costo || '') + '" placeholder="Del Excel"></div>' +
+    '</div>' +
+    (comps.length ? '<div class="sugerido"><span>Trae ' + esc(comps.map((c) => c.cantidad + ' × ' + nombreVariante(c.componente_id)).join(', ')) + '. Producirlo cuesta <strong>' + pesos(sugerido) + '</strong>.</span>' +
+      (sugerido !== (v.costo || 0) ? '<button type="button" class="btn-sec" data-usar-costo="' + sugerido + '">Usar ese costo</button>' : '') + '</div>' : '') +
+    '<div class="cuenta" data-cuenta aria-live="polite"></div>' +
+    '<details><summary>Inventario, envío y foto</summary><div class="tam-mas">' +
+      '<div class="campo"><label for="' + k + '-m">Avisar cuando queden menos de</label><input id="' + k + '-m" type="number" name="stock_minimo" min="0" step="1" value="' + (v.stock_minimo != null ? v.stock_minimo : 5) + '"></div>' +
+      (conPeso ? '<div class="campo"><label for="' + k + '-g">Peso empacado (g)</label><input id="' + k + '-g" type="number" name="peso_g" min="1" step="10" value="' + (v.peso_g || '') + '" placeholder="—"></div>' : '') +
+      (comps.length
+        ? '<div class="campo"><span>Inventario</span><p class="nota">Al despachar descuenta cada producto que trae el combo.</p><input type="hidden" name="descuenta_de" value=""><input type="hidden" name="descuenta_cantidad" value="1"></div>'
+        : '<div class="campo"><label for="' + k + '-i">Descuenta inventario de</label><select id="' + k + '-i" name="descuenta_de"><option value="">Su propio stock</option>' +
+          otrasVariantes.filter((o) => o.id !== v.id).map((o) => '<option value="' + esc(o.id) + '"' + (v.descuenta_de === o.id ? ' selected' : '') + '>' + esc((productoDe(o.producto_id) || {}).nombre + ' · ' + o.nombre) + '</option>').join('') + '</select></div>' +
+          '<div class="campo"><label for="' + k + '-x">Unidades que descuenta</label><input id="' + k + '-x" type="number" name="descuenta_cantidad" min="1" max="20" step="1" value="' + (v.descuenta_cantidad || 1) + '"></div>') +
+      (conEnvioGratis ? '<label class="check"><input type="checkbox" name="envio_gratis"' + (v.envio_gratis ? ' checked' : '') + '>Envío gratis siempre (el envío lo pagas tú)</label>' : '') +
+      (conFoto ? '<div class="campo" style="grid-column: 1 / -1"><span>Foto propia de este tamaño <small style="font-weight: 500">(vacío = la del producto)</small></span><div class="foto-tam"><img src="' + esc(verFoto(v.imagen || p.imagen)) + '" alt="" width="40" height="40"' + (v.imagen ? '' : ' style="opacity: .4"') + '>' +
+        '<input name="imagen" maxlength="300" value="' + esc(v.imagen || '') + '" aria-label="Foto propia de este tamaño" placeholder="La del producto" style="flex: 1; min-height: 42px; padding: 0 10px; border-radius: 10px; border: 1.5px solid var(--campo); font: inherit; font-size: 14px">' +
+        (conGaleria ? '<button type="button" class="btn-sec" data-subir-var style="min-height: 40px; padding: 0 12px">Subir</button>' : '') + '</div></div>' : '') +
+    '</div></details></div>';
+  };
+  // La cuenta de cada tarjeta se rehace al escribir precio, costo o marcar envío gratis.
+  const pintarCuenta = (tam) => {
+    const g = (n) => tam.querySelector('[name="' + n + '"]');
+    const precio = Math.round(Number(g('precio').value) || 0);
+    const costo = Math.round(Number(g('costo').value) || 0);
+    const r = rentaDe({}, precio, costo, g('envio_gratis') ? g('envio_gratis').checked : false);
+    const caja = tam.querySelector('[data-cuenta]');
+    if (!precio) { caja.innerHTML = '<span class="nota">Escribe el precio de venta para ver cuánto te deja.</span>'; return; }
+    caja.innerHTML = '<div><span>Precio de venta</span><strong>' + pesos(precio) + '</strong></div>' +
+      '<div class="resta"><span>− Costo de producción</span><span>' + (costo ? pesos(costo) : 'falta') + '</span></div>' +
+      '<div class="resta"><span>− Gastos (' + String(pctGastos()).replace('.', ',') + ' % del costo)</span><span>' + pesos(r.gastos) + '</span></div>' +
+      (r.envio ? '<div class="resta"><span>− Envío que pagas tú</span><span>' + pesos(r.envio) + '</span></div>' : '') +
+      (r.comision ? '<div class="resta"><span>− Comisión de recaudo</span><span>' + pesos(r.comision) + '</span></div>' : '') +
+      '<div class="fin"><span>Te queda por unidad</span><span style="display: flex; gap: 8px; align-items: center"><strong' + (r.queda < 0 ? ' style="color: var(--error)"' : '') + '>' + (costo ? pesos(r.queda) : '—') + '</strong>' + chipMargen(r.margen) + '</span></div>' +
+      (precio % 1000 !== 900 ? '<span class="nota" style="color: var(--ambar)">Ojo: tus precios terminan en 900 (ej. ' + pesos(Math.ceil((precio - 900) / 1000) * 1000 + 900) + ').</span>' : '');
+  };
   caja.innerHTML = '<form class="editor" id="form-producto">' +
     '<div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center"><h3 style="flex: 1; font-family: var(--serif); font-weight: 400; font-size: 24px; margin: 0">' + esc(p.nuevo ? 'Nuevo producto' : p.nombre) + '</h3>' +
     (p.nuevo ? '' : '<span class="chip ' + (p.visible ? 'bien' : 'gris') + '">' + (p.visible ? 'Visible en la tienda' : 'Oculto') + '</span>') + '</div>' +
@@ -1505,9 +1799,8 @@ function pintarEditor() {
     (conGaleria ? '<div><span class="etiqueta-campo">Más fotos para la landing</span><div class="fotos-lista" id="pe-fotos"></div>' +
       '<button type="button" class="btn-sec" id="pe-subir-fotos" style="margin-top: 8px">+ Agregar fotos</button></div>' : '') +
     '</div></div>' +
-    '<div><h3 style="margin-bottom: 4px">Tamaños y precios</h3><p class="nota" style="margin-bottom: 8px">Precio normal = el tachado. Precio de venta = lo que se cobra. Un combo («2 frascos») puede descontar del inventario de otro tamaño.' + (conEnvioGratis ? ' «Envío gratis» = el pedido que lo lleve no paga envío, sin importar el total.' : '') + '</p>' +
-    '<div class="tabla-caja tabla-variantes"><table><thead><tr><th>Tamaño</th><th>Detalle</th><th>Precio normal</th><th>Precio venta</th><th>Costo</th><th class="der">Margen</th><th>Mínimo</th>' + (conPeso ? '<th>Peso (g)</th>' : '') + (conFoto ? '<th>Foto (ruta)</th>' : '') + '<th>Inventario</th>' + (conEnvioGratis ? '<th>Envío gratis</th>' : '') + '<th>Visible</th><th></th></tr></thead><tbody id="pe-variantes">' +
-    vs.map(filaVar).join('') + '</tbody></table></div>' +
+    '<div><h3 style="margin-bottom: 4px">Tamaños, precios y costos</h3><p class="nota" style="margin-bottom: 10px">El <strong>costo de producción</strong> es la columna «Costo original» de tu Excel (sin gastos): el gestor le suma los gastos y el envío para decirte cuánto te queda.</p>' +
+    '<div class="tams" id="pe-variantes">' + vs.map(filaVar).join('') + '</div>' +
     '<button type="button" class="btn-sec" id="pe-agregar-var" style="margin-top: 10px">+ Agregar tamaño</button></div>' +
     '<p class="mensaje error" id="pe-msg" role="alert"></p>' +
     '<div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; border-top: 1px solid var(--hueso-2); padding-top: 14px">' +
@@ -1544,10 +1837,30 @@ function pintarEditor() {
   }
   $('#form-producto').fotosActuales = () => fotos;
 
+  $$('#pe-variantes > [data-var]').forEach(pintarCuenta);
   $('#pe-agregar-var').addEventListener('click', () => {
     $('#pe-variantes').insertAdjacentHTML('beforeend', filaVar({ id: '', nombre: '', detalle: '', precio: null, precio_antes: null, costo: 0, stock_minimo: 5, visible: true }));
+    const nueva = $('#pe-variantes').lastElementChild;
+    pintarCuenta(nueva);
+    nueva.querySelector('[name="nombre"]').focus();
+  });
+  $('#pe-variantes').addEventListener('input', (e) => { const t = e.target.closest('[data-var]'); if (t) pintarCuenta(t); });
+  $('#pe-variantes').addEventListener('change', (e) => {
+    const t = e.target.closest('[data-var]');
+    if (!t) return;
+    if (e.target.name === 'visible') t.classList.toggle('oculta', !e.target.checked);
+    pintarCuenta(t);
   });
   $('#pe-variantes').addEventListener('click', async (e) => {
+    const uc = e.target.closest('[data-usar-costo]');
+    if (uc) {
+      const t = uc.closest('[data-var]');
+      t.querySelector('[name="costo"]').value = uc.dataset.usarCosto;
+      pintarCuenta(t);
+      uc.hidden = true;
+      avisar('Costo puesto · guarda los cambios');
+      return;
+    }
     const sv = e.target.closest('[data-subir-var]');
     if (sv) {
       const [link] = await elegirFotos(false, carpeta);
@@ -1556,7 +1869,7 @@ function pintarEditor() {
     }
     const b = e.target.closest('[data-quitar-var]');
     if (!b) return;
-    const tr = b.closest('tr');
+    const tr = b.closest('[data-var]');
     const id = tr.dataset.var;
     if (id) {
       if (!confirm('¿Quitar este tamaño? Si ya tiene pedidos, mejor desmarca «Visible».')) return;
@@ -1607,7 +1920,7 @@ async function guardarProducto(p) {
     if (error) { msg.textContent = 'No se pudo guardar: ' + error.message; return; }
   }
   const num = (v) => (v === '' || v == null ? null : Math.round(Number(v)));
-  const filas = $$('#pe-variantes tr');
+  const filas = $$('#pe-variantes > [data-var]');
   for (let i = 0; i < filas.length; i++) {
     const tr = filas[i];
     const g = (n) => tr.querySelector('[name="' + n + '"]');
@@ -1939,6 +2252,11 @@ function pintarAjustes() {
   $('#a-comision').value = A.comision_recaudo;
   $('#sec-wompi').hidden = !('wompi_activo' in A);
   $('#sec-regalo').hidden = !('regalo_desde' in A);
+  $('#sec-gastos').hidden = !('gastos_fijos' in A); // migración 025
+  if ('gastos_fijos' in A) {
+    pintarGastos(gastosFijos());
+    $('#a-pct-gastos').value = A.pct_gastos;
+  }
   if ('regalo_desde' in A) {
     const sel = $('#a-regalo-var');
     sel.textContent = '';
@@ -1984,6 +2302,24 @@ function pintarAjustes() {
   $$('#sec-envia input, #sec-envia select, #sec-envia button').forEach((n) => { n.disabled = !hayEnvia; });
   if (!hayEnvia) { $('#a-envia-msg').className = 'mensaje error'; $('#a-envia-msg').textContent = 'Falta correr supabase/migraciones/010-envia.sql para usar Envía.'; }
 }
+
+/* Sueldos y gastos fijos (migración 025) */
+function pintarGastos(lista) {
+  $('#a-gastos').innerHTML = lista.map((g, i) => '<div class="gasto">' +
+    '<input type="text" data-g-nombre maxlength="60" value="' + esc(g.nombre) + '" aria-label="Gasto ' + (i + 1) + '" placeholder="Ej.: Sueldo administración">' +
+    '<input type="number" data-g-valor min="0" step="10000" value="' + (Number(g.valor) || 0) + '" aria-label="Valor al mes">' +
+    '<button type="button" class="btn-sec btn-peligro" data-quitar-gasto aria-label="Quitar gasto" style="min-height: 42px; padding: 0 12px">×</button></div>').join('') +
+    '<p class="nota">Total al mes: <strong>' + pesos(lista.reduce((s, g) => s + (Number(g.valor) || 0), 0)) + '</strong></p>';
+}
+const gastosEnPantalla = () => $$('#a-gastos .gasto').map((f) => ({ nombre: $('[data-g-nombre]', f).value.trim(), valor: Math.max(0, Math.round(Number($('[data-g-valor]', f).value) || 0)) }));
+$('#a-gasto-mas').addEventListener('click', () => { pintarGastos(gastosEnPantalla().concat([{ nombre: '', valor: 0 }])); const n = $$('#a-gastos [data-g-nombre]'); n[n.length - 1].focus(); });
+$('#a-gastos').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-quitar-gasto]');
+  if (!b) return;
+  const lista = gastosEnPantalla();
+  lista.splice($$('#a-gastos .gasto').indexOf(b.closest('.gasto')), 1);
+  pintarGastos(lista);
+});
 
 let municipiosJSON = null;
 async function llenarCiudades(dep, actual, selector) {
@@ -2064,6 +2400,10 @@ $('#form-ajustes').addEventListener('submit', async (e) => {
     actualizado_en: new Date().toISOString()
   };
   if ('envio_ciudades' in D.ajustes) cambios.envio_ciudades = tarifasCiudadEnPantalla();
+  if ('gastos_fijos' in D.ajustes) {
+    cambios.gastos_fijos = gastosEnPantalla().filter((g) => g.nombre || g.valor).map((g) => ({ nombre: g.nombre || 'Gasto', valor: g.valor }));
+    cambios.pct_gastos = Math.min(300, Math.max(0, Number($('#a-pct-gastos').value) || 0));
+  }
   if ('regalo_desde' in D.ajustes) {
     const desde = $('#a-regalo-desde').value;
     cambios.regalo_desde = desde === '' ? null : Math.max(0, Math.round(Number(desde)));
@@ -2095,6 +2435,187 @@ $('#form-ajustes').addEventListener('submit', async (e) => {
   pintarTodo();
   avisar('Ajustes guardados');
 });
+
+/* ---------- Venta por WhatsApp (migración 025) ----------
+   Queda como un pedido más (canal 'whatsapp'): cuenta en la ganancia, descuenta inventario al
+   despachar y se le puede generar guía. Entra como Confirmado y, si se eligió otro estado, se
+   cambia enseguida para que el trigger de inventario haga lo suyo. */
+const dlgVenta = $('#venta-wa');
+let envioEditado = false;
+const tarifaPara = (dep, ciudad) => {
+  const A = D.ajustes;
+  const c = (A.envio_ciudades || {})[dep + '|' + ciudad];
+  if (c != null) return c;
+  const d = (A.envio_departamentos || {})[dep];
+  return d != null ? d : A.envio_base;
+};
+function filaItemVenta(id, q) {
+  const opciones = D.variantes.filter((v) => v.precio).map((v) => '<option value="' + esc(v.id) + '"' + (v.id === id ? ' selected' : '') + '>' + esc(nombreVariante(v.id)) + ' — ' + pesos(v.precio) + '</option>').join('');
+  return '<div class="wa-item"><select data-w-var aria-label="Producto"><option value="">Elige el producto</option>' + opciones + '</select>' +
+    '<input type="number" data-w-q min="1" max="60" step="1" value="' + (q || 1) + '" aria-label="Cantidad">' +
+    '<button type="button" class="btn-sec btn-peligro" data-w-quitar aria-label="Quitar producto" style="min-height: 44px; padding: 0 12px">×</button></div>';
+}
+const itemsVenta = () => $$('#w-items .wa-item').map((f) => ({ v: varianteDe($('[data-w-var]', f).value), q: Math.max(1, Math.min(60, Math.round(Number($('[data-w-q]', f).value) || 1))) })).filter((x) => x.v);
+function cuentaVenta() {
+  const ls = itemsVenta();
+  const subtotal = ls.reduce((s, x) => s + x.v.precio * x.q, 0);
+  const descuento = Math.min(subtotal, Math.max(0, Math.round(Number($('#w-desc').value) || 0)));
+  // Envío sugerido con las mismas reglas de la tienda (se puede cambiar a mano).
+  const dep = $('#w-dep').value, ciudad = $('#w-ciudad').value;
+  const gratis = ls.some((x) => x.v.envio_gratis) || (subtotal - descuento) >= D.ajustes.envio_gratis_desde;
+  if (!envioEditado && ls.length) $('#w-envio').value = gratis ? 0 : (dep ? tarifaPara(dep, ciudad) : 0);
+  const envio = Math.max(0, Math.round(Number($('#w-envio').value) || 0));
+  const total = subtotal - descuento + envio;
+  const costo = ls.reduce((s, x) => s + (x.v.costo || 0) * x.q, 0);
+  const pago = $('#w-pago').value;
+  const envioReal = pago === 'efectivo' && !envio ? 0 : Number(D.ajustes.costo_envio_promedio) || 0;
+  const comision = pago === 'contraentrega' ? Math.round(total * (Number(D.ajustes.comision_recaudo) || 0) / 100) : 0;
+  const gan = total - costo - envioReal - comision;
+  $('#w-cuenta').innerHTML = '<div><span>Productos</span><span>' + pesos(subtotal) + '</span></div>' +
+    (descuento ? '<div class="resta"><span>− Descuento</span><span>' + pesos(descuento) + '</span></div>' : '') +
+    '<div><span>Envío que le cobras' + (gratis && !envio ? ' (gratis)' : '') + '</span><span>' + pesos(envio) + '</span></div>' +
+    '<div class="fin"><span>Total' + (pago === 'contraentrega' ? ' a cobrar al recibir' : '') + '</span><strong>' + pesos(total) + '</strong></div>' +
+    '<div class="resta"><span>Ganancia bruta estimada (producción ' + pesos(costo) + ', envío ' + pesos(envioReal) + (comision ? ', comisión ' + pesos(comision) : '') + ')</span><span>' + pesos(gan) + '</span></div>';
+  return { ls, subtotal, descuento, envio, total, costo };
+}
+$('#p-venta-wa').addEventListener('click', async () => {
+  if (!D.tienda) { avisar('Corre la migración 007 primero'); return; }
+  $('#form-venta-wa').reset();
+  envioEditado = false;
+  $('#w-msg').textContent = '';
+  const dep = $('#w-dep');
+  if (dep.options.length < 2) DEPARTAMENTOS.forEach((d) => dep.add(new Option(d, d)));
+  $('#w-ciudad').innerHTML = '<option value="">Primero el departamento</option>';
+  $('#w-items').innerHTML = filaItemVenta('', 1);
+  cuentaVenta();
+  dlgVenta.showModal();
+  $('#w-nombre').focus();
+});
+dlgVenta.addEventListener('click', (e) => {
+  if (e.target === dlgVenta || e.target.closest('[data-cerrar-venta]')) { dlgVenta.close(); return; }
+  const q = e.target.closest('[data-w-quitar]');
+  if (q) { if ($$('#w-items .wa-item').length > 1) q.closest('.wa-item').replaceWith(); else $('[data-w-var]', q.closest('.wa-item')).value = ''; cuentaVenta(); }
+});
+$('#w-mas').addEventListener('click', () => { $('#w-items').insertAdjacentHTML('beforeend', filaItemVenta('', 1)); cuentaVenta(); });
+$('#w-dep').addEventListener('change', async (e) => { await llenarCiudades(e.target.value, '', '#w-ciudad'); cuentaVenta(); });
+$('#w-envio').addEventListener('input', () => { envioEditado = true; cuentaVenta(); });
+$('#form-venta-wa').addEventListener('input', (e) => { if (e.target.id !== 'w-envio') cuentaVenta(); });
+$('#form-venta-wa').addEventListener('change', () => cuentaVenta());
+$('#form-venta-wa').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const msg = $('#w-msg');
+  msg.textContent = '';
+  const k = cuentaVenta();
+  const nombre = $('#w-nombre').value.trim().replace(/\s+/g, ' ');
+  let cel = $('#w-celular').value.replace(/\D/g, '');
+  if (cel.length === 12 && cel.startsWith('57')) cel = cel.slice(2);
+  const falta = nombre.length < 3 ? 'Escribe el nombre del cliente.'
+    : !/^3\d{9}$/.test(cel) ? 'El celular debe tener 10 dígitos y empezar por 3.'
+    : !$('#w-dep').value || !$('#w-ciudad').value ? 'Elige departamento y ciudad.'
+    : $('#w-dir').value.trim().length < 4 ? 'Escribe la dirección.'
+    : !k.ls.length ? 'Agrega al menos un producto.'
+    : k.total <= 0 ? 'El total debe ser mayor que cero.' : '';
+  if (falta) { msg.textContent = falta; return; }
+  const boton = $('#form-venta-wa [type="submit"]');
+  boton.disabled = true;
+  const unidades = k.ls.reduce((s, x) => s + x.q, 0);
+  const items = k.ls.map((x) => ({ variante_id: x.v.id, producto_id: x.v.producto_id, nombre: nombreVariante(x.v.id), cantidad: x.q, precio: x.v.precio, costo: x.v.costo || 0 }));
+  const fila = {
+    event_id: 'wa-' + (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2)),
+    canal: 'whatsapp',
+    nombre, celular: '57' + cel,
+    direccion: $('#w-dir').value.trim(), barrio: $('#w-barrio').value.trim() || null,
+    ciudad: $('#w-ciudad').value, departamento: $('#w-dep').value,
+    cantidad: Math.min(60, unidades), prioritario: false,
+    items, subtotal: k.subtotal, descuento: k.descuento, cupon: null, envio_cobrado: k.envio,
+    costo_productos: k.costo, total: k.total,
+    producto: items.map((i) => i.cantidad + ' × ' + i.nombre).join(' + ').slice(0, 300),
+    para_quien: [], estado: 'Confirmado', metodo_pago: $('#w-pago').value,
+    notas: $('#w-notas').value.trim() || null
+  };
+  const fecha = hoy().replace(/-/g, '');
+  let creado = null, error = null;
+  for (let i = 0; i < 4 && !creado; i++) {
+    const order_id = 'WA-' + fecha + '-' + String(Math.floor(Math.random() * 10000)).padStart(4, '0');
+    ({ data: creado, error } = await sb.from('pedidos').insert(Object.assign({ order_id }, fila)).select().single());
+    if (error && error.code !== '23505') break;
+  }
+  if (!creado) {
+    boton.disabled = false;
+    msg.textContent = 'No se pudo guardar: ' + (error ? (/canal|metodo_pago/.test(error.message) ? 'falta correr la migración 025.' : error.message) : 'inténtalo de nuevo.');
+    return;
+  }
+  const estado = $('#w-estado').value;
+  if (estado !== 'Confirmado') await sb.from('pedidos').update({ estado }).eq('id', creado.id);
+  boton.disabled = false;
+  dlgVenta.close();
+  await cargar();
+  avisar('Venta ' + creado.order_id + ' guardada');
+});
+
+/* ---------- Avisos al celular del admin (Web Push, migración 025 + función avisar-admin) ---------- */
+const avisosPosibles = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+const desdeB64 = (s) => { const t = s.replace(/-/g, '+').replace(/_/g, '/'); const b = atob(t + '='.repeat((4 - t.length % 4) % 4)); return Uint8Array.from(b, (c) => c.charCodeAt(0)); };
+async function registroAvisos() { return navigator.serviceWorker.register('sw.js', { scope: './' }); }
+async function pintarAvisos() {
+  const msg = $('#av-msg');
+  const iphone = /iPhone|iPad/.test(navigator.userAgent);
+  const instalada = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  $('#av-iphone').hidden = !(iphone && !instalada);
+  if (!avisosPosibles()) {
+    $('#av-activar').hidden = true;
+    msg.className = 'mensaje error';
+    msg.textContent = iphone ? 'En iPhone primero agrega el gestor a la pantalla de inicio (abajo te explico).' : 'Este navegador no permite avisos. Prueba con Chrome.';
+    return;
+  }
+  const reg = await navigator.serviceWorker.getRegistration('./');
+  const sus = reg ? await reg.pushManager.getSubscription() : null;
+  const activo = !!sus && Notification.permission === 'granted';
+  $('#av-activar').hidden = activo;
+  $('#av-probar').hidden = !activo;
+  $('#av-apagar').hidden = !activo;
+  msg.className = 'mensaje' + (activo ? ' ok' : Notification.permission === 'denied' ? ' error' : '');
+  msg.textContent = activo ? 'Activos en este celular. Te llegan aunque el gestor esté cerrado.'
+    : Notification.permission === 'denied' ? 'Bloqueaste las notificaciones para esta página. Actívalas en los ajustes del navegador (candado junto a la dirección) y vuelve a intentar.'
+    : 'Apagados en este celular.';
+}
+$('#av-activar').addEventListener('click', async () => {
+  const msg = $('#av-msg');
+  msg.className = 'mensaje';
+  msg.textContent = 'Activando…';
+  try {
+    const permiso = await Notification.requestPermission();
+    if (permiso !== 'granted') { pintarAvisos(); return; }
+    const { data, error } = await sb.functions.invoke('avisar-admin', { method: 'GET' });
+    if (error || !data || !data.publica) throw new Error('La función avisar-admin no está publicada o le faltan las llaves VAPID.');
+    const reg = await registroAvisos();
+    await navigator.serviceWorker.ready;
+    let sus = await reg.pushManager.getSubscription();
+    if (!sus) sus = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: desdeB64(data.publica) });
+    const j = sus.toJSON();
+    const disp = (navigator.userAgentData && navigator.userAgentData.platform) || (/iPhone|iPad/.test(navigator.userAgent) ? 'iPhone' : /Android/.test(navigator.userAgent) ? 'Android' : 'Computador');
+    const { error: e2 } = await sb.from('push_suscripciones').upsert({ endpoint: j.endpoint, p256dh: j.keys.p256dh, auth: j.keys.auth, dispositivo: disp });
+    if (e2) throw new Error(/push_suscripciones/.test(e2.message) ? 'Falta correr la migración 025.' : e2.message);
+    await pintarAvisos();
+    avisar('Avisos activados');
+  } catch (e) {
+    msg.className = 'mensaje error';
+    msg.textContent = 'No se pudieron activar: ' + e.message;
+  }
+});
+$('#av-probar').addEventListener('click', async () => {
+  const { data, error } = await sb.functions.invoke('avisar-admin', { body: { tipo: 'prueba' } });
+  avisar(error || !data || !data.ok ? 'No se pudo mandar la prueba' : 'Prueba enviada a ' + data.enviados + (data.enviados === 1 ? ' celular' : ' celulares'));
+});
+$('#av-apagar').addEventListener('click', async () => {
+  const reg = await navigator.serviceWorker.getRegistration('./');
+  const sus = reg && await reg.pushManager.getSubscription();
+  if (sus) { await sb.from('push_suscripciones').delete().eq('endpoint', sus.endpoint); await sus.unsubscribe(); }
+  await pintarAvisos();
+  avisar('Avisos apagados en este celular');
+});
+if (avisosPosibles()) registroAvisos().catch(() => {});
+pintarAvisos().catch(() => {});
 
 /* ---------- Carritos abandonados (migración 023) ---------- */
 let filtroCarrito = 'Pendientes';

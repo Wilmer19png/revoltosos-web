@@ -351,6 +351,21 @@ dialog.panel:focus, dialog.panel:focus-visible { outline: none; }
 .mr-regalo svg { flex: none; width: 40px; height: 24px; color: var(--rosa); }
 .mr-regalo .mr-precio { color: var(--salvia); }
 .mr-mas { margin-top: 6px; padding: 6px 0; border: 0; background: none; color: var(--rosa); font: inherit; font-weight: 800; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.mr-cuentas { margin-top: 10px; padding-top: 10px; border-top: 1.5px dashed var(--linea, #D6CCBA); display: flex; flex-direction: column; gap: 6px; }
+.mr-fila { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-variant-numeric: tabular-nums; }
+.mr-fila > span:first-child { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.mr-fila svg { flex: none; width: 18px; height: 18px; color: var(--salvia); }
+.mr-fila small { color: var(--tinta-2); font-size: 13px; font-weight: 600; }
+.mr-envio { font-weight: 700; }
+.mr-gratis { color: var(--salvia); font-weight: 800; letter-spacing: .02em; }
+.mr-verde { color: var(--salvia); font-weight: 700; }
+.mr-nota { margin: 0; font-size: 13px; line-height: 1.35; color: var(--rosa); font-weight: 600; }
+.mr-nota.ok { color: var(--salvia); }
+.mr-nota svg { display: inline-block; width: 16px; height: 16px; vertical-align: -3px; margin-right: 4px; }
+.mr-total { margin-top: 2px; padding-top: 8px; border-top: 1px solid var(--linea, #D6CCBA); font-size: 15px; }
+.mr-total > span:last-child strong { font-size: 22px; color: var(--rosa); }
+.mr-total small { font-size: 13px; }
+.recomendado { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; background: var(--salvia); color: #FFFFFF; font-style: normal; font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; vertical-align: 2px; }
 .cotiza { border: 2px solid var(--salvia); border-radius: var(--radio); padding: 16px 18px; background: var(--salvia-claro); display: flex; flex-direction: column; gap: 6px; font-size: 16px; }
 .cotiza-titulo { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--salvia); }
 .cotiza .fila { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; }
@@ -577,3 +592,11 @@ dialog.panel:focus, dialog.panel:focus-visible { outline: none; }
 .precio, .precio-grande, .valor, .val, .metodo-precio, .cuentas, .resumen, .mr-precio, .aviso-precio, .prod-precio, .item-c strong {
   font-variant-numeric: tabular-nums;
 }
+
+/* Carga progresiva: lo que está más abajo se pinta solo cuando el cliente se acerca bajando
+   (las fotos y videos ya se descargan así: loading="lazy" y video[data-src]). */
+.seccion, .seccion-t:not(#catalogo), footer.pie { content-visibility: auto; contain-intrinsic-size: auto 700px; }
+/* Galería: mientras llega la foto grande se ve la miniatura un poco desenfocada. */
+.galeria-p .principal img { transition: filter .2s ease; }
+.galeria-p .principal img.foto-cargando { filter: blur(2px); }
+@media (prefers-reduced-motion: reduce) { .galeria-p .principal img { transition: none; } }

@@ -1,0 +1,12 @@
+{
+  "name": "Gestor Revoltosos",
+  "short_name": "Gestor",
+  "start_url": "/pedidos/",
+  "scope": "/pedidos/",
+  "display": "standalone",
+  "background_color": "#F6F1E7",
+  "theme_color": "#2A231D",
+  "icons": [
+    { "src": "/assets/img/logo.jpg", "sizes": "150x150", "type": "image/jpeg" }
+  ]
+}
