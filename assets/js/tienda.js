@@ -416,18 +416,19 @@ function pintarBarraEnvio(el, k) {
   const clamp = (x) => Math.max(0, Math.min(1, x));
   let msg, f, etiqueta;
   if (!k.unidades) {
-    msg = (k.minimo ? 'Pides desde <strong>' + pesos(k.minimo) + '</strong> · ' : '') + 'Envío <strong>GRATIS</strong> desde ' + pesos(envioDesde);
+    // Una sola línea en celular: textos cortos, la barra no debe robar pantalla.
+    msg = (k.minimo ? 'Mín. <strong>' + pesos(k.minimo) + '</strong> · ' : '') + 'Envío <strong>GRATIS</strong> desde ' + pesos(envioDesde);
     f = 0; etiqueta = 'Avance de tu pedido';
   } else if (!k.puede) {
     msg = 'Te faltan <strong>' + pesos(k.faltaMinimo) + '</strong> para completar tu pedido';
     f = k.subtotal / k.minimo; etiqueta = 'Avance hacia el pedido mínimo';
   } else if (!k.gratis) {
-    msg = (k.minimo ? 'Pedido listo. ' : '') + 'Te faltan <strong>' + pesos(k.falta) + '</strong> para el envío GRATIS';
+    msg = 'Te faltan <strong>' + pesos(k.falta) + '</strong> para el envío GRATIS';
     const desde = Math.min(k.minimo, envioDesde);
     f = (k.neto - desde) / Math.max(1, envioDesde - desde); etiqueta = 'Avance hacia el envío gratis';
   } else if (k.regaloDesde && !k.regalo) {
-    msg = '<strong>¡Envío GRATIS!</strong> Te faltan <strong>' + pesos(k.faltaRegalo) + '</strong> para tu regalo';
-    f = (k.neto - envioDesde) / Math.max(1, k.regaloDesde - envioDesde); etiqueta = 'Avance hacia el regalo';
+    msg = '<strong>¡Envío GRATIS!</strong> Faltan <strong>' + pesos(k.faltaRegalo) + '</strong> para tu regalo';
+    f =(k.neto - envioDesde) / Math.max(1, k.regaloDesde - envioDesde); etiqueta = 'Avance hacia el regalo';
   } else {
     msg = '<strong>' + (k.regalo ? '¡Envío GRATIS y regalo desbloqueados!' : '¡Desbloqueaste el envío GRATIS!') + '</strong>';
     f = 1; etiqueta = 'Metas cumplidas';
@@ -614,7 +615,7 @@ function pintarCatalogo() {
   const caja = $('#catalogo-lista');
   if (!caja) return;
   const filtros = $('#filtro-cat');
-  // Ventanas (migración 030): en este orden; una categoría nueva del gestor va al final, y «Todos» de último.
+  // Ventanas (migración 030): en este orden; «Todos» de primero; una categoría nueva del gestor va al final.
   const cats = [];
   T.variantes.forEach((v) => { const c = prodDe(v).categoria; if (cats.indexOf(c) < 0) cats.push(c); });
   const pos = (c) => { const i = ORDEN_VENTANAS.indexOf(c); return i < 0 ? 99 : i; };
@@ -630,7 +631,7 @@ function pintarCatalogo() {
   const palabras = normal(busqueda).split(/\s+/).filter(Boolean);
   const porCat = (c) => ordenCatalogo(T.variantes.filter((v) => !c || prodDe(v).categoria === c)).length;
   if (filtros) {
-    filtros.innerHTML = cats.concat(['']).map((c) => '<button type="button" data-cat="' + esc(c) + '" aria-pressed="' + (!palabras.length && c === activa) + '">' +
+    filtros.innerHTML = [''].concat(cats).map((c) => '<button type="button" data-cat="' + esc(c) + '" aria-pressed="' + (!palabras.length && c === activa) + '">' +
       esc(c || 'Todos') + '<span>' + porCat(c) + '</span></button>').join('');
     filtros.hidden = cats.length < 2 || !!P.categoriaFija;
   }

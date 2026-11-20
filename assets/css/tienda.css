@@ -53,6 +53,9 @@ body { overflow-x: clip; }
 .envio-barra { position: relative; background: #FFFFFF; border-top: 1px solid var(--hueso-2); padding: 9px 16px 11px; transition: background-color .4s ease; }
 .envio-barra-in { max-width: 560px; margin: 0 auto; }
 .envio-barra p { margin: 0 0 7px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+/* Siempre en una línea: en celulares angostos baja un punto la letra. */
+.envio-barra p span { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 400px) { .envio-barra p { font-size: 13px; } }
 .envio-barra p svg { flex: none; color: var(--rosa); }
 .envio-barra strong { color: var(--rosa); }
 .riel { height: 10px; border-radius: 99px; background: var(--hueso-2); overflow: hidden; }
