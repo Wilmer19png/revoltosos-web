@@ -882,7 +882,288 @@ my @productos = (
     como_darlo => \@HUESOS_COMO,
     preguntas => [
       ['¿Le sirve a un perro pequeño?', 'Las patas y la codorniz (en trozos) sí; los huesos de cerdo van mejor con perros medianos y grandes. Para los pequeños mira el Combo Pollo Loco.'],
-      ['¿Cómo hago para no pagar envío?', 'Súmale codornices a tu pedido: desde $70.000 en productos el envío es gratis.'],
+      ['¿Cómo hago para no pagar envío?', 'Súmale codornices a tu pedido: desde $120.000 en productos el envío es gratis.'],
+    ],
+  },
+
+  # --- Combos de noviembre 2026 (migración 027): todo pedido es desde $50.000 y el envío es
+  #     gratis desde $120.000. Fotos provisionales hasta tener la foto de cada combo. ---------
+  {
+    id => 'combo-cerdito-crujiente', ruta => 'combo-cerdito-crujiente', nombre => 'Combo Cerdito Crujiente', corto => 'el Combo Cerdito Crujiente',
+    antetitulo => 'Combo · cerdo y pollo',
+    descripcion => '1 paleta de cerdo, 1 fémur de cerdo, 1 oreja de cerdo y 5 patas de pollo. Para morder, masticar y crujir en un solo pedido.',
+    meta => 'Combo Cerdito Crujiente: paleta, fémur y oreja de cerdo, y 5 patas de pollo deshidratados, sin conservantes. Pagas al recibir.',
+    foto => 'combo-cerdo-foto', ancho => 1000, alt_foto => 'Snacks de cerdo deshidratados Revoltosos',
+    miniaturas => galeria('combo-cerdo-foto', 'Snacks de cerdo deshidratados Revoltosos', 'paleta', 'femur_cerdo', 'oreja', 'patas'),
+    trae => [pieza('paleta', '×1', 1), pieza('femur_cerdo', '×1', 1), pieza('oreja', '×1', 1), pieza('patas5', '×5', 1)],
+    trae_bajada => 'Un hueso firme, una paleta para sostener, una oreja para masticar y patas crocantes.',
+    llega => [empaques('paleta', 'femur_cerdo', 'oreja', 'patas')],
+    anatomia => $ANAT_FEMUR_CERDO,
+    checks => ['4 snacks en un pedido', 'Cerdo y pollo', 'Sin conservantes', 'Hecho en Colombia'],
+    beneficios_titulo => 'Para morder y para crujir.',
+    beneficios_bajada => 'Huesos de cerdo para los ratos largos y patas crocantes para premiar.',
+    beneficios => [
+      ['textura', 'Cuatro texturas', 'Hueso para morder, paleta para sostener, oreja para masticar y patas crocantes.'],
+      ['calma', 'Horas de entretenimiento', 'Morder y masticar los calma y ayuda a que no muerdan lo que no deben.'],
+      ['dientes', 'Ayuda a mantener los dientes', 'La masticación ayuda a reducir placa y sarro.'],
+      ['aditivos', 'Sin aditivos', 'Sin conservantes, sin sal añadida, sin colorantes.'],
+    ],
+    para_quien => ['Perros medianos y grandes', 'Perros que disfrutan masticar', 'Adultos'],
+    uso => ['Para morder', 'Premio diario', 'Para regalar'],
+    como_darlo => \@HUESOS_COMO,
+    preguntas => [
+      ['¿Le sirve a un perro pequeño?', 'Las patas de pollo sí; los huesos de cerdo van mejor con perros medianos y grandes.'],
+      ['¿Puedo pedir solo este combo?', 'Sí. Pasa del pedido mínimo de $50.000, así que lo puedes pedir solo o sumarle otros snacks.'],
+    ],
+  },
+  {
+    id => 'combo-masticador-grande', ruta => 'combo-masticador-grande', nombre => 'Combo Masticador Grande', corto => 'el Combo Masticador Grande',
+    antetitulo => 'Combo · huesos de res y patas',
+    descripcion => '1 húmero de res, 1 fémur de res y 30 patas de pollo. Los huesos más grandes que tenemos y patas para todo el mes.',
+    meta => 'Combo Masticador Grande: húmero y fémur de res, y 30 patas de pollo deshidratados, sin conservantes. Pagas al recibir.',
+    foto => 'combo-res-codornicitas-foto', ancho => 1000, alt_foto => 'Fémur y húmero de res deshidratados Revoltosos',
+    miniaturas => galeria('combo-res-codornicitas-foto', 'Fémur y húmero de res deshidratados Revoltosos', 'femur_res', 'humero_res', 'patas'),
+    trae => [pieza('humero_res', '×1', 1), pieza('femur_res', '×1', 1), pieza('patas30', '×30', 1)],
+    trae_bajada => 'Dos huesos grandes de res para los ratos largos y 30 patas crocantes para premiar.',
+    llega => [empaques('femur_res', 'humero_res', 'patas')],
+    anatomia => $ANAT_FEMUR_RES,
+    checks => ['Huesos grandes de res', '30 patas de pollo', 'Sin conservantes', 'Hecho en Colombia'],
+    beneficios_titulo => 'Para los que muerden en serio.',
+    beneficios_bajada => 'Huesos de res grandes y firmes, y patas para el día a día.',
+    beneficios => [
+      ['hueso', 'Huesos grandes y firmes', 'Fémur y húmero de res, a la medida de un perro grande.'],
+      ['calma', 'Horas de entretenimiento', 'Los huesos grandes los mantienen ocupados un buen rato.'],
+      ['dientes', 'Ayuda a mantener los dientes', 'La masticación ayuda a reducir placa y sarro.'],
+      ['aditivos', 'Sin aditivos', 'Sin conservantes, sin sal añadida, sin colorantes.'],
+    ],
+    para_quien => ['Perros grandes', 'Perros medianos con mordida fuerte', 'Adultos'],
+    uso => ['Huesos para morder', 'Patas como premio', 'Para regalar'],
+    como_darlo => \@HUESOS_COMO,
+    preguntas => [
+      ['¿Le sirve a un perro pequeño?', 'Las patas de pollo sí; los huesos de res son grandes y van mejor con perros medianos y grandes.'],
+      ['¿Puedo pedir solo este combo?', 'Sí. Pasa del pedido mínimo de $50.000, así que lo puedes pedir solo o sumarle otros snacks.'],
+    ],
+  },
+  {
+    id => 'combo-despensa-crujiente', ruta => 'combo-despensa-crujiente', nombre => 'Combo Despensa Crujiente', corto => 'el Combo Despensa Crujiente',
+    antetitulo => 'Combo · para tener en casa',
+    descripcion => '30 patas de pollo, 2 paletas de cerdo y 2 orejas de cerdo. Una despensa de snacks para premiar y masticar varias semanas.',
+    meta => 'Combo Despensa Crujiente: 30 patas de pollo, 2 paletas y 2 orejas de cerdo deshidratadas, sin conservantes. Pagas al recibir.',
+    foto => 'combo-granja-revoltosa-foto', ancho => 1000, alt_foto => 'Patas de pollo, paletas y orejas de cerdo deshidratadas Revoltosos',
+    miniaturas => galeria('combo-granja-revoltosa-foto', 'Patas de pollo, paletas y orejas de cerdo deshidratadas Revoltosos', 'patas', 'paleta', 'oreja'),
+    trae => [pieza('patas30', '×30', 1), pieza('paleta', '×2', 2), pieza('oreja', '×2', 2)],
+    trae_bajada => 'Patas crocantes para todos los días, paletas para sostener y orejas para masticar un buen rato.',
+    llega => [empaques('patas', 'paleta', 'oreja')],
+    checks => ['34 snacks en un pedido', 'Cerdo y pollo', 'Sin conservantes', 'Hecho en Colombia'],
+    beneficios_titulo => 'Snacks para varias semanas.',
+    beneficios_bajada => 'Lo que más piden, en cantidad, para no quedarte sin premios.',
+    beneficios => [
+      ['duracion', 'Para varias semanas', '30 patas, 2 paletas y 2 orejas en un solo pedido.'],
+      ['textura', 'Tres texturas', 'Patas crocantes, paletas para sostener y orejas para masticar.'],
+      ['dientes', 'Ayuda a mantener los dientes', 'La masticación ayuda a reducir placa y sarro.'],
+      ['aditivos', 'Sin aditivos', 'Sin conservantes, sin sal añadida, sin colorantes.'],
+    ],
+    para_quien => ['Perros de todos los tamaños', 'Casas con varios perros', 'Adultos'],
+    uso => ['Premio diario', 'Para masticar', 'Para compartir'],
+    como_darlo => \@HUESOS_COMO,
+    preguntas => [
+      ['¿Le sirve a un perro pequeño?', 'Las patas de pollo y las orejas sí; la paleta va mejor con perros medianos y grandes.'],
+      ['¿Puedo pedir solo este combo?', 'Sí. Pasa del pedido mínimo de $50.000, así que lo puedes pedir solo o sumarle otros snacks.'],
+    ],
+  },
+  {
+    id => 'combo-favoritos-revoltosos', ruta => 'combo-favoritos-revoltosos', nombre => 'Combo Favoritos Revoltosos', corto => 'el Combo Favoritos Revoltosos',
+    antetitulo => 'Combo · codorniz, pollo y cerdo',
+    descripcion => '1 frasco de codornicitas de 100 g, 30 patas de pollo y 1 paleta de cerdo. Los snacks que más nos piden, juntos.',
+    meta => 'Combo Favoritos Revoltosos: codornicitas de 100 g, 30 patas de pollo y paleta de cerdo deshidratados, sin conservantes. Pagas al recibir.',
+    foto => 'codornices-frasco-100g', ancho => 1000, alt_foto => 'Frasco de codornicitas Revoltosos de 100 g',
+    miniaturas => galeria('codornices-frasco-100g', 'Frasco de codornicitas Revoltosos de 100 g', 'patas', 'paleta'),
+    trae => [pieza('frasco', '100 g', 1), pieza('patas30', '×30', 1), pieza('paleta', '×1', 1)],
+    trae_bajada => 'Codornicitas para premiar, patas crocantes y una paleta para morder.',
+    llega => [empaques('frasco', 'patas', 'paleta')],
+    checks => ['3 proteínas distintas', 'Frasco de 100 g', 'Sin conservantes', 'Hecho en Colombia'],
+    beneficios_titulo => 'Los que más nos piden.',
+    beneficios_bajada => 'Codorniz, pollo y cerdo: descubre cuál le gusta más.',
+    beneficios => [
+      ['novedosa', 'Tres proteínas', 'Codorniz, pollo y cerdo en un solo pedido.'],
+      ['proteina', 'Codorniz de un solo ingrediente', 'Proteína novedosa: buena opción si no le va bien el pollo o la res.'],
+      ['textura', 'Tres texturas', 'Codornicitas crocantes, patas para crujir y una paleta para sostener.'],
+      ['aditivos', 'Sin aditivos', 'Sin conservantes, sin sal añadida, sin colorantes.'],
+    ],
+    para_quien => ['Perros de todos los tamaños', 'Perros que aman los premios', 'Adultos'],
+    uso => ['Premio diario', 'Para entrenar', 'Para morder'],
+    como_darlo => \@HUESOS_COMO,
+    preguntas => [
+      ['¿Le sirve a un perro pequeño?', 'Las codornicitas y las patas sí; la paleta va mejor con perros medianos y grandes.'],
+      ['¿Puedo pedir solo este combo?', 'Sí. Pasa del pedido mínimo de $50.000, así que lo puedes pedir solo o sumarle otros snacks.'],
+    ],
+  },
+  {
+    id => 'combo-cerdo-patitas', ruta => 'combo-cerdo-patitas', nombre => 'Combo Cerdo y Patitas', corto => 'el Combo Cerdo y Patitas',
+    antetitulo => 'Combo · cerdo y pollo',
+    descripcion => '1 paleta de cerdo, 1 fémur de cerdo y 30 patas de pollo. Dos huesos para morder y patas para todo el mes.',
+    meta => 'Combo Cerdo y Patitas: paleta y fémur de cerdo, y 30 patas de pollo deshidratados, sin conservantes. Pagas al recibir.',
+    foto => 'femur-cerdo-producto', ancho => 1000, alt_foto => 'Fémur de cerdo deshidratado Revoltosos',
+    miniaturas => galeria('femur-cerdo-producto', 'Fémur de cerdo deshidratado Revoltosos', 'femur_cerdo', 'paleta', 'patas'),
+    trae => [pieza('paleta', '×1', 1), pieza('femur_cerdo', '×1', 1), pieza('patas30', '×30', 1)],
+    trae_bajada => 'Un fémur con carne pegada al hueso, una paleta para sostener y 30 patas crocantes.',
+    llega => [empaques('femur_cerdo', 'paleta', 'patas')],
+    anatomia => $ANAT_FEMUR_CERDO,
+    checks => ['2 huesos de cerdo', '30 patas de pollo', 'Sin conservantes', 'Hecho en Colombia'],
+    beneficios_titulo => 'Huesos y premios.',
+    beneficios_bajada => 'Para los ratos largos y para el premio de todos los días.',
+    beneficios => [
+      ['hueso', 'Dos huesos de cerdo', 'Fémur y paleta: un reto para los que muerden fuerte.'],
+      ['calma', 'Horas de entretenimiento', 'Morder los calma y ayuda a que no muerdan lo que no deben.'],
+      ['dientes', 'Ayuda a mantener los dientes', 'La masticación ayuda a reducir placa y sarro.'],
+      ['aditivos', 'Sin aditivos', 'Sin conservantes, sin sal añadida, sin colorantes.'],
+    ],
+    para_quien => ['Perros medianos y grandes', 'Perros que disfrutan masticar', 'Adultos'],
+    uso => ['Para morder', 'Premio diario', 'Para regalar'],
+    como_darlo => \@HUESOS_COMO,
+    preguntas => [
+      ['¿Le sirve a un perro pequeño?', 'Las patas de pollo sí; los huesos de cerdo van mejor con perros medianos y grandes.'],
+      ['¿Puedo pedir solo este combo?', 'Sí. Pasa del pedido mínimo de $50.000, así que lo puedes pedir solo o sumarle otros snacks.'],
+    ],
+  },
+  {
+    id => 'combo-doble-paleta', ruta => 'combo-doble-paleta', nombre => 'Combo Doble Paleta', corto => 'el Combo Doble Paleta',
+    antetitulo => 'Combo · paletas y patas',
+    descripcion => '2 paletas de cerdo y 30 patas de pollo. Planas y fáciles de sostener, con patas para premiar todos los días.',
+    meta => 'Combo Doble Paleta: 2 paletas de cerdo y 30 patas de pollo deshidratadas, sin conservantes. Pagas al recibir.',
+    foto => 'paleta-cerdo-producto', ancho => 1000, alt_foto => 'Paleta de cerdo deshidratada Revoltosos',
+    miniaturas => galeria('paleta-cerdo-producto', 'Paleta de cerdo deshidratada Revoltosos', 'paleta', 'patas'),
+    trae => [pieza('paleta', '×2', 2), pieza('patas30', '×30', 1)],
+    trae_bajada => 'Dos paletas para sostener entre las patas y 30 patas crocantes.',
+    llega => [empaques('paleta', 'patas')],
+    checks => ['2 paletas de cerdo', '30 patas de pollo', 'Sin conservantes', 'Hecho en Colombia'],
+    beneficios_titulo => 'Fáciles de sostener.',
+    beneficios_bajada => 'La paleta es plana: la sostienen entre las patas y la muerden a su ritmo.',
+    beneficios => [
+      ['textura', 'Una textura distinta', 'Más plana que los huesos largos, fácil de agarrar.'],
+      ['calma', 'Horas de entretenimiento', 'Morder los calma y ayuda a que no muerdan lo que no deben.'],
+      ['dientes', 'Ayuda a mantener los dientes', 'La masticación ayuda a reducir placa y sarro.'],
+      ['aditivos', 'Sin aditivos', 'Sin conservantes, sin sal añadida, sin colorantes.'],
+    ],
+    para_quien => ['Perros medianos y grandes', 'Perros que disfrutan masticar', 'Adultos'],
+    uso => ['Para morder', 'Premio diario', 'Para regalar'],
+    como_darlo => \@HUESOS_COMO,
+    preguntas => [
+      ['¿Le sirve a un perro pequeño?', 'Las patas de pollo sí; la paleta va mejor con perros medianos y grandes.'],
+      ['¿Puedo pedir solo este combo?', 'Sí. Pasa del pedido mínimo de $50.000, así que lo puedes pedir solo o sumarle otros snacks.'],
+    ],
+  },
+  {
+    id => 'combo-res-crujiente', ruta => 'combo-res-crujiente', nombre => 'Combo Res Crujiente', corto => 'el Combo Res Crujiente',
+    antetitulo => 'Combo · huesos de res',
+    descripcion => '1 húmero de res, 1 fémur de res y 1 paleta de cerdo. Tres huesos para los perros que muerden en serio.',
+    meta => 'Combo Res Crujiente: húmero y fémur de res, y paleta de cerdo deshidratados, sin conservantes. Pagas al recibir.',
+    foto => 'humero-res-empaque-fondo-blanco', ancho => 1000, alt_foto => 'Húmero de res deshidratado Revoltosos',
+    miniaturas => galeria('humero-res-empaque-fondo-blanco', 'Húmero de res deshidratado Revoltosos', 'humero_res', 'femur_res', 'paleta'),
+    trae => [pieza('humero_res', '×1', 1), pieza('femur_res', '×1', 1), pieza('paleta', '×1', 1)],
+    trae_bajada => 'Los dos huesos más grandes que tenemos y una paleta de cerdo para variar.',
+    llega => [empaques('humero_res', 'femur_res', 'paleta')],
+    anatomia => $ANAT_FEMUR_RES,
+    checks => ['Huesos grandes de res', '3 huesos en un pedido', 'Sin conservantes', 'Hecho en Colombia'],
+    beneficios_titulo => 'Para los que muerden en serio.',
+    beneficios_bajada => 'Huesos grandes y firmes para los ratos largos.',
+    beneficios => [
+      ['hueso', 'Huesos grandes y firmes', 'Fémur y húmero de res, a la medida de un perro grande.'],
+      ['calma', 'Horas de entretenimiento', 'Los huesos grandes los mantienen ocupados un buen rato.'],
+      ['dientes', 'Ayuda a mantener los dientes', 'La masticación ayuda a reducir placa y sarro.'],
+      ['aditivos', 'Sin aditivos', 'Sin conservantes, sin sal añadida, sin colorantes.'],
+    ],
+    para_quien => ['Perros grandes', 'Perros medianos con mordida fuerte', 'Adultos'],
+    uso => ['Para morder', 'Para los días en casa', 'Para regalar'],
+    como_darlo => \@HUESOS_COMO,
+    preguntas => [
+      ['¿Le sirve a un perro pequeño?', 'Estos huesos son grandes: van mejor con perros medianos y grandes. Para los pequeños mira el Combo Patitas para Compartir.'],
+      ['¿Puedo pedir solo este combo?', 'Sí. Pasa del pedido mínimo de $50.000, así que lo puedes pedir solo o sumarle otros snacks.'],
+    ],
+  },
+  {
+    id => 'combo-patitas-compartir', ruta => 'combo-patitas-compartir', nombre => 'Combo Patitas para Compartir', corto => 'el Combo Patitas para Compartir',
+    antetitulo => 'Combo · 60 patas y codornicitas',
+    descripcion => '60 patas de pollo (2 paquetes de 30) y 1 bolsa de codornicitas de 50 g. Para casas con varios perros o para no quedarte sin premios.',
+    meta => 'Combo Patitas para Compartir: 60 patas de pollo y codornicitas de 50 g deshidratadas, sin conservantes. Pagas al recibir.',
+    foto => 'combo-codornicitas-patas-foto', ancho => 1000, alt_foto => 'Patas de pollo y codornicitas deshidratadas Revoltosos',
+    miniaturas => galeria('combo-codornicitas-patas-foto', 'Patas de pollo y codornicitas deshidratadas Revoltosos', 'patas', 'codornicitas'),
+    trae => [pieza('patas30', '×60', 2), pieza('codornicitas', '50 g', 1)],
+    trae_bajada => 'Dos paquetes de 30 patas crocantes y una bolsa de codornicitas para premiar.',
+    llega => [empaques('patas', 'codornicitas')],
+    checks => ['60 patas de pollo', 'Para todos los tamaños', 'Sin conservantes', 'Hecho en Colombia'],
+    beneficios_titulo => 'Para compartir.',
+    beneficios_bajada => 'Patas crocantes y fáciles de masticar, ideales también para perros pequeños.',
+    beneficios => [
+      ['duracion', 'Para varias semanas', '60 patas y una bolsa de codornicitas en un solo pedido.'],
+      ['textura', 'Crocantes', 'Fáciles de masticar, también para perros pequeños.'],
+      ['proteina', 'Codorniz de un solo ingrediente', 'Proteína novedosa: buena opción si no le va bien el pollo o la res.'],
+      ['aditivos', 'Sin aditivos', 'Sin conservantes, sin sal añadida, sin colorantes.'],
+    ],
+    para_quien => ['Perros de todos los tamaños', 'Casas con varios perros', 'Cachorros grandes y adultos'],
+    uso => ['Premio diario', 'Para entrenar', 'Para compartir'],
+    como_darlo => [
+      ['Ofrécelas como premio,', ' sin reemplazar su comida. Empieza con una y mira cómo le cae.'],
+      ['Siempre bajo supervisión', ' y con agua fresca a la mano.'],
+      ['Guárdalas bien cerradas', ' en un lugar fresco y seco.'],
+    ],
+    preguntas => [
+      ['¿Le sirve a un perro pequeño?', 'Sí. Las patas y las codornicitas son ideales también para perros pequeños.'],
+      ['¿Puedo pedir solo este combo?', 'Sí. Pasa del pedido mínimo de $50.000, así que lo puedes pedir solo o sumarle otros snacks.'],
+    ],
+  },
+  {
+    id => 'combo-despensa-familiar', ruta => 'combo-despensa-familiar', nombre => 'Combo Despensa Familiar', corto => 'el Combo Despensa Familiar',
+    antetitulo => 'Combo · el más grande · envío gratis',
+    descripcion => '1 frasco de codornicitas de 100 g, 60 patas de pollo (2 paquetes de 30) y 2 paletas de cerdo. Nuestro combo más grande, y con él tu pedido ya pasa del envío gratis.',
+    meta => 'Combo Despensa Familiar: codornicitas de 100 g, 60 patas de pollo y 2 paletas de cerdo deshidratados. Con este combo el envío es gratis. Pagas al recibir.',
+    foto => 'cajita-producto-fondo-blanco', ancho => 1000, alt_foto => 'Snacks deshidratados Revoltosos',
+    miniaturas => galeria('cajita-producto-fondo-blanco', 'Snacks deshidratados Revoltosos', 'frasco', 'patas', 'paleta'),
+    trae => [pieza('frasco', '100 g', 1), pieza('patas30', '×60', 2), pieza('paleta', '×2', 2)],
+    trae_bajada => 'Codornicitas para premiar, 60 patas crocantes y dos paletas para morder.',
+    llega => [empaques('frasco', 'patas', 'paleta')],
+    checks => ['Nuestro combo más grande', 'Envío gratis', 'Sin conservantes', 'Hecho en Colombia'],
+    beneficios_titulo => 'La despensa completa.',
+    beneficios_bajada => 'Codorniz, pollo y cerdo en cantidad, para toda la familia de peludos.',
+    beneficios => [
+      ['duracion', 'Para varias semanas', 'Un frasco de codornicitas, 60 patas y 2 paletas.'],
+      ['novedosa', 'Tres proteínas', 'Codorniz, pollo y cerdo en un solo pedido.'],
+      ['dientes', 'Ayuda a mantener los dientes', 'La masticación ayuda a reducir placa y sarro.'],
+      ['paquete', 'Envío gratis', 'Pasa de $120.000: llega a tu casa sin pagar envío.'],
+    ],
+    para_quien => ['Casas con varios perros', 'Perros de todos los tamaños', 'Adultos'],
+    uso => ['Premio diario', 'Para morder', 'Para compartir'],
+    como_darlo => \@HUESOS_COMO,
+    preguntas => [
+      ['¿Le sirve a un perro pequeño?', 'Las codornicitas y las patas sí; las paletas van mejor con perros medianos y grandes.'],
+      ['¿El envío es gratis?', 'Sí. Desde $120.000 en productos el envío es gratis, y este combo ya pasa de ese valor.'],
+    ],
+  },
+  {
+    id => 'combo-duo-masticador', ruta => 'combo-duo-masticador', nombre => 'Combo Dúo Masticador', corto => 'el Combo Dúo Masticador',
+    antetitulo => 'Combo · para dos perros',
+    descripcion => '2 húmeros de res, 2 paletas de cerdo y 30 patas de pollo. Doble ración de huesos para dos perros o para que te dure el doble.',
+    meta => 'Combo Dúo Masticador: 2 húmeros de res, 2 paletas de cerdo y 30 patas de pollo deshidratados, sin conservantes. Pagas al recibir.',
+    foto => 'humero-res-empaque', ancho => 1000, alt_foto => 'Húmero de res Revoltosos empacado con su etiqueta',
+    miniaturas => galeria('humero-res-empaque', 'Húmero de res Revoltosos empacado con su etiqueta', 'humero_res', 'paleta', 'patas'),
+    trae => [pieza('humero_res', '×2', 2), pieza('paleta', '×2', 2), pieza('patas30', '×30', 1)],
+    trae_bajada => 'Dos húmeros de res, dos paletas de cerdo y 30 patas para premiar.',
+    llega => [empaques('humero_res', 'paleta', 'patas')],
+    checks => ['Doble ración de huesos', '30 patas de pollo', 'Sin conservantes', 'Hecho en Colombia'],
+    beneficios_titulo => 'Uno para cada uno.',
+    beneficios_bajada => 'Si tienes dos perros, cada uno con su hueso. Si tienes uno, te dura el doble.',
+    beneficios => [
+      ['hueso', 'Huesos grandes y firmes', 'Húmeros de res y paletas de cerdo, para morder con ganas.'],
+      ['calma', 'Horas de entretenimiento', 'Los huesos grandes los mantienen ocupados un buen rato.'],
+      ['dientes', 'Ayuda a mantener los dientes', 'La masticación ayuda a reducir placa y sarro.'],
+      ['aditivos', 'Sin aditivos', 'Sin conservantes, sin sal añadida, sin colorantes.'],
+    ],
+    para_quien => ['Casas con dos perros', 'Perros medianos y grandes', 'Adultos'],
+    uso => ['Para morder', 'Premio diario', 'Para compartir'],
+    como_darlo => \@HUESOS_COMO,
+    preguntas => [
+      ['¿Le sirve a un perro pequeño?', 'Las patas de pollo sí; los huesos van mejor con perros medianos y grandes.'],
+      ['¿Puedo pedir solo este combo?', 'Sí. Pasa del pedido mínimo de $50.000, así que lo puedes pedir solo o sumarle otros snacks.'],
     ],
   },
 );
@@ -909,7 +1190,16 @@ my $base = leer("$raiz/codornices/index.html");
 my ($carga) = $base =~ /(<!-- Pantalla de carga -->.*?\n<\/div>\n)/s or die 'No encontré la pantalla de carga en codornices/index.html';
 my ($iconos) = $base =~ /(<!-- Íconos reutilizables -->.*?<\/svg>\n)/s or die 'No encontré los íconos en codornices/index.html';
 
+# Combos retirados en noviembre de 2026 (migración 027): ya no se generan. Sus links viejos
+# (anuncios, WhatsApp) llevan al combo nuevo más parecido con las redirecciones de netlify.toml.
+my %RETIRADOS = map { $_ => 1 } qw(
+  combo-cerdo combo-codornicitas-patas combo-granja-revoltosa combo-res-codornicitas
+  combo-mordedor-revoltoso combo-michi-revoltoso combo-cerdito-revoltoso combo-huesos-snacks
+  combo-pollo-loco combo-revoltoso-variado combo-masticador-xl combo-codorniz-lover combo-huesos-revoltosos
+);
+
 for my $p (@productos) {
+  next if $RETIRADOS{$p->{id}};
   my $f600 = "$IMG/$p->{foto}-600.jpg";
   my $fgrande = "$IMG/$p->{foto}.jpg";
   my $e600 = "$IMG/" . ($p->{empaque} // "") . "-600.jpg";
@@ -1049,7 +1339,7 @@ CADA
   my $para = $p->{para} // 'para perros';
 
   # Combos con envío incluido: los textos de envío hablan del combo, no del mínimo.
-  my $gratis_hasta = '<span data-envio-gratis-desde>$70.000</span>';
+  my $gratis_hasta = '<span data-envio-gratis-desde>$120.000</span>';
   my ($aviso, $combina_t, $combina_b, $sello, $faq_envio) = $p->{envio_incluido}
     ? ('<strong>Envío GRATIS incluido</strong><span>A cualquier ciudad de Colombia. Pagas al recibir.</span>',
        'Súmale otro snack', 'El envío ya va por cuenta del combo: lo que agregues tampoco paga envío.',
@@ -1099,7 +1389,7 @@ COMBINA
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght\@400;500;600;700;800&display=swap">
 $precarga<link rel="stylesheet" href="/assets/css/landing.css?v=8">
-<link rel="stylesheet" href="/assets/css/tienda.css?v=22">
+<link rel="stylesheet" href="/assets/css/tienda.css?v=23">
 
 <!-- Generada con herramientas/landings/generar.pl: los cambios van allá, no aquí. -->
 <script>
@@ -1112,7 +1402,7 @@ $precarga<link rel="stylesheet" href="/assets/css/landing.css?v=8">
 
 $carga
 $iconos
-<div class="anuncio">Envío <b>GRATIS</b> desde <span data-envio-gratis-desde>\$70.000</span> · Pagas al recibir en casa</div>
+<div class="anuncio">Envío <b>GRATIS</b> desde <span data-envio-gratis-desde>\$120.000</span> · Pagas al recibir</div>
 
 <header class="cab">
   <div class="cab-fila">
@@ -1337,7 +1627,7 @@ $iconos
   <button type="button" id="cookies-ok">Entendido</button>
 </div>
 
-<script src="/assets/js/tienda.js?v=25"></script>
+<script src="/assets/js/tienda.js?v=26"></script>
 </body>
 </html>
 HTML

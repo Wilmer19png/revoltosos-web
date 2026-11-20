@@ -169,6 +169,26 @@ Deno.serve(async (req) => {
   }
   console.log(`Wompi ${p.order_id}: ${tx.status} (${tx.payment_method_type ?? '?'})`);
 
+  // Bonos (migración 029): el bono que usó este pedido queda gastado, y el pedido gana uno nuevo
+  // para la próxima compra (una sola vez por pedido: pedido_origen es único).
+  if (estado === 'aprobado') {
+    if (p.bono_id) {
+      const { error: e1 } = await supabase.from('bonos').update({ usado_pedido: p.order_id, usado_en: new Date().toISOString() })
+        .eq('id', p.bono_id).is('usado_pedido', null);
+      if (e1) console.error('bono usado', e1);
+    }
+    const { data: a } = await supabase.from('ajustes').select('bono_wompi, bono_dias').eq('id', 1).maybeSingle();
+    if (a?.bono_wompi > 0) {
+      const hoy = new Date(Date.now() - 5 * 3600 * 1000);
+      const vence = new Date(hoy.getTime() + (Number(a.bono_dias) || 30) * 86400000).toISOString().slice(0, 10);
+      const { error: e2 } = await supabase.from('bonos').upsert(
+        { celular: p.celular, nombre: p.nombre, monto: a.bono_wompi, pedido_origen: p.order_id, vence },
+        { onConflict: 'pedido_origen', ignoreDuplicates: true },
+      );
+      if (e2) console.error('bono nuevo', e2);
+    }
+  }
+
   // Purchase a Meta una sola vez: quien logra borrar meta_datos es quien lo manda.
   if (estado === 'aprobado') {
     const { data: tomado } = await supabase.from('pedidos').update({ meta_datos: null })

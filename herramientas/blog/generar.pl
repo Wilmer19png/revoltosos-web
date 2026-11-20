@@ -101,7 +101,7 @@ HTML
     fecha => '2026-11-13',
     foto => 'codornices-frasco-100g', alt => 'Frasco de codorniz deshidratada para perros y gatos',
     lectura => 4,
-    productos => ['codornices', 'codorniz-entera', 'mix-de-visceras', 'combo-codorniz-lover'],
+    productos => ['codornices', 'codorniz-entera', 'mix-de-visceras', 'combo-favoritos-revoltosos'],
     cuerpo => <<'HTML',
 <p>La codorniz es un ave pequeña que muchos perros y gatos nunca han probado. Justamente por eso se ha vuelto una de las proteínas favoritas para premiar: es sabrosa, ligera y distinta a lo de siempre.</p>
 
@@ -125,7 +125,7 @@ HTML
 
 <h2>¿La codorniz deshidratada tiene hueso?</h2>
 <p>Sí, la codorniz entera incluye sus huesos, que son pequeños y quedan crocantes al deshidratarse lentamente (no es lo mismo que un hueso cocinado). Si tu mascota come muy rápido o es muy pequeña, dásela en trozos.</p>
-<p>Si quieres probar varias presentaciones, el <a href="/combo-codorniz-lover/">Combo Codorniz Lover</a> trae bolsa, frasco, vísceras y codorniz entera.</p>
+<p>Si quieres combinar, el <a href="/combo-favoritos-revoltosos/">Combo Favoritos Revoltosos</a> trae un frasco de codornicitas de 100 g, 30 patas de pollo y una paleta de cerdo.</p>
 HTML
   },
   {
@@ -184,7 +184,7 @@ my %PRODUCTO = (
   'patas-de-pollo'       => ['Patas de pollo', 'patas-pollo-producto'],
   'oreja-de-cerdo'       => ['Oreja de cerdo', 'oreja-cerdo-producto'],
   'combos'               => ['Combos', 'combo-cerdo-foto'],
-  'combo-codorniz-lover' => ['Combo Codorniz Lover', 'codornices-bolsa-50g'],
+  'combo-favoritos-revoltosos' => ['Combo Favoritos Revoltosos', 'codornices-frasco-100g'],
 );
 
 sub esc { my $s = shift // ''; $s =~ s/&/&amp;/g; $s =~ s/</&lt;/g; $s =~ s/>/&gt;/g; $s =~ s/"/&quot;/g; return $s; }
@@ -225,7 +225,7 @@ sub pagina {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght\@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="/assets/css/landing.css?v=8">
-<link rel="stylesheet" href="/assets/css/tienda.css?v=22">
+<link rel="stylesheet" href="/assets/css/tienda.css?v=23">
 $o{jsonld}
 <!-- Generada con herramientas/blog/generar.pl: los cambios van allá, no aquí. -->
 <script>
@@ -235,7 +235,7 @@ $o{jsonld}
 <body>
 
 $iconos
-<div class="anuncio">Envío <b>GRATIS</b> desde <span data-envio-gratis-desde>\$70.000</span> · Pagas al recibir en casa</div>
+<div class="anuncio">Envío <b>GRATIS</b> desde <span data-envio-gratis-desde>\$120.000</span> · Pagas al recibir</div>
 
 <header class="cab">
   <div class="cab-fila">
@@ -293,7 +293,7 @@ $o{contenido}
   <button type="button" id="cookies-ok">Entendido</button>
 </div>
 
-<script src="/assets/js/tienda.js?v=25"></script>
+<script src="/assets/js/tienda.js?v=26"></script>
 </body>
 </html>
 HTML
@@ -340,7 +340,7 @@ $a->{cuerpo}
   <section class="seccion-t" style="background: var(--hueso-2)" aria-labelledby="t-prods">
     <div class="contenedor blog-angosto">
       <h2 class="titulo-sec" id="t-prods" style="font-size: 30px">Snacks de este artículo</h2>
-      <p class="bajada" style="margin: 6px 0 18px">Naturales, de un solo ingrediente. Envío gratis desde <span data-envio-gratis-desde>\$70.000</span> y pagas al recibir.</p>
+      <p class="bajada" style="margin: 6px 0 18px">Naturales, de un solo ingrediente. Envío gratis desde <span data-envio-gratis-desde>\$120.000</span> y pagas al recibir.</p>
       <div class="blog-prods">
         $prods
       </div>

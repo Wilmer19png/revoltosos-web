@@ -151,6 +151,22 @@ async function armarAviso(sb: any, tipo: string, id: string): Promise<Aviso | nu
       url: '/pedidos/?tab=carritos', tag: 'carrito-' + id,
     };
   }
+  if (tipo === 'bonos') {
+    // id = fecha de hoy (YYYY-MM-DD): un aviso por día, con los bonos que vencen en 7 días o menos.
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(id)) return null;
+    const hoy = new Date(Date.now() - 5 * 3600 * 1000).toISOString().slice(0, 10);
+    if (id !== hoy) return null;
+    const limite = new Date(Date.parse(hoy) + 7 * 86400000).toISOString().slice(0, 10);
+    const { data: bs } = await sb.from('bonos').select('monto, vence').is('usado_pedido', null).gte('vence', hoy).lte('vence', limite);
+    if (!bs?.length) return null;
+    const suma = bs.reduce((s: number, x: { monto: number }) => s + x.monto, 0);
+    const hoyMismo = bs.filter((x: { vence: string }) => x.vence === hoy).length;
+    return {
+      title: '🎟️ ' + (bs.length === 1 ? '1 bono se vence' : bs.length + ' bonos se vencen') + ' esta semana',
+      body: 'Son ' + pesos(suma) + ' que tus clientes pueden usar' + (hoyMismo ? ' (' + hoyMismo + ' vence' + (hoyMismo === 1 ? '' : 'n') + ' hoy)' : '') + '. Toca para recordarles por WhatsApp.',
+      url: '/pedidos/?tab=bonos', tag: 'bonos-' + id,
+    };
+  }
   return null;
 }
 
@@ -177,7 +193,7 @@ Deno.serve(async (req) => {
     if (!admin) return json({ ok: false, error: 'Solo para admins' }, 401);
     aviso = { title: '🔔 Avisos activados', body: 'Así te llegarán los pedidos, carritos y reseñas nuevas.', url: '/pedidos/', tag: 'prueba' };
   } else {
-    if (!['pedido', 'resena', 'carrito'].includes(tipo) || !id) return json({ ok: false }, 400);
+    if (!['pedido', 'resena', 'carrito', 'bonos'].includes(tipo) || !id) return json({ ok: false }, 400);
     aviso = await armarAviso(sb, tipo, id);
     if (!aviso) return json({ ok: true, omitido: true });
     // Una sola vez por fila.

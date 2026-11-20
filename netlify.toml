@@ -75,3 +75,58 @@
   for = "/assets/data/*"
   [headers.values]
     Cache-Control = "public, max-age=604800"
+
+# Combos retirados en noviembre de 2026 (migración 027): sus links viejos (anuncios, WhatsApp)
+# llevan al combo nuevo más parecido.
+[[redirects]]
+  from = "/combo-cerdo/*"
+  to = "/combo-cerdito-crujiente/"
+  status = 301
+[[redirects]]
+  from = "/combo-cerdito-revoltoso/*"
+  to = "/combo-cerdito-crujiente/"
+  status = 301
+[[redirects]]
+  from = "/combo-mordedor-revoltoso/*"
+  to = "/combo-cerdo-patitas/"
+  status = 301
+[[redirects]]
+  from = "/combo-huesos-snacks/*"
+  to = "/combo-cerdo-patitas/"
+  status = 301
+[[redirects]]
+  from = "/combo-granja-revoltosa/*"
+  to = "/combo-despensa-crujiente/"
+  status = 301
+[[redirects]]
+  from = "/combo-revoltoso-variado/*"
+  to = "/combo-despensa-crujiente/"
+  status = 301
+[[redirects]]
+  from = "/combo-res-codornicitas/*"
+  to = "/combo-res-crujiente/"
+  status = 301
+[[redirects]]
+  from = "/combo-masticador-xl/*"
+  to = "/combo-masticador-grande/"
+  status = 301
+[[redirects]]
+  from = "/combo-huesos-revoltosos/*"
+  to = "/combo-duo-masticador/"
+  status = 301
+[[redirects]]
+  from = "/combo-codornicitas-patas/*"
+  to = "/combo-patitas-compartir/"
+  status = 301
+[[redirects]]
+  from = "/combo-pollo-loco/*"
+  to = "/combo-patitas-compartir/"
+  status = 301
+[[redirects]]
+  from = "/combo-codorniz-lover/*"
+  to = "/combo-favoritos-revoltosos/"
+  status = 301
+[[redirects]]
+  from = "/combo-michi-revoltoso/*"
+  to = "/combos/"
+  status = 301

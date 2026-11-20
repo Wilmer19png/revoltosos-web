@@ -53,7 +53,7 @@ const PRODUCTOS_SUGERIDOS = ['codornices', 'codorniz-entera'];
 
 // Respaldo por si Supabase no responde: la tienda sigue mostrando lo principal.
 const RESPALDO = {
-  ajustes: { envio_gratis_desde: 70000, envio_base: 20000, envio_departamentos: {}, prioritario: 5000 },
+  ajustes: { envio_gratis_desde: 120000, envio_base: 20000, envio_departamentos: {}, prioritario: 5000, pedido_minimo: 50000 },
   productos: [
     { id: 'codornices', nombre: 'Codornices deshidratadas', categoria: 'Codorniz', descripcion: 'Codorniz entera, deshidratada lentamente. Un solo ingrediente.', imagen: '/assets/img/productos/codornices-frasco-100g-600.jpg', ruta: '/codornices/', orden: 1 },
     { id: 'cajita-perros', nombre: 'Cajita para perros', categoria: 'Cajitas', descripcion: 'Patas de pollo, oreja de cerdo, codornicitas, codorniz entera y fémur de cerdo.', imagen: '/assets/img/productos/cajita-producto-fondo-blanco-600.jpg', ruta: '/cajita/', orden: 2 }
@@ -96,7 +96,8 @@ async function descargarCatalogo() {
       .catch(() => pedir('productos?select=id,nombre,categoria,descripcion,imagen,ruta,orden{extra}&order=orden', ',etiqueta')),
     rest('variantes?select=id,producto_id,nombre,detalle,precio,precio_antes,orden,imagen,envio_gratis&order=orden')
       .catch(() => pedir('variantes?select=id,producto_id,nombre,detalle,precio,precio_antes,orden{extra}&order=orden', ',imagen')),
-    rest('ajustes?select=envio_gratis_desde,envio_base,envio_departamentos,prioritario,envio_ciudades,wompi_activo,regalo_desde,regalo_variante&id=eq.1')
+    rest('ajustes?select=envio_gratis_desde,envio_base,envio_departamentos,prioritario,envio_ciudades,wompi_activo,regalo_desde,regalo_variante,pedido_minimo,bono_wompi,bono_dias&id=eq.1')
+      .catch(() => rest('ajustes?select=envio_gratis_desde,envio_base,envio_departamentos,prioritario,envio_ciudades,wompi_activo,regalo_desde,regalo_variante&id=eq.1'))
       .catch(() => rest('ajustes?select=envio_gratis_desde,envio_base,envio_departamentos,prioritario,envio_ciudades,wompi_activo&id=eq.1'))
       .catch(() => pedir('ajustes?select=envio_gratis_desde,envio_base,envio_departamentos,prioritario{extra}&id=eq.1', ',envio_ciudades'))
   ]);
@@ -143,6 +144,11 @@ let carrito = {};
 try { carrito = JSON.parse(leerL('rv-carrito') || '{}') || {}; } catch (e) { carrito = {}; }
 let cupon = null;
 try { cupon = JSON.parse(leer('rv-cupon') || 'null'); } catch (e) {}
+// Bono de Wompi del cliente (migración 029): se busca al escribir el celular en el formulario.
+// bonoCliente = { celular, monto, vence } · usarBono: el cliente lo puede guardar para después.
+let bonoCliente = null;
+let usarBono = true;
+const bonoAplicado = () => !!(bonoCliente && usarBono);
 
 function guardarCarrito() { guardarL('rv-carrito', JSON.stringify(carrito)); }
 
@@ -175,9 +181,17 @@ function cuentas(departamento, ciudad) {
   // Regalo (migración 024): mismo cálculo que crear-pedido (productos ya con cupón).
   const regaloDesde = T.ajustes.regalo_variante ? Number(T.ajustes.regalo_desde) || 0 : 0;
   const regalo = !!regaloDesde && unidades > 0 && neto >= regaloDesde;
+  // Pedido mínimo (migración 029): en productos, antes de cupón y bono. Igual que crear-pedido.
+  const minimo = Number(T.ajustes.pedido_minimo) || 0;
+  const puede = unidades > 0 && subtotal >= minimo;
+  // Bono de Wompi: se descuenta al final (no cuenta para el mínimo, el envío gratis ni el regalo).
+  const bono = puede && bonoAplicado() ? Math.min(bonoCliente.monto, neto) : 0;
   return {
     ls, subtotal, unidades, descuento, neto, gratis, porCombo,
-    regaloDesde, regalo,
+    regaloDesde, regalo, minimo, puede, bono,
+    faltaMinimo: Math.max(0, minimo - subtotal),
+    // 0: aún no puede pedir · 1: puede pedir · 2: envío gratis · 3: regalo
+    nivel: !puede ? 0 : regalo ? 3 : gratis ? 2 : 1,
     faltaRegalo: regaloDesde && !regalo ? Math.max(0, regaloDesde - neto) : 0,
     pctRegalo: regaloDesde ? Math.min(100, Math.round(neto / regaloDesde * 100)) : 0,
     ahorro: ahorroPromo + descuento,
@@ -191,17 +205,6 @@ function cuentas(departamento, ciudad) {
 function nombreRegalo() {
   const v = T.porId[T.ajustes.regalo_variante];
   return v ? nombreLargo(v) : 'Codornices de 50 g';
-}
-
-// Caja del regalo para el carrito: avance o «ganaste».
-function cajaRegalo(k) {
-  // Un letrero a la vez: el del regalo aparece solo cuando el envío ya es gratis.
-  if (!k.regaloDesde || !k.unidades || !(k.gratis || k.regalo)) return '';
-  if (k.regalo) {
-    return '<div class="caja regalo-caja ganado rv-pop"><p>' + ICONO.regalo + '<span><strong>¡Ganaste un regalo!</strong> Te llevas <b>' + esc(nombreRegalo()) + '</b> GRATIS con tu pedido.</span></p></div>';
-  }
-  return '<div class="caja regalo-caja"><p>' + ICONO.regalo + '<span>Te faltan <strong>' + pesos(k.faltaRegalo) + '</strong> para llevarte de regalo <b>' + esc(nombreRegalo()) + '</b>.</span></p>' +
-    '<div class="riel" role="progressbar" aria-label="Avance hacia el regalo" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + k.pctRegalo + '"><span style="width:' + Math.max(4, k.pctRegalo) + '%"></span></div></div>';
 }
 
 function agregar(id, n, opciones) {
@@ -255,10 +258,11 @@ function avisoAgregado(v, n) {
     '<div><strong>' + esc(prodDe(v).nombre) + '</strong><span>' + esc(nombreConCantidad(v, n)) + '</span></div>' +
     '<strong class="aviso-precio">' + pesos(v.precio * n) + '</strong></div>' +
     '<p class="aviso-total">Tu carrito: <b>' + k.unidades + (k.unidades === 1 ? ' producto' : ' productos') + ' · ' + pesos(k.neto) + '</b>' +
-    (k.gratis ? ' · <span class="verde">envío GRATIS</span>' : '') + '</p>' +
+    (k.gratis && k.puede ? ' · <span class="verde">envío GRATIS</span>' : '') + '</p>' +
+    (!k.puede ? '<p class="aviso-regalo">' + ICONO.candado + '<span>Te faltan <b>' + pesos(k.faltaMinimo) + '</b> para poder pedir</span></p>' : '') +
     (k.regalo ? '<p class="aviso-regalo">' + ICONO.regalo + '<span>¡Ganaste <b>' + esc(nombreRegalo()) + '</b> de regalo!</span></p>'
       : k.regaloDesde && k.gratis ? '<p class="aviso-regalo">' + ICONO.regalo + '<span>Te faltan <b>' + pesos(k.faltaRegalo) + '</b> para tu regalo</span></p>' : '') +
-    '<div class="aviso-botones"><button type="button" class="btn" data-ver-carrito>Ver mi carrito' + ICONO.flecha + '</button>' +
+    '<div class="aviso-botones"><button type="button" class="btn" data-ver-carrito>' + (k.puede ? 'Ver mi carrito' : 'Ver mi paquete') + ICONO.flecha + '</button>' +
     '<button type="button" class="aviso-seguir" data-cerrar-aviso>Seguir comprando</button></div>';
   t.hidden = false;
   ubicarAviso(t);
@@ -301,32 +305,110 @@ function lanzarConfeti(contenedor) {
   setTimeout(() => c.remove(), 3200);
 }
 
-/* ---------- Barras de envío gratis ---------- */
+/* ---------- Barra de metas: pedir · envío gratis · regalo (migración 029) ----------
+   Un camino con un premio por meta. Cada tramo se llena completo hasta su premio y el
+   premio se enciende: candado que se abre (ya puedes pedir), camión (envío gratis) y regalo. */
 
-function pintarBarraEnvio(el, k) {
-  if (!el.dataset.listo) {
-    el.innerHTML = '<div class="envio-barra-in"><p>' + ICONO.camion + '<span data-msg></span></p>' +
-      '<div class="riel" role="progressbar" aria-label="Avance hacia el envío gratis" aria-valuemin="0" aria-valuemax="100"><span></span></div></div>';
-    el.dataset.listo = '1';
+const CANDADO_ABIERTO = '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.8-1.2"/></svg>';
+
+function metasLista() {
+  const A = T.ajustes;
+  const l = [];
+  const min = Number(A.pedido_minimo) || 0;
+  if (min) l.push({ k: 'pedir', valor: min, nombre: 'Pedido mín.', hecho: 'Ya puedes pedir' });
+  l.push({ k: 'envio', valor: Number(A.envio_gratis_desde) || 0, nombre: 'Envío gratis', hecho: 'Envío gratis' });
+  const reg = A.regalo_variante ? Number(A.regalo_desde) || 0 : 0;
+  if (reg) l.push({ k: 'regalo', valor: reg, nombre: 'Regalo', hecho: 'Regalo' });
+  return l;
+}
+
+function textoMetas(k) {
+  const A = T.ajustes;
+  if (!k.unidades) {
+    return (k.minimo ? 'Pides desde <strong>' + pesos(k.minimo) + '</strong> · ' : '') + 'Envío <strong>GRATIS</strong> desde ' + pesos(A.envio_gratis_desde);
   }
-  const meta = pesos(T.ajustes.envio_gratis_desde);
-  const msg = $('[data-msg]', el);
-  // Ya con envío gratis, la barra empuja hacia el regalo.
-  if (k.regalo) msg.innerHTML = '<strong>¡Envío GRATIS y regalo desbloqueados!</strong>';
-  else if (k.gratis && k.regaloDesde) msg.innerHTML = '<strong>¡Envío GRATIS!</strong> Te faltan <strong>' + pesos(k.faltaRegalo) + '</strong> para tu regalo';
-  else if (k.gratis) msg.innerHTML = '<strong>¡Desbloqueaste el envío GRATIS!</strong>';
-  else if (!k.unidades) msg.innerHTML = 'Envío <strong>GRATIS</strong> desde ' + meta;
-  else msg.innerHTML = (k.pct >= 60 ? '¡Ya casi! ' : '') + 'Te faltan <strong>' + pesos(k.falta) + '</strong> para envío GRATIS';
-  el.classList.toggle('gratis', k.gratis);
-  el.classList.toggle('casi', !k.gratis && k.pct >= 60);
-  const riel = $('.riel', el);
-  riel.setAttribute('aria-valuenow', String(k.pct));
-  $('span', riel).style.width = (k.unidades ? Math.max(4, k.pct) : 0) + '%';
+  if (!k.puede) return 'Te faltan <strong>' + pesos(k.faltaMinimo) + '</strong> para poder pedir';
+  if (k.regalo) return '<strong>¡Envío GRATIS y regalo desbloqueados!</strong>';
+  if (k.gratis) return k.regaloDesde ? '<strong>¡Envío GRATIS!</strong> Te faltan <strong>' + pesos(k.faltaRegalo) + '</strong> para tu regalo' : '<strong>¡Envío GRATIS desbloqueado!</strong>';
+  return (k.minimo ? '<b class="metas-ok">Ya puedes pedir.</b> ' : '') + 'Te faltan <strong>' + pesos(k.falta) + '</strong> para el envío gratis';
+}
+
+function iconoMeta(m, hecho) {
+  if (m.k === 'pedir') return hecho ? CANDADO_ABIERTO : ICONO.candado;
+  return m.k === 'envio' ? ICONO.camion : ICONO.regalo;
+}
+
+// conEtiquetas: debajo de cada premio, su nombre y monto (en el carrito). En la barra de arriba solo los íconos.
+function pintarMetas(el, k, conEtiquetas) {
+  const lista = metasLista();
+  const firma = lista.map((m) => m.k + m.valor).join(',') + (conEtiquetas ? 'e' : '');
+  if (el.dataset.firma !== firma) {
+    el.innerHTML = '<div class="metas' + (conEtiquetas ? ' metas--etiquetas' : '') + '"><p class="metas-msg" data-msg aria-live="polite"></p>' +
+      '<div class="metas-camino" role="progressbar" aria-valuemin="0" aria-valuemax="' + lista.length + '">' +
+      lista.map((m) => '<span class="metas-tramo"><i></i></span><span class="metas-nodo" data-nodo="' + m.k + '"><span class="metas-ico"></span>' +
+        (conEtiquetas ? '<small></small>' : '') + '</span>').join('') + '</div></div>';
+    el.dataset.firma = firma;
+  }
+  $('[data-msg]', el).innerHTML = textoMetas(k);
+  const tramos = $$('.metas-tramo i', el);
+  const nodos = $$('.metas-nodo', el);
+  let hechas = 0;
+  lista.forEach((m, i) => {
+    const desde = i ? lista[i - 1].valor : 0;
+    const base = m.k === 'pedir' ? k.subtotal : k.neto;
+    const hecho = m.k === 'pedir' ? k.puede : m.k === 'envio' ? k.gratis && k.puede : k.regalo && k.puede;
+    const f = hecho ? 1 : (k.unidades ? Math.max(0, Math.min(1, (base - desde) / Math.max(1, m.valor - desde))) : 0);
+    if (hecho) hechas++;
+    tramos[i].style.width = Math.round(f * 100) + '%';
+    const n = nodos[i];
+    const actual = !hecho && (i === 0 || nodos[i - 1].classList.contains('hecho'));
+    n.classList.toggle('hecho', hecho);
+    n.classList.toggle('actual', actual);
+    $('.metas-ico', n).innerHTML = iconoMeta(m, hecho);
+    n.setAttribute('aria-label', (hecho ? m.hecho + ': listo' : m.nombre + ' desde ' + pesos(m.valor)));
+    const s = $('small', n);
+    if (s) s.innerHTML = hecho ? '<b>' + esc(m.hecho) + '</b>' : esc(m.nombre) + '<br>' + pesos(m.valor);
+  });
+  const camino = $('.metas-camino', el);
+  camino.setAttribute('aria-valuenow', String(hechas));
+  camino.setAttribute('aria-label', 'Metas cumplidas: ' + hechas + ' de ' + lista.length);
+}
+
+function pintarBarraEnvio(el, k) { pintarMetas(el, k, false); }
+
+/* Celebración al cumplir una meta: insignia, confeti y vibración. Al llegar al regalo, la ruleta. */
+const TEXTO_INSIGNIA = ['', 'Pedido desbloqueado', 'Envío gratis desbloqueado', 'Regalo desbloqueado'];
+function celebrar(nivel) {
+  let t = $('#insignia-meta');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'insignia-meta';
+    t.className = 'insignia-meta';
+    t.setAttribute('role', 'status');
+    document.body.appendChild(t);
+  }
+  t.innerHTML = '<span class="insignia-check">' + ICONO.check + '</span>' + TEXTO_INSIGNIA[nivel];
+  t.hidden = false;
+  t.classList.remove('rv-sube'); void t.offsetWidth; t.classList.add('rv-sube');
+  clearTimeout(celebrar.temp);
+  celebrar.temp = setTimeout(() => { t.hidden = true; }, 2600);
+  const carritoAbierto = $('#carrito') && $('#carrito').open;
+  lanzarConfeti(carritoAbierto ? $('[data-metas-panel]', $('#carrito')) : $('.cab [data-envio-barra]'));
+  if (!reducirMovimiento) { try { if (navigator.vibrate) navigator.vibrate([30, 40, 30]); } catch (e) {} }
+  if (nivel === 1) {
+    $$('[data-finalizar], [data-barra-btn]').forEach((b) => { b.classList.remove('rv-desbloqueo'); void b.offsetWidth; b.classList.add('rv-desbloqueo'); });
+  }
+  if (nivel === 3 && !leer('rv-ruleta')) {
+    guardar('rv-ruleta', '1');
+    setTimeout(abrirRuleta, 1300);
+  }
 }
 
 /* ---------- Pintar todo lo que depende del carrito ---------- */
 
-let estabaGratis = leer('rv-gratis') === '1';
+// Nivel de metas antes del último cambio. La primera pintada solo lo anota (no celebra al cargar la página).
+let nivelAntes = Number(leer('rv-nivel') || '0');
+let primeraPintada = true;
 
 function actualizar() {
   const k = cuentas();
@@ -345,16 +427,15 @@ function actualizar() {
     b.innerHTML = q ? ICONO.check + 'Agregado (' + q + ')' : ICONO.mas + 'Agregar';
   });
   if ($('#elegir') && $('#elegir').open) pintarElegir();
+  if (compra.variante && T.porId[compra.variante] && $('#compra-agregar')) pintarCompraPaquete(T.porId[compra.variante]);
   pintarBarraFija(k);
   if ($('#carrito') && $('#carrito').open) pintarCarrito();
   if ($('#pedido-modal') && $('#pedido-modal').open && !$('#pedido-modal').dataset.gracias) pintarResumenPedido();
 
-  if (k.gratis && !estabaGratis) {
-    const visible = ($('#carrito') && $('#carrito').open) ? $('.envio-caja', $('#carrito')) : $('.cab [data-envio-barra]');
-    lanzarConfeti(visible);
-  }
-  estabaGratis = k.gratis;
-  guardar('rv-gratis', k.gratis ? '1' : '0');
+  if (k.nivel > nivelAntes && !primeraPintada && catalogoListo) celebrar(k.nivel);
+  if (catalogoListo) primeraPintada = false;
+  nivelAntes = k.nivel;
+  guardar('rv-nivel', String(k.nivel));
 }
 
 /* ---------- Barra fija de abajo ---------- */
@@ -374,7 +455,11 @@ function pintarBarraFija(k) {
   if (!barra) return;
   mostrarBarra();
   const btn = $('[data-barra-btn]', barra);
-  btn.innerHTML = (k.unidades ? 'Finalizar pedido (' + k.unidades + ')' : 'Pedir ahora') + ICONO.flecha;
+  // Por debajo del mínimo el botón dice cuánto falta (y abre el carrito con sugerencias para llegar).
+  btn.classList.toggle('btn-falta', k.unidades > 0 && !k.puede);
+  btn.innerHTML = !k.unidades ? 'Pedir ahora' + ICONO.flecha
+    : !k.puede ? ICONO.candado + 'Te faltan ' + pesos(k.faltaMinimo) + ' para pedir'
+    : 'Finalizar pedido (' + k.unidades + ')' + ICONO.flecha;
   const ahorro = $('[data-barra-ahorro]', barra);
   ahorro.hidden = !k.ahorro;
   ahorro.innerHTML = ICONO.etiqueta + 'Estás ahorrando ' + pesos(k.ahorro);
@@ -638,6 +723,7 @@ function pintarCompra() {
   const gratisTxt = $('[data-envio-gratis-desde]');
   if (gratisTxt) gratisTxt.textContent = pesos(T.ajustes.envio_gratis_desde);
   if (caja) caja.dataset.variante = v.id;
+  pintarCompraPaquete(v);
   // Al cambiar de tamaño se muestra su foto: la miniatura marcada con data-variante,
   // o la foto propia del tamaño (columna Foto en el gestor).
   if (compra.foto !== v.id) {
@@ -647,6 +733,41 @@ function pintarCompra() {
     // En la primera pintada no se toca la foto si ya es la correcta (así se aprovecha la versión liviana).
     if (mini) { if (!primera || mini.getAttribute('aria-pressed') !== 'true') mostrarFoto(mini.dataset.src, mini.dataset.alt, mini); }
     else if (v.imagen) mostrarFoto(v.imagen, nombreLargo(v), null);
+  }
+}
+
+// Pedido mínimo (migración 029): los snacks sueltos se compran dentro de un paquete.
+// El botón dice «Agregar a mi paquete» y una nota explica cómo se pide. «Pedir contra entrega»
+// solo aparece si con este producto el carrito ya llega al mínimo.
+function pintarCompraPaquete(v) {
+  const p = prodDe(v);
+  const esCombo = p && p.categoria === 'Combos';
+  const minimo = Number(T.ajustes.pedido_minimo) || 0;
+  const btn = $('#compra-agregar');
+  if (btn) {
+    const icono = $('svg', btn);
+    btn.textContent = esCombo || !minimo ? 'Agregar al carrito' : 'Agregar a mi paquete';
+    if (icono) btn.prepend(icono);
+  }
+  let nota = $('#compra-paquete');
+  if (!nota && minimo && !esCombo) {
+    const precio = $('#compra-precio');
+    if (precio) {
+      nota = document.createElement('div');
+      nota.id = 'compra-paquete';
+      nota.className = 'compra-paquete';
+      precio.after(nota);
+    }
+  }
+  if (nota) {
+    nota.hidden = esCombo || !minimo;
+    nota.innerHTML = ICONO.etiqueta + '<span><strong>Este snack va dentro de un paquete.</strong> Júntalo con un combo o con otros snacks: desde ' + pesos(minimo) + ' ya puedes pedir.</span>';
+  }
+  const pedir = $('#compra-pedir');
+  if (pedir) {
+    const k = cuentas();
+    const despues = k.subtotal + (carrito[v.id] ? 0 : v.precio * compra.cantidad);
+    pedir.hidden = !!minimo && despues < minimo;
   }
 }
 
@@ -871,7 +992,16 @@ function crearDialogos() {
       if (d === m && d.dataset.gracias) reiniciarFormulario();
     });
   });
-  $('[data-finalizar]', c).addEventListener('click', () => { cerrarDialogo(c); abrirPedido(); });
+  $('[data-finalizar]', c).addEventListener('click', () => {
+    // Por debajo del mínimo no se abre el formulario: se muestran las sugerencias para llegar.
+    if (!cuentas().puede) {
+      const sug = $('#sug-minimo', c);
+      if (sug) { sug.scrollIntoView({ behavior: reducirMovimiento ? 'auto' : 'smooth', block: 'center' }); sug.classList.remove('rv-meneo-1'); void sug.offsetWidth; sug.classList.add('rv-meneo-1'); }
+      return;
+    }
+    cerrarDialogo(c);
+    abrirPedido();
+  });
   iniciarFormulario();
   iniciarAvisoSalida();
 }
@@ -961,19 +1091,14 @@ function pintarCarrito() {
   const k = cuentas();
   $('[data-carrito-n]', d).textContent = k.unidades ? '(' + k.unidades + ')' : '';
   $('[data-carrito-pie]', d).hidden = !k.unidades;
-  $('[data-carrito-pie] p', d).innerHTML = T.ajustes.wompi_activo ? '<b>Pagas al recibir</b> o en línea con Wompi' : '<b>Pagas al recibir</b> · no pagas nada hoy';
   const cuerpo = $('[data-carrito-cuerpo]', d);
   if (!k.unidades) {
     cuerpo.innerHTML = '<div class="carrito-vacio"><p>Tu carrito está vacío.</p><a class="btn" href="/#catalogo">Ver los snacks</a></div>';
     return;
   }
   const valorCupon = $('#cupon-input') ? $('#cupon-input').value : '';
-  let html = '<div class="caja envio-caja' + (k.gratis ? ' gratis' : (k.pct >= 60 ? ' casi' : '')) + '">';
-  html += k.gratis
-    ? '<p class="rv-pop"><strong>¡Desbloqueaste el envío GRATIS!</strong> Te ahorraste el envío.</p>'
-    : '<p>' + (k.pct >= 60 ? '¡Ya casi! ' : '') + 'Te faltan <strong style="color: var(--rosa)">' + pesos(k.falta) + '</strong> para que tu envío sea totalmente <strong>GRATIS</strong>.</p>';
-  html += '<div class="riel" role="progressbar" aria-label="Avance hacia el envío gratis" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + k.pct + '"><span style="width:' + Math.max(4, k.pct) + '%"></span></div></div>';
-  html += cajaRegalo(k);
+  // Arriba, el camino de metas con su nombre y monto (se pinta después de armar el HTML).
+  let html = '<div class="caja metas-caja' + (k.puede ? '' : ' falta') + '" data-metas-panel></div>';
 
   k.ls.forEach((l) => {
     html += '<div class="item-c"><img src="' + esc(fotoDe(l.v)) + '" alt="" width="72" height="72">' +
@@ -983,7 +1108,19 @@ function pintarCarrito() {
       '<strong>' + pesos(l.v.precio * l.q) + '</strong></div></div></div>';
   });
 
-  if (!k.gratis) {
+  if (!k.puede) {
+    // Por debajo del mínimo: hasta 3 snacks con los que ya alcanza (o el más grande, si ninguno alcanza solo).
+    const libres = T.variantes.filter((v) => !carrito[v.id]);
+    const alcanzan = libres.filter((v) => v.precio >= k.faltaMinimo).sort((a, b) => a.precio - b.precio).slice(0, 3);
+    const lista = alcanzan.length ? alcanzan : libres.slice().sort((a, b) => b.precio - a.precio).slice(0, 1);
+    if (lista.length) {
+      html += '<div class="sug-minimo" id="sug-minimo"><strong>' + (alcanzan.length ? 'Con uno de estos ya puedes pedir' : 'Súmale y te acercas al mínimo') + '</strong><div class="sug-minimo-lista">' +
+        lista.map((v) => '<div class="sug-m"><img src="' + esc(fotoDe(v)) + '" alt="" width="120" height="90" loading="lazy">' +
+          '<span class="sug-m-nom">' + esc(prodDe(v).nombre) + '<small>' + esc(v.nombre) + '</small></span><b>' + pesos(v.precio) + '</b>' +
+          '<button type="button" data-agregar-sug="' + esc(v.id) + '" aria-label="Agregar ' + esc(nombreLargo(v)) + '">+ Agregar</button></div>').join('') +
+        '</div><a class="sug-combos" href="/combos/">¿Prefieres un combo? Ver los combos</a></div>';
+    }
+  } else if (!k.gratis) {
     const sug = sugerencia(k);
     if (sug) {
       html += '<div class="sugerencia"><img src="' + esc(fotoDe(sug)) + '" alt="" width="56" height="56"><div><strong>' +
@@ -1016,6 +1153,14 @@ function pintarCarrito() {
     '<div class="total"><span>Total</span><span>' + pesos(k.neto) + (k.gratis ? '' : ' + envío') + '</span></div>' +
     (k.ahorro ? '<div class="ahorro-caja rv-pop"><span>' + ICONO.etiqueta + 'Estás ahorrando</span><strong>' + pesos(k.ahorro) + '</strong></div>' : '') + '</div>';
   cuerpo.innerHTML = html;
+  pintarMetas($('[data-metas-panel]', cuerpo), k, true);
+  // Botón de abajo: por debajo del mínimo dice cuánto falta y lleva a las sugerencias.
+  const fin = $('[data-finalizar]', d);
+  fin.classList.toggle('btn-falta', !k.puede);
+  fin.setAttribute('aria-disabled', String(!k.puede));
+  fin.innerHTML = k.puede ? 'Finalizar pedido' + ICONO.flecha : ICONO.candado + 'Te faltan ' + pesos(k.faltaMinimo) + ' para pedir';
+  $('[data-carrito-pie] p', d).innerHTML = !k.puede ? 'Todos los pedidos son desde <b>' + pesos(k.minimo) + '</b> en productos'
+    : T.ajustes.wompi_activo ? '<b>Pagas al recibir</b> o en línea con Wompi' : '<b>Pagas al recibir</b> · no pagas nada hoy';
 }
 
 // El tamaño más barato que alcanza para el envío gratis; si ninguno alcanza, el más caro.
@@ -1092,6 +1237,7 @@ function plantillaFormulario() {
     '<div class="mini-resumen" data-mini-resumen></div>' +
     '<div class="campo"><label for="f-nombre">Nombre completo</label><input id="f-nombre" name="nombre" type="text" autocomplete="name" placeholder="Ej: María Pérez" required maxlength="120" aria-describedby="e-nombre"><span class="error" id="e-nombre"></span></div>' +
     '<div class="campo"><label for="f-celular">Celular (WhatsApp)</label><input id="f-celular" name="celular" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="300 123 4567" required maxlength="16" aria-describedby="e-celular"><span class="error" id="e-celular"></span></div>' +
+    '<div class="bono-caja" data-bono-caja hidden></div>' +
     '<div class="campos-2">' +
     '<div class="campo"><label for="f-departamento">Departamento</label><select id="f-departamento" name="departamento" autocomplete="address-level1" required aria-describedby="e-departamento"><option value="">Elige</option>' +
     DEPARTAMENTOS.map((d) => '<option>' + d + '</option>').join('') + '</select><span class="error" id="e-departamento"></span></div>' +
@@ -1106,7 +1252,7 @@ function plantillaFormulario() {
     '<div class="mascotas"><button type="button" class="mascota" aria-pressed="false">Perro pequeño</button><button type="button" class="mascota" aria-pressed="false">Perro mediano</button><button type="button" class="mascota" aria-pressed="false">Perro grande</button><button type="button" class="mascota" aria-pressed="false">Gato</button></div></fieldset>' +
     '<fieldset class="metodos" data-metodos hidden><legend style="font-size: 15px; margin-bottom: 8px">¿Cómo quieres pagar?</legend>' +
     '<label class="metodo"><input type="radio" name="metodo_pago" value="contraentrega" checked><span><strong>Pagar al recibir <em class="recomendado">Recomendado</em></strong><span>Pagas en efectivo cuando te llegue.</span></span><b class="metodo-precio" data-precio-metodo></b></label>' +
-    '<label class="metodo"><input type="radio" name="metodo_pago" value="wompi"><span><strong>Pagar ahora</strong><span>Tarjeta, PSE, Nequi o Bancolombia, con Wompi.</span></span><b class="metodo-precio" data-precio-metodo></b></label></fieldset>' +
+    '<label class="metodo"><input type="radio" name="metodo_pago" value="wompi"><span><strong>Pagar ahora</strong><span>Tarjeta, PSE, Nequi o Bancolombia, con Wompi.</span><span class="metodo-bono" data-bono-wompi hidden></span></span><b class="metodo-precio" data-precio-metodo></b></label></fieldset>' +
     '<label class="acepto prio-linea"><input type="checkbox" id="f-prioritario" name="prioritario"><span>Agrega <strong>Envío Prioritario</strong> por solo <strong data-valor-prioritario></strong> COP</span></label>' +
     '<label class="acepto"><input type="checkbox" id="f-acepto" name="acepto" required aria-describedby="e-acepto"><span>Autorizo el tratamiento de mis datos para gestionar mi pedido, según la <a href="/privacidad.html" target="_blank" rel="noopener">política de datos</a> (Ley 1581 de 2012).</span></label>' +
     '<span class="error" id="e-acepto" style="margin-top: -8px"></span>' +
@@ -1172,11 +1318,13 @@ function cuentasArriba(k, ciudad, prio, wompi) {
   const nota = k.gratis
     ? '<p class="mr-nota ok">' + (k.porCombo ? 'Tu combo incluye el envío.' : 'Tu pedido supera ' + pesos(T.ajustes.envio_gratis_desde) + ': no pagas envío.') + '</p>'
     : '<p class="mr-nota">Agrega <strong>' + pesos(k.falta) + '</strong> más en productos y tu envío es <strong>GRATIS</strong>.</p>';
-  const total = k.neto + (k.gratis ? 0 : (k.envio || 0)) + prio;
+  const total = k.neto - k.bono + (k.gratis ? 0 : (k.envio || 0)) + prio;
   return '<div class="mr-cuentas">' +
     (k.descuento ? fila('Cupón ' + esc(cupon.codigo), '−' + pesos(k.descuento), 'mr-verde') : '') +
     envio + nota +
     (prio ? fila('Envío prioritario', pesos(prio)) : '') +
+    (k.bono ? fila(ICONO.cupon + 'Bono Wompi', '−' + pesos(k.bono), 'mr-verde') +
+      '<p class="mr-nota ok">El mínimo, el envío gratis y el regalo se cuentan con tus productos, antes del bono.</p>' : '') +
     fila('<strong>' + (wompi ? 'Total a pagar' : 'Total a pagar al recibir') + '</strong>', '<strong>' + pesos(total) + (k.gratis || k.envio != null ? '' : ' <small>+ envío</small>') + '</strong>', 'mr-total') +
     (k.ahorro ? '<p class="mr-nota ok">' + ICONO.etiqueta + 'Estás ahorrando <strong>' + pesos(k.ahorro) + '</strong></p>' : '') +
     '</div>';
@@ -1196,8 +1344,9 @@ function pintarResumenPedido() {
   // Arriba, de una vez: si el envío es gratis o cuánto cuesta, y el total.
   $('[data-mini-resumen]', d).innerHTML = primera ? miniResumen(k, cuentasArriba(k, form.ciudad.value, prio, wompi)) : '<div class="mr-cab"><strong>Tu carrito está vacío</strong></div>';
 
-  const total = k.neto + (k.gratis ? 0 : (k.envio || 0)) + prio;
+  const total = k.neto - k.bono + (k.gratis ? 0 : (k.envio || 0)) + prio;
   const totalTxt = pesos(total) + (dep || k.gratis ? '' : ' + envío');
+  pintarBono(form, k);
   $$('[data-precio-metodo]', d).forEach((b) => { b.textContent = totalTxt; });
   if (!enviando) pintarBoton(form, total);
   const wa = $('[data-wa-pedido]', d);
@@ -1205,11 +1354,55 @@ function pintarResumenPedido() {
   return total;
 }
 
+/* Bono de Wompi (migración 029): al escribir un celular válido se pregunta si tiene un bono vigente.
+   Si tiene, aparece aplicado; el cliente lo puede guardar para otra compra. */
+const fechaLarga = (iso) => {
+  try { return new Date(iso + 'T12:00:00').toLocaleDateString('es-CO', { day: 'numeric', month: 'long' }); } catch (e) { return iso; }
+};
+const diasHasta = (iso) => Math.max(0, Math.round((new Date(iso + 'T12:00:00') - new Date(new Date().toDateString() + ' 12:00')) / 86400000));
+let bonoBuscado = '';
+async function buscarBono(form) {
+  const cel = normalizarCelular(form.celular.value);
+  if (cel === bonoBuscado) return;
+  bonoBuscado = cel;
+  if (bonoCliente && bonoCliente.celular !== cel) { bonoCliente = null; pintarResumenPedido(); }
+  if (!cel) return;
+  try {
+    const r = await rest('rpc/bono_disponible', { method: 'POST', body: JSON.stringify({ p_celular: cel }) });
+    if (bonoBuscado !== cel) return; // cambió el celular mientras llegaba la respuesta
+    bonoCliente = r && r.monto ? { celular: cel, monto: Number(r.monto), vence: r.vence } : null;
+    usarBono = true;
+  } catch (e) { bonoCliente = null; }
+  pintarResumenPedido();
+}
+
+function pintarBono(form, k) {
+  const caja = $('[data-bono-caja]', form);
+  if (caja) {
+    caja.hidden = !bonoCliente;
+    if (bonoCliente) {
+      const dias = diasHasta(bonoCliente.vence);
+      caja.classList.toggle('apagado', !usarBono);
+      caja.innerHTML = ICONO.cupon + '<span><strong>Tienes un bono de ' + pesos(bonoCliente.monto) + '</strong>' +
+        (dias === 0 ? 'Vence hoy' : 'Te ' + (dias === 1 ? 'queda 1 día' : 'quedan ' + dias + ' días') + ' para usarlo') +
+        (!k.puede ? '' : usarBono ? '' : ' · lo guardas para después') + '</span>' +
+        '<button type="button" data-bono-usar aria-pressed="' + usarBono + '">' + (usarBono ? ICONO.check + 'Aplicado' : 'Usar') + '</button>';
+    }
+  }
+  const promo = $('[data-bono-wompi]', form);
+  const monto = Number(T.ajustes.bono_wompi) || 0;
+  if (promo) {
+    promo.hidden = !monto;
+    promo.innerHTML = ICONO.cupon + '<span><b>Te regalamos ' + pesos(monto) + '</b> para tu próximo pedido</span>';
+  }
+}
+
 let checkoutIniciado = false;
 function abrirPedido() {
   const d = $('#pedido-modal');
   if (d.dataset.gracias) reiniciarFormulario();
-  if (!cuentas().unidades) { abrirCarrito(); return; }
+  // Vacío o por debajo del pedido mínimo: el carrito explica cuánto falta y sugiere cómo llegar.
+  if (!cuentas().puede) { abrirCarrito(); return; }
   pintarResumenPedido();
   abrirDialogo(d);
   if (!checkoutIniciado) {
@@ -1336,7 +1529,12 @@ function iniciarFormulario() {
   $$('[name="metodo_pago"]', form).forEach((r) => r.addEventListener('change', pintarResumenPedido));
   form.addEventListener('click', (e) => {
     if (e.target.closest('[data-mr-mas]')) { miniAbierto = !miniAbierto; pintarResumenPedido(); }
+    if (e.target.closest('[data-bono-usar]')) { usarBono = !usarBono; pintarResumenPedido(); }
   });
+  form.celular.addEventListener('input', () => buscarBono(form));
+  form.celular.addEventListener('change', () => buscarBono(form));
+  bonoBuscado = '';
+  if (form.celular.value) buscarBono(form);
   // Carrito abandonado (migración 023): se guarda solo con celular válido y la casilla de datos marcada.
   ['input', 'change'].forEach((ev) => form.addEventListener(ev, (e) => {
     if (['nombre', 'celular', 'departamento', 'ciudad', 'acepto'].includes(e.target.name)) programarCarritoGuardado();
@@ -1374,7 +1572,7 @@ async function enviarPedido(e) {
     return;
   }
   const k = cuentas(form.departamento.value, form.ciudad.value);
-  if (!k.unidades) { cerrarDialogo($('#pedido-modal')); abrirCarrito(); return; }
+  if (!k.puede) { cerrarDialogo($('#pedido-modal')); abrirCarrito(); return; }
 
   enviando = true;
   const btn = $('#btn-pagar');
@@ -1398,6 +1596,7 @@ async function enviarPedido(e) {
     indicaciones: form.indicaciones.value.trim(),
     prioritario: form.prioritario.checked,
     metodo_pago: metodoDe(form),
+    usar_bono: bonoAplicado() && bonoCliente.celular === normalizarCelular(form.celular.value),
     para_quien: Array.from(mascotas),
     utm_source: leer('rv-utm_source') || '',
     utm_medium: leer('rv-utm_medium') || '',
@@ -1442,6 +1641,12 @@ async function enviarPedido(e) {
       guardar('rv-cupon', '');
       pintarResumenPedido();
       errorGeneral.textContent = 'El cupón ya no es válido, lo quitamos. Revisa el total y vuelve a confirmar.';
+    } else if (err.campo === 'bono') {
+      bonoCliente = null;
+      pintarResumenPedido();
+      errorGeneral.textContent = 'Tu bono ya no está disponible (se usó o venció), lo quitamos. Revisa el total y vuelve a confirmar.';
+    } else if (err.campo === 'minimo') {
+      errorGeneral.textContent = err.message + '. Agrega otro snack desde el carrito y vuelve a confirmar.';
     } else {
       const texto = 'Hola, quiero pedir: ' + k.ls.map((l) => l.q + ' × ' + nombreLargo(l.v)).join(', ') + '. Mis datos: ' + datos.nombre + ', ' + datos.direccion + ', ' + datos.barrio + ', ' + datos.ciudad + ' - ' + datos.departamento + '.';
       const wa = '<a href="https://wa.me/' + CONFIG.WHATSAPP + '?text=' + encodeURIComponent(texto) + '" target="_blank" rel="noopener">';
@@ -1478,6 +1683,8 @@ function pedidoListo(datos, r, unidades, eventId, pago) {
   mostrarGracias(datos, r, pago);
   carrito = {};
   cupon = null;
+  bonoCliente = null;
+  bonoBuscado = '';
   guardarCarrito();
   guardar('rv-cupon', '');
   actualizar();
@@ -1580,6 +1787,20 @@ async function volverDeWompi() {
   } catch (e) { /* sin respuesta: el pedido quedó guardado y el gestor verá el pago cuando Wompi avise */ }
 }
 
+// Pagó con Wompi: le mostramos el bono que ganó para el próximo pedido (lo crea wompi-eventos al aprobarse).
+function boletaBono(datos, pago) {
+  const monto = Number(T.ajustes.bono_wompi) || 0;
+  if (!monto || (pago !== 'aprobado' && pago !== 'pendiente')) return '';
+  const cel = String(datos.celular || '').slice(2);
+  const vence = new Date(Date.now() + (Number(T.ajustes.bono_dias) || 30) * 86400000).toISOString().slice(0, 10);
+  return '<div class="boleta-bono rv-pop"><span class="boleta-rotulo">TU BONO DE REGALO</span>' +
+    '<strong class="boleta-valor">' + pesos(monto) + '</strong><span>para tu próximo pedido</span><hr>' +
+    '<span class="boleta-nota">' + (pago === 'pendiente' ? 'Te queda apenas se apruebe tu pago. ' : '') +
+    'Queda guardado con tu celular <b>' + esc(cel.slice(0, 3)) + ' ••• ' + esc(cel.slice(-4)) + '</b>: no tienes que copiar ningún código.</span>' +
+    '<span class="boleta-vence">' + ((Number(T.ajustes.bono_dias) || 30) === 30 ? 'Dura 1 mes' : 'Dura ' + T.ajustes.bono_dias + ' días') + ': úsalo antes del ' + esc(fechaLarga(vence)) + '</span></div>' +
+    '<p class="boleta-letra">Un bono por cada pedido pagado con Wompi. Se usa en un solo pedido y no se cambia por dinero.</p>';
+}
+
 function mostrarGracias(datos, r, pago) {
   const d = $('#pedido-modal');
   d.dataset.gracias = '1';
@@ -1598,10 +1819,12 @@ function mostrarGracias(datos, r, pago) {
       ? '<div class="verde"><span>' + i.cantidad + ' × ' + esc(i.nombre) + '</span><span>GRATIS</span></div>'
       : '<div><span>' + i.cantidad + ' × ' + esc(i.nombre) + '</span><span>' + pesos(i.precio * i.cantidad) + '</span></div>')).join('') +
     (r.descuento ? '<div class="verde"><span>Cupón</span><span>−' + pesos(r.descuento) + '</span></div>' : '') +
+    (r.bono ? '<div class="verde"><span>Bono Wompi</span><span>−' + pesos(r.bono) + '</span></div>' : '') +
     '<div><span>Envío</span><span' + (r.envio ? '' : ' class="verde"') + '>' + (r.envio ? pesos(r.envio) : 'GRATIS') + '</span></div>' +
     (r.prioritario ? '<div><span>Envío prioritario</span><span>' + pesos(r.prioritario) + '</span></div>' : '') +
     '<hr class="perforado"><div class="resumen-total"><strong>' + (pago === 'aprobado' ? 'Pagado con Wompi' : pago === 'pendiente' ? 'Pago en verificación' : 'Pagas al recibir') + '</strong><span>' + pesos(r.total) + '</span></div>' +
     '<p style="margin-top: 12px; font-size: 14px; color: var(--tinta-2)">' + esc([datos.direccion, datos.barrio, datos.ciudad + ' - ' + datos.departamento].join(', ')) + '</p></div>' +
+    boletaBono(datos, pago) +
     '<a class="btn btn--verde" href="https://wa.me/' + CONFIG.WHATSAPP + '?text=' + encodeURIComponent(msg) + '" target="_blank" rel="noopener">' + ICONO.whatsapp + 'Escríbenos por WhatsApp</a>' +
     '<button type="button" class="btn btn--borde" data-cerrar>Seguir mirando</button></div>';
   $('#t-gracias').focus();
@@ -2068,6 +2291,98 @@ function iniciarClicsWhatsapp() {
   }, true);
 }
 
+/* ---------- Ruleta del regalo (al pasar ajustes.regalo_desde) ----------
+   Es solo una animación: siempre cae en el regalo (ajustes.regalo_variante) y lo dice abajo.
+   Las demás porciones muestran otros snacks de la tienda con su foto. */
+
+function porcionesRuleta() {
+  const reg = T.porId[T.ajustes.regalo_variante];
+  const vistos = {};
+  const otros = [];
+  T.variantes.forEach((v) => {
+    const p = prodDe(v);
+    if (!p || p.categoria === 'Combos' || vistos[p.id] || (reg && p.id === reg.producto_id)) return;
+    vistos[p.id] = true;
+    otros.push({ nombre: p.nombre.replace(/ deshidratadas?$/i, ''), foto: fotoDe(v) });
+  });
+  const primera = { nombre: reg ? prodDe(reg).nombre.replace(/ deshidratadas?$/i, '') + ' ' + reg.nombre.replace(/^Bolsa /i, '') : 'Codornices 50 g', foto: reg ? fotoDe(reg) : '/assets/img/productos/codornices-bolsa-50g-600.jpg' };
+  const lista = [primera].concat(otros.slice(0, 7));
+  while (lista.length < 8) lista.push(otros[lista.length % Math.max(1, otros.length)] || primera);
+  return lista;
+}
+
+function abrirRuleta() {
+  if ($('#ruleta')) $('#ruleta').remove();
+  const reg = T.porId[T.ajustes.regalo_variante];
+  const nombreReg = nombreRegalo();
+  const fotoReg = reg ? fotoDe(reg) : '/assets/img/productos/codornices-bolsa-50g-600.jpg';
+  const d = document.createElement('dialog');
+  d.id = 'ruleta';
+  d.className = 'ruleta';
+  d.setAttribute('aria-labelledby', 'ruleta-titulo');
+  const porciones = porcionesRuleta();
+  const focos = Array.from({ length: 16 }, (_, i) => '<i style="--a:' + (i * 22.5) + 'deg;--d:' + (i % 2 ? '0s' : 'var(--vel)') + '"></i>').join('');
+  const chispas = Array.from({ length: 10 }, (_, i) => {
+    const a = (i / 10) * Math.PI * 2 + 0.3;
+    return '<svg viewBox="0 0 24 24" style="left:calc(50% + ' + Math.round(Math.cos(a) * 160) + 'px - 9px);top:calc(50% + ' + Math.round(Math.sin(a) * 160) + 'px - 9px);animation-delay:' + (i * 90) + 'ms"><path d="M12 0l2.6 9.4L24 12l-9.4 2.6L12 24l-2.6-9.4L0 12l9.4-2.6z"/></svg>';
+  }).join('');
+  d.innerHTML = '<div class="ruleta-v">' +
+    '<div class="ruleta-rayos" aria-hidden="true"></div>' +
+    '<div class="ruleta-cab" data-ruleta-antes><span class="ruleta-rotulo">LLEGASTE A ' + esc(pesos(T.ajustes.regalo_desde)) + '</span><h2 id="ruleta-titulo">Gira y mira tu regalo</h2></div>' +
+    '<div class="ruleta-cab" data-ruleta-despues hidden><span class="ruleta-rotulo ok">TU REGALO</span><h2>' + esc(nombreReg) + '</h2></div>' +
+    '<div class="ruleta-zona"><div class="ruleta-escala">' +
+      '<svg class="ruleta-puntero" viewBox="0 0 40 46" aria-hidden="true"><path d="M20 44 3 9a6 6 0 0 1 5.4-8.6h23.2A6 6 0 0 1 37 9z"/><circle cx="20" cy="13" r="5"/></svg>' +
+      '<div class="ruleta-aro">' + focos + '</div>' +
+      '<div class="ruleta-rueda" role="img" aria-label="Ruleta con fotos de los snacks Revoltosos">' +
+        porciones.map((p, i) => '<span class="ruleta-div" style="--a:' + (i * 45) + 'deg"></span>').join('') +
+        porciones.map((p, i) => '<div class="ruleta-porcion' + (i === 0 ? ' gana' : '') + '" style="--a:' + (i * 45 + 22.5) + 'deg;--c:' + (i % 2 ? '#2A231D' : '#FFFFFF') + '">' +
+          '<img src="' + esc(p.foto) + '" alt="" width="46" height="46"><span>' + esc(p.nombre) + '</span></div>').join('') +
+        '<div class="ruleta-brillo"></div></div>' +
+      '<div class="ruleta-centro"><img src="' + esc(fotoReg) + '" alt="" width="68" height="68"></div>' +
+      '<div class="ruleta-chispas" aria-hidden="true">' + chispas + '</div>' +
+    '</div></div>' +
+    '<div class="ruleta-premio" data-ruleta-despues hidden><img src="' + esc(fotoReg) + '" alt="" width="56" height="56"><div><strong>' + esc(nombreReg) + '</strong><span>Va gratis dentro de tu pedido</span></div><b>$0</b></div>' +
+    '<div class="ruleta-acciones">' +
+      '<button type="button" class="btn ruleta-girar" data-ruleta-girar>Girar la ruleta</button>' +
+      '<button type="button" class="btn" data-ruleta-seguir hidden>Seguir con mi pedido</button>' +
+      '<button type="button" class="ruleta-omitir" data-ruleta-omitir>Omitir animación</button>' +
+      '<p class="ruleta-legal">La ruleta es solo una animación, no es un sorteo. Desde ' + esc(pesos(T.ajustes.regalo_desde)) + ' el regalo siempre es ' + esc(nombreReg.toLowerCase().indexOf('codorn') >= 0 ? 'una bolsa de codornices de 50 g' : nombreReg) + '.</p>' +
+    '</div></div>';
+  document.body.appendChild(d);
+  const rueda = $('.ruleta-rueda', d);
+  const FINAL = 360 * 7 - 22.5;
+  let temp = null;
+  const mostrarResultado = (sinGiro) => {
+    clearTimeout(temp);
+    if (sinGiro) { rueda.style.transition = 'none'; rueda.style.transform = 'rotate(' + FINAL + 'deg)'; }
+    d.classList.remove('girando');
+    d.classList.add('listo');
+    $$('[data-ruleta-antes]', d).forEach((x) => { x.hidden = true; });
+    $$('[data-ruleta-despues]', d).forEach((x) => { x.hidden = false; });
+    $('[data-ruleta-girar]', d).hidden = true;
+    $('[data-ruleta-omitir]', d).hidden = true;
+    const seguir = $('[data-ruleta-seguir]', d);
+    seguir.hidden = false;
+    seguir.focus();
+    lanzarConfeti($('.ruleta-v', d));
+    if (!reducirMovimiento) { try { if (navigator.vibrate) navigator.vibrate([40, 60, 40, 60, 80]); } catch (e) {} }
+  };
+  d.addEventListener('click', (e) => {
+    if (e.target.closest('[data-ruleta-girar]')) {
+      if (reducirMovimiento) { mostrarResultado(true); return; }
+      d.classList.add('girando');
+      const b = $('[data-ruleta-girar]', d);
+      b.disabled = true;
+      b.textContent = 'Girando…';
+      rueda.style.transform = 'rotate(' + FINAL + 'deg)';
+      temp = setTimeout(() => mostrarResultado(false), 5100);
+    } else if (e.target.closest('[data-ruleta-omitir]')) mostrarResultado(true);
+    else if (e.target.closest('[data-ruleta-seguir]')) d.close();
+  });
+  d.addEventListener('close', () => { clearTimeout(temp); d.remove(); });
+  if (typeof d.showModal === 'function') d.showModal(); else d.setAttribute('open', '');
+}
+
 /* ---------- Arranque ---------- */
 
 function pintarTodo() {
@@ -2080,6 +2395,7 @@ function pintarTodo() {
   pintarCombina();
   pintarSeparado();
   $$('[data-envio-gratis-desde]').forEach((el) => { el.textContent = pesos(T.ajustes.envio_gratis_desde); });
+  $$('[data-pedido-minimo]').forEach((el) => { el.textContent = pesos(Number(T.ajustes.pedido_minimo) || 0); });
   actualizar();
 }
 

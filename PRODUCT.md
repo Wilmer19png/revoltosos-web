@@ -20,11 +20,11 @@ Sell a catalog of natural dog snacks (codornices, Cajita para perros, patas, ore
 
 ## Positioning
 
-Single-ingredient whole quail, slowly dehydrated, with nothing added (no preservatives, salt or colorants). Made in Colombia. Free shipping from $70.000 in products (otherwise a per-department fee) and cash on delivery.
+Single-ingredient whole quail, slowly dehydrated, with nothing added (no preservatives, salt or colorants). Made in Colombia. Orders from $50.000 in products (combos or single snacks mixed); free shipping from $120.000; gift from $150.000; cash on delivery.
 
 ## Capabilities and Constraints
 
-- Prices in COP, formatted `$20.900`. Free shipping from `ajustes.envio_gratis_desde` ($70.000); below that, `envio_base` or the department fee. Optional priority shipping +$5.000. Envía + Interrapidísimo are the carriers (API integration planned).
+- Prices in COP, formatted `$20.900`. Minimum order `ajustes.pedido_minimo` ($50.000). Free shipping from `ajustes.envio_gratis_desde` ($120.000); below that, `envio_base` or the department fee. Optional priority shipping +$5.000. Envía + Interrapidísimo are the carriers (API integration planned).
 - Prices, sizes, costs and stock are edited in the gestor, never hard-coded. The jar render still says "50 GR" on the label; it needs a new photo or crop.
 - Phone: 10 digits starting with 3, stored as `573XXXXXXXXX`.
 - Store navigation: header with Tienda / product landings, cart, floating WhatsApp button. Each product landing must stand alone for ads.

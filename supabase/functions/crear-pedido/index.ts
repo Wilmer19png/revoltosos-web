@@ -15,6 +15,10 @@
 // Lo que diga el navegador sobre precios se ignora: solo se usan los ids de los
 // tamaños y las cantidades.
 //
+// Migración 029: pedido mínimo (ajustes.pedido_minimo, en productos antes de cupón y bono) y
+// bono de Wompi (usar_bono: true → se busca el bono vigente del celular y se descuenta al final;
+// el envío gratis y el regalo se cuentan antes del bono).
+//
 // Secrets que usa (Supabase › Edge Functions › Secrets):
 //   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY  → Supabase los pone solos
 //   META_PIXEL_ID, META_ACCESS_TOKEN         → opcionales; sin ellos no se envía a Meta
@@ -69,6 +73,7 @@ const json = (body: unknown, status = 200) =>
 
 const texto = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 const redondear100 = (n: number) => Math.round(n / 100) * 100;
+const pesosTxt = (n: number) => '$' + String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 const hoyColombia = () => new Date(Date.now() - 5 * 3600 * 1000).toISOString().slice(0, 10);
 
 // Mismo cálculo que assets/js/tienda.js (descuentoCupon).
@@ -279,6 +284,12 @@ Deno.serve(async (req) => {
   const subtotal = items.reduce((s, i) => s + i.precio * i.cantidad, 0);
   const costoProductos = items.reduce((s, i) => s + i.costo * i.cantidad, 0);
 
+  // Pedido mínimo (migración 029): se cuenta en productos, antes de cupón y bono.
+  const minimo = Number(ajustes!.pedido_minimo ?? 0);
+  if (minimo && subtotal < minimo) {
+    return json({ ok: false, error: `El pedido mínimo es de ${pesosTxt(minimo)} en productos`, campo: 'minimo' }, 422);
+  }
+
   // Cupón: si no sirve se avisa, para que el cliente no pague algo distinto a lo que vio.
   let descuento = 0;
   let cupon: Cupon | null = null;
@@ -301,7 +312,18 @@ Deno.serve(async (req) => {
   const productosNeto = subtotal - descuento;
   const envio = conEnvioGratis || productosNeto >= a.envio_gratis_desde ? 0 : Number(porCiudad ?? porDepartamento ?? a.envio_base);
   const valorPrioritario = prioritario ? a.prioritario : 0;
-  const total = productosNeto + envio + valorPrioritario;
+
+  // Bono por pagar con Wompi (migración 029): amarrado al celular, se usa el que vence primero.
+  // Se descuenta al final: el envío gratis y el regalo se cuentan antes del bono.
+  let bono: { id: number; monto: number } | null = null;
+  if (b.usar_bono === true) {
+    const { data } = await supabase.from('bonos').select('id, monto').eq('celular', celular)
+      .is('usado_pedido', null).gte('vence', hoyColombia()).order('vence').order('id').limit(1).maybeSingle();
+    bono = data as { id: number; monto: number } | null;
+    if (!bono) return json({ ok: false, error: 'Tu bono ya no está disponible', campo: 'bono' }, 422);
+  }
+  const bonoDescuento = bono ? Math.min(bono.monto, productosNeto) : 0;
+  const total = productosNeto - bonoDescuento + envio + valorPrioritario;
 
   // Regalo (migración 024): desde ajustes.regalo_desde en productos (ya con cupón) va gratis
   // el tamaño ajustes.regalo_variante. Precio $0; su costo sí cuenta y sale del inventario.
@@ -375,6 +397,9 @@ Deno.serve(async (req) => {
     utm_content: texto(b.utm_content, 120) || null,
     utm_term: texto(b.utm_term, 200) || null,
     fbclid: texto(b.fbclid, 500) || null,
+    // Solo cuando hay bono, para que la tienda siga funcionando si la migración 029 no se ha corrido.
+    ...(bono ? { bono_id: bono.id, bono_descuento: bonoDescuento }
+      : existente && 'bono_id' in existente ? { bono_id: null, bono_descuento: 0 } : {}),
   };
   // Con Wompi se guardan las cookies de Meta para mandar el Purchase cuando se apruebe el pago.
   const pago = conWompi
@@ -416,6 +441,13 @@ Deno.serve(async (req) => {
     if (error) console.error('cupon usos', error);
   }
 
+  // Contra entrega: el bono queda usado ya. Con Wompi se marca cuando el pago se aprueba (wompi-eventos).
+  if (bono && !conWompi) {
+    const { error } = await supabase.from('bonos').update({ usado_pedido: orderId, usado_en: new Date().toISOString() })
+      .eq('id', bono.id).is('usado_pedido', null);
+    if (error) console.error('bono usado', error);
+  }
+
   let wompi = null;
   if (conWompi) {
     const checkout = await checkoutWompi(orderId, total);
@@ -438,6 +470,7 @@ Deno.serve(async (req) => {
     total,
     subtotal,
     descuento,
+    bono: bonoDescuento,
     envio,
     prioritario: valorPrioritario,
     items: items.map(({ costo: _costo, ...i }) => i),

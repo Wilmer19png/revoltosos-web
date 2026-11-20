@@ -37,7 +37,7 @@ Gestor /pedidos ◀── lee y edita todo (solo correos de la tabla admins)
 
 - **Precios y tamaños** viven en Supabase (`productos` y `variantes`) y se cambian en el gestor → pestaña **Productos**. La tienda los muestra; la función `crear-pedido` los vuelve a leer al crear el pedido, así nadie puede cambiar un precio desde el navegador.
 - **Precio normal / precio de venta:** si un tamaño tiene precio normal mayor que el de venta, la tienda lo muestra tachado con «Ahorras $X» y lo suma en «Estás ahorrando».
-- **Envío:** gratis cuando los productos (ya con cupón) llegan al mínimo de **Ajustes** (hoy $70.000). Si no, se cobra la tarifa de la ciudad (si tiene), la del departamento o la normal, en ese orden. Las tarifas se sacan a mano del cotizador público de envia.com (instrucciones en Ajustes) y se pueden cambiar cuando quieras.
+- **Envío:** gratis cuando los productos (ya con cupón) llegan al mínimo de **Ajustes** (hoy $120.000). Si no, se cobra la tarifa de la ciudad (si tiene), la del departamento o la normal, en ese orden. Las tarifas se sacan a mano del cotizador público de envia.com (instrucciones en Ajustes) y se pueden cambiar cuando quieras.
 - **Pautar un tamaño:** `/codornices/?t=50g` abre la landing con la bolsa elegida y `?t=100g` con el frasco. Gestor → Productos → «Links para pautar cada tamaño» tiene cada link listo para copiar. Si un tamaño tiene foto propia (columna Foto), la foto principal cambia al elegirlo.
 - **Inventario:** sale solo cuando un pedido pasa a **Despachado** (o En reparto / Entregado). Vuelve a bodega si se cancela, no se confirma o se devuelve. Un combo («2 frascos») descuenta del tamaño que se elija (2 × frasco de 100 g).
 - **Ganancia:** venta − costo de producto − envío real (o el promedio de Ajustes) − comisión de recaudo. Las devoluciones restan el flete de ida y vuelta. La neta resta además el gasto en pauta del mes.
@@ -109,7 +109,7 @@ En el formulario el cliente elige **Contra entrega** (como siempre) o **Pagar ah
 ## Checklist de prueba
 
 1. Abrir `/` en el celular: aparece el catálogo; agregar un producto sube el contador del carrito y la barra de envío gratis.
-2. Llegar a $70.000: la barra se pone verde con dorado y cae confeti.
+2. Pasar de $50.000: el candado de la barra se abre, sale la insignia «Pedido desbloqueado» y el botón de pedir se pone rosado. Pasar de $120.000: envío gratis. Pasar de $150.000: regalo y ruleta.
 3. Crear un cupón en el gestor → escribirlo en el carrito → baja el total.
 4. Hacer un pedido de prueba → pantalla de gracias con número `REV-AAAAMMDD-XXXX`.
 5. En el gestor el pedido sale como **Nuevo** con sus productos, cupón y envío.
@@ -138,3 +138,20 @@ El sitio usa rutas que empiezan con `/`, así que no se ve bien abriendo el arch
 4. Gestor › Ajustes › «Avisos en este celular» › Activar avisos (en iPhone, primero «Agregar a inicio»
    desde Safari y abrir el gestor desde ese ícono). Luego «Mandar aviso de prueba».
 5. Gestor › Ajustes › «Sueldos y gastos fijos»: revisar los valores (vienen 2.000.000 admin + 2.000.000 marketing).
+
+## Paquetes desde $50.000, combos nuevos y bonos de Wompi (migraciones 026 a 029)
+
+Reglas (noviembre de 2026):
+- **Todo pedido es desde $50.000** en productos (antes de cupón y bono). Los snacks sueltos se compran dentro de un paquete: en su página el botón dice «Agregar a mi paquete».
+- **Envío gratis desde $120.000**, combos incluidos (ningún combo trae el envío incluido). Ciudades principales $15.000, Pereira $12.000, Dosquebradas $12.500, resto del país $20.000.
+- **Regalo desde $150.000**: bolsa de codornices 50 g, con una ruleta que es solo animación (siempre cae en el regalo y lo dice abajo; se puede omitir).
+- **Precio tachado = 25 % de descuento** en todo; se recalcula solo al cambiar un precio.
+- **Bono de $10.000 por pagar con Wompi**: dura 30 días, queda amarrado al celular y la tienda lo aplica sola. El mínimo, el envío gratis y el regalo se cuentan antes del bono. Si un pedido con bono se cancela, el bono vuelve a quedar disponible. Gestor › pestaña **Bonos**: recordatorios por WhatsApp a 7 y a 2 días del vencimiento; cada mañana llega un aviso al celular si hay bonos por vencer.
+- Los 13 combos de antes se ocultan y entran 10 nuevos. Sus páginas viejas redirigen al combo nuevo más parecido (netlify.toml).
+
+Para publicarlo, **en este orden**:
+1. Supabase › SQL Editor: correr `026-tachado-25-por-ciento.sql`, `027-precios-nuevos-noviembre.sql`, `028-envio-ciudades-principales.sql` y `029-pedido-minimo-y-bonos.sql`.
+2. Volver a publicar las funciones **crear-pedido**, **wompi-eventos** (Verify JWT apagado) y **avisar-admin** (Verify JWT apagado).
+3. Publicar el sitio (git push → Netlify).
+
+Valores que se cambian en el gestor › Ajustes: pedido mínimo, valor del bono y días que dura, envío gratis, regalo y tarifas.

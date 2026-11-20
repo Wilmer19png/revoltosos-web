@@ -306,6 +306,28 @@ dialog.ventana::backdrop { background: rgba(18,17,15,.55); }
   .tabla-caja { overflow: visible; }
 }
 .aviso { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--negro); color: #F5F1E8; padding: 12px 18px; border-radius: 12px; font-weight: 600; font-size: 15px; z-index: 20; box-shadow: 0 16px 40px -20px rgba(0,0,0,.7); max-width: calc(100vw - 32px); }
+/* Bonos de Wompi (migración 029) */
+.bonos-numeros { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.bono-num { background: #FFFFFF; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; line-height: 1.25; }
+.bono-num span { font-size: 12px; color: var(--tinta-2); font-weight: 700; }
+.bono-num strong { font-size: 22px; font-variant-numeric: tabular-nums; }
+.bono-num small { font-size: 12px; color: var(--tinta-2); }
+.bono-num.rosa { background: var(--rosa-claro); }
+.bono-num.rosa span, .bono-num.rosa strong, .bono-num.rosa small { color: var(--rosa-hover); }
+.bono-num.verde { background: var(--salvia-claro); }
+.bono-num.verde span, .bono-num.verde strong, .bono-num.verde small { color: var(--salvia); }
+.pedido.bono-toca { box-shadow: inset 0 0 0 2px var(--rosa); }
+.pedido.bono-toca.urgente { box-shadow: inset 0 0 0 2px var(--error); }
+.bono-chip { flex: none; font-size: 12px; font-weight: 800; border-radius: 999px; padding: 4px 10px; }
+.bono-chip.verde { background: var(--salvia-claro); color: var(--salvia); }
+.bono-chip.rosa { background: var(--rosa-claro); color: var(--rosa-hover); }
+.bono-chip.rojo { background: var(--error); color: #FFFFFF; }
+.bono-chip.gris { background: var(--hueso-2); color: var(--tinta-2); }
+.bono-origen { margin: 0; font-size: 13px; color: var(--tinta-2); }
+.bono-riel { height: 8px; border-radius: 99px; background: var(--hueso-2); overflow: hidden; }
+.bono-riel i { display: block; height: 100%; border-radius: 99px; }
+.bono-pie { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; color: var(--tinta-2); }
+.bono-msg { margin: 0; background: var(--hueso); border-radius: 10px; padding: 10px 12px; font-size: 13px; line-height: 1.4; }
 </style>
 </head>
 <body>
@@ -366,6 +388,7 @@ dialog.ventana::backdrop { background: rgba(18,17,15,.55); }
       <button type="button" class="pestana" role="tab" data-tab="inventario" aria-selected="false">Inventario <span class="contador" id="bajos" hidden></span></button>
       <button type="button" class="pestana" role="tab" data-tab="pauta" aria-selected="false">Pauta</button>
       <button type="button" class="pestana" role="tab" data-tab="carritos" aria-selected="false">Carritos <span class="contador" id="carritos-pendientes" hidden></span></button>
+      <button type="button" class="pestana" role="tab" data-tab="bonos" aria-selected="false">Bonos <span class="contador" id="bonos-por-recordar" hidden></span></button>
       <button type="button" class="pestana" role="tab" data-tab="cupones" aria-selected="false">Cupones</button>
       <button type="button" class="pestana" role="tab" data-tab="ajustes" aria-selected="false">Ajustes</button>
       <button type="button" class="pestana" role="tab" data-tab="resenas" aria-selected="false">Reseñas <span class="contador" id="resenas-pendientes" hidden></span></button>
@@ -606,6 +629,15 @@ dialog.ventana::backdrop { background: rgba(18,17,15,.55); }
       <p class="nota" id="av-iphone" hidden style="margin-top: 6px">En iPhone: abre el gestor en Safari → botón Compartir → <strong>Agregar a inicio</strong>. Abre el gestor desde ese ícono y toca «Activar avisos» ahí.</p>
     </section>
     <form id="form-ajustes" style="display: flex; flex-direction: column; gap: 16px">
+      <section class="caja" id="sec-minimo" hidden>
+        <h3>Pedido mínimo y bono de Wompi</h3>
+        <p class="nota" style="margin: 4px 0 10px">Ningún pedido se puede hacer por debajo del mínimo (en productos, antes de cupón y bono). Cada pedido pagado con Wompi gana un bono para la próxima compra, amarrado al celular del cliente. Pon 0 para apagar cualquiera de los dos.</p>
+        <div class="rejilla">
+          <div class="campo"><label for="a-minimo">Pedido mínimo ($ en productos)</label><input id="a-minimo" type="number" min="0" step="1000"></div>
+          <div class="campo"><label for="a-bono">Bono por pagar con Wompi ($)</label><input id="a-bono" type="number" min="0" step="1000"></div>
+          <div class="campo"><label for="a-bono-dias">Días que dura el bono</label><input id="a-bono-dias" type="number" min="1" max="365" step="1"></div>
+        </div>
+      </section>
       <section class="caja" id="sec-regalo" hidden>
         <h3>Regalo por compras grandes</h3>
         <p class="nota" style="margin: 4px 0 10px">Desde este monto en productos (ya con cupón, sin contar el envío) el pedido lleva este regalo gratis. La tienda muestra «Te faltan $X para tu regalo». Deja el monto vacío para apagarlo.</p>
@@ -717,6 +749,18 @@ dialog.ventana::backdrop { background: rgba(18,17,15,.55); }
     <div class="filtros" id="filtros-carritos" role="group" aria-label="Filtrar carritos"></div>
     <p class="estado-carga" id="c-estado" aria-live="polite">Cargando carritos…</p>
     <div class="lista" id="lista-carritos"></div>
+  </main>
+
+  <!-- Bonos de Wompi (migración 029) -->
+  <main class="contenido" id="tab-bonos" role="tabpanel" hidden>
+    <div class="pedido">
+      <strong>Bonos por pagar con Wompi</strong>
+      <p style="margin: 0; font-size: 14px; color: var(--tinta-2)">Cada pedido pagado con Wompi gana un bono para la próxima compra. Queda guardado con el celular del cliente y se aplica solo en la tienda. Recuérdales 2 veces: cuando faltan <strong>7 días</strong> y cuando faltan <strong>2</strong>. La tarjeta que toca se resalta con el mensaje listo: tócalo, se abre tu WhatsApp y solo le das enviar. Cada mañana te llega un aviso al celular si hay bonos por vencer.</p>
+    </div>
+    <div class="bonos-numeros" id="b-numeros"></div>
+    <div class="filtros" id="filtros-bonos" role="group" aria-label="Filtrar bonos"></div>
+    <p class="estado-carga" id="b-estado" aria-live="polite">Cargando bonos…</p>
+    <div class="lista" id="lista-bonos"></div>
   </main>
 
   <main class="contenido" id="tab-resenas" role="tabpanel" hidden>
@@ -843,7 +887,7 @@ let cargando = false;
 async function cargar() {
   if (cargando) return;
   cargando = true;
-  const [rp, rprod, rvar, rcup, raj, rmov, rr, rpa, rcomp, rcar, rclic] = await Promise.all([
+  const [rp, rprod, rvar, rcup, raj, rmov, rr, rpa, rcomp, rcar, rclic, rbon] = await Promise.all([
     sb.from('pedidos').select('*').order('creado_en', { ascending: false }).limit(3000),
     sb.from('productos').select('*').order('orden'),
     sb.from('variantes').select('*').order('orden'),
@@ -854,7 +898,8 @@ async function cargar() {
     sb.from('pauta_anuncios').select('*').gte('fecha', sumarDias(hoy(), -100)).order('fecha').limit(20000),
     sb.from('variante_componentes').select('*'),
     sb.from('carritos').select('*').order('actualizado_en', { ascending: false }).limit(500),
-    sb.from('clics_whatsapp').select('creado_en, lugar, pagina, utm_source').gte('creado_en', sumarDias(hoy(), -400) + 'T00:00:00Z').order('creado_en', { ascending: false }).limit(20000)
+    sb.from('clics_whatsapp').select('creado_en, lugar, pagina, utm_source').gte('creado_en', sumarDias(hoy(), -400) + 'T00:00:00Z').order('creado_en', { ascending: false }).limit(20000),
+    sb.from('bonos').select('*').gte('vence', sumarDias(hoy(), -120)).order('vence').limit(3000)
   ]);
   cargando = false;
   if (rp.error) {
@@ -868,11 +913,12 @@ async function cargar() {
   D.variantes = rvar.error ? [] : rvar.data;
   D.cupones = rcup.error ? [] : rcup.data;
   D.movimientos = rmov.error ? [] : rmov.data;
-  D.ajustes = raj.data || { envio_gratis_desde: 70000, envio_base: 12000, envio_departamentos: {}, prioritario: 5000, costo_envio_promedio: 12000, comision_recaudo: 0, metas: {} };
+  D.ajustes = raj.data || { envio_gratis_desde: 120000, envio_base: 12000, envio_departamentos: {}, prioritario: 5000, costo_envio_promedio: 12000, comision_recaudo: 0, metas: {} };
   D.resenas = rr.error ? null : rr.data;
   D.componentes = rcomp.error ? [] : rcomp.data;
   D.carritos = rcar.error ? null : rcar.data;
   D.clics = rclic.error ? null : rclic.data; // migración 025
+  D.bonos = rbon.error ? null : rbon.data; // migración 029
   D.pautaLista = !rpa.error;
   D.pauta = rpa.error ? [] : rpa.data;
   pintarTodo();
@@ -923,6 +969,7 @@ function pintarTodo() {
   pintarCupones();
   pintarAjustes();
   pintarCarritos();
+  pintarBonos();
   pintarResenas();
 }
 
@@ -1257,6 +1304,7 @@ function mensajeWhatsApp(p) {
     'Recibimos tu pedido #' + p.order_id + ':',
     ...lineasPedido(p).map((l) => '• ' + l.txt),
     p.descuento ? '• Cupón ' + (p.cupon || '') + ': −' + pesos(p.descuento) : '',
+    p.bono_descuento ? '• Bono Wompi: −' + pesos(p.bono_descuento) : '',
     '• Envío: ' + (p.envio_cobrado ? pesos(p.envio_cobrado) : 'GRATIS') + (p.prioritario ? ' + prioritario' : ''),
     pagadoWompi(p) ? '• Total pagado con Wompi: ' + pesos(p.total) : '• Total a pagar al recibir: ' + pesos(p.total),
     '📍 ' + [p.direccion, p.barrio].filter(Boolean).join(', ') + ', ' + p.ciudad + ' - ' + p.departamento,
@@ -1324,7 +1372,8 @@ function tarjeta(p) {
   const items = el('div', 'pedido-items');
   lineasPedido(p).forEach((l) => { const f = el('div'); f.append(el('span', null, l.txt), el('span', null, pesos(l.valor))); items.append(f); });
   if (p.descuento) { const f = el('div', 'gris'); f.append(el('span', null, 'Cupón ' + (p.cupon || '')), el('span', null, '−' + pesos(p.descuento))); items.append(f); }
-  if (p.items) { const f = el('div', 'gris'); f.append(el('span', null, 'Envío cobrado' + (p.prioritario ? ' + prioritario' : '')), el('span', null, p.total - (p.subtotal - p.descuento) ? pesos(p.total - (p.subtotal - p.descuento)) : 'Gratis')); items.append(f); }
+  if (p.bono_descuento) { const f = el('div', 'gris'); f.append(el('span', null, 'Bono Wompi'), el('span', null, '−' + pesos(p.bono_descuento))); items.append(f); }
+  if (p.items) { const neto = p.subtotal - p.descuento - (p.bono_descuento || 0); const f = el('div', 'gris'); f.append(el('span', null, 'Envío cobrado' + (p.prioritario ? ' + prioritario' : '')), el('span', null, p.total - neto ? pesos(p.total - neto) : 'Gratis')); items.append(f); }
   const extra = el('div', 'pedido-fecha');
   if (p.prioritario) { const t = el('span', 'tag', 'Prioritario'); t.style.marginRight = '6px'; extra.append(t); }
   if (p.para_quien && p.para_quien.length) extra.append(p.para_quien.join(', '));
@@ -2252,6 +2301,12 @@ function pintarAjustes() {
   $('#a-comision').value = A.comision_recaudo;
   $('#sec-wompi').hidden = !('wompi_activo' in A);
   $('#sec-regalo').hidden = !('regalo_desde' in A);
+  $('#sec-minimo').hidden = !('pedido_minimo' in A); // migración 029
+  if ('pedido_minimo' in A) {
+    $('#a-minimo').value = A.pedido_minimo;
+    $('#a-bono').value = A.bono_wompi;
+    $('#a-bono-dias').value = A.bono_dias;
+  }
   $('#sec-gastos').hidden = !('gastos_fijos' in A); // migración 025
   if ('gastos_fijos' in A) {
     pintarGastos(gastosFijos());
@@ -2403,6 +2458,11 @@ $('#form-ajustes').addEventListener('submit', async (e) => {
   if ('gastos_fijos' in D.ajustes) {
     cambios.gastos_fijos = gastosEnPantalla().filter((g) => g.nombre || g.valor).map((g) => ({ nombre: g.nombre || 'Gasto', valor: g.valor }));
     cambios.pct_gastos = Math.min(300, Math.max(0, Number($('#a-pct-gastos').value) || 0));
+  }
+  if ('pedido_minimo' in D.ajustes) {
+    cambios.pedido_minimo = Math.max(0, Math.round(Number($('#a-minimo').value) || 0));
+    cambios.bono_wompi = Math.max(0, Math.round(Number($('#a-bono').value) || 0));
+    cambios.bono_dias = Math.min(365, Math.max(1, Math.round(Number($('#a-bono-dias').value) || 30)));
   }
   if ('regalo_desde' in D.ajustes) {
     const desde = $('#a-regalo-desde').value;
@@ -2627,6 +2687,136 @@ const MENSAJES_CARRITO = [
 const estadoCarrito = (c) => (c.pedido_id || c.recuperado_en ? 'Recuperados' : c.descartado ? 'Descartados' : 'Pendientes');
 
 // «Codornices», «Codornices y Patas de pollo», «Codornices, Patas de pollo y 2 más».
+/* ---------- Bonos de Wompi (migración 029) ----------
+   Recordatorios por WhatsApp: cuando faltan 7 días y cuando faltan 2 (último aviso). */
+let filtroBono = 'Por vencer';
+const diasBono = (b) => Math.round((Date.parse(b.vence + 'T12:00:00Z') - Date.parse(hoy() + 'T12:00:00Z')) / 86400000);
+const fechaBono = (d) => new Intl.DateTimeFormat('es-CO', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' }).format(new Date(d + 'T12:00:00Z'));
+function estadoBono(b) {
+  if (b.usado_pedido) return 'Usados';
+  return diasBono(b) < 0 ? 'Vencidos' : 'Activos';
+}
+// Qué recordatorio toca: 'r2' (último aviso) si faltan 2 días o menos; 'r7' si faltan 7 o menos y no se ha mandado ninguno.
+function recordatorioBono(b) {
+  if (estadoBono(b) !== 'Activos') return null;
+  const d = diasBono(b);
+  if (d <= 2 && !b.recordado_2) return 'r2';
+  if (d <= 7 && !b.recordado_7 && !b.recordado_2) return 'r7';
+  return null;
+}
+function mensajeBono(b, cual) {
+  const nombre = String(b.nombre || '').trim().split(/\s+/)[0] || '';
+  const hola = nombre ? 'Hola ' + nombre : 'Hola';
+  const d = diasBono(b);
+  const cuando = d === 0 ? 'hoy' : 'el ' + fechaBono(b.vence);
+  if (cual === 'r2') return hola + ' 🐾 Tu bono de ' + pesos(b.monto) + ' en Revoltosos se vence ' + cuando + '. Es tu última oportunidad para usarlo en snacks para tu peludo. Se aplica solo con tu celular: ' + SITIO;
+  return hola + ' 🐾 Te recordamos que tienes un bono de ' + pesos(b.monto) + ' en Revoltosos por tu pago con Wompi. Te quedan ' + d + ' días para usarlo (vence ' + cuando + '). Se aplica solo con tu celular: ' + SITIO;
+}
+async function guardarBono(b, cambios, texto) {
+  const { error } = await sb.from('bonos').update(cambios).eq('id', b.id);
+  if (error) { avisar('No se pudo guardar'); return; }
+  Object.assign(b, cambios);
+  if (texto) avisar(texto);
+  pintarBonos();
+}
+
+function pintarBonos() {
+  const estado = $('#b-estado');
+  const lista = $('#lista-bonos');
+  const filtros = $('#filtros-bonos');
+  const numeros = $('#b-numeros');
+  lista.textContent = '';
+  filtros.textContent = '';
+  numeros.textContent = '';
+  const bonos = D.bonos;
+  const badge = $('#bonos-por-recordar');
+  if (bonos == null) {
+    badge.hidden = true;
+    estado.hidden = false;
+    estado.textContent = 'Falta la tabla de bonos. Ejecuta supabase/migraciones/029-pedido-minimo-y-bonos.sql en Supabase.';
+    return;
+  }
+  const activos = bonos.filter((b) => estadoBono(b) === 'Activos');
+  const porVencer = activos.filter((b) => diasBono(b) <= 7);
+  const porRecordar = bonos.filter(recordatorioBono).length;
+  badge.hidden = !porRecordar;
+  badge.textContent = porRecordar;
+
+  const mes = hoy().slice(0, 7);
+  const usadosMes = bonos.filter((b) => b.usado_en && diaCO(b.usado_en).slice(0, 7) === mes);
+  const suma = (l) => pesos(l.reduce((s, b) => s + b.monto, 0));
+  [['Activos', activos.length, suma(activos), ''], ['Vencen en 7 días', porVencer.length, suma(porVencer), 'rosa'], ['Usados este mes', usadosMes.length, 'volvieron a comprar', 'verde']].forEach(([t, n, sub, c]) => {
+    const caja = el('div', 'bono-num' + (c ? ' ' + c : ''));
+    caja.append(el('span', null, t), el('strong', null, String(n)), el('small', null, sub));
+    numeros.append(caja);
+  });
+
+  const grupos = {
+    'Por vencer': porVencer,
+    'Activos': activos,
+    'Usados': bonos.filter((b) => estadoBono(b) === 'Usados').sort((a, b) => String(b.usado_en).localeCompare(String(a.usado_en))),
+    'Vencidos': bonos.filter((b) => estadoBono(b) === 'Vencidos').reverse()
+  };
+  Object.keys(grupos).forEach((g) => {
+    const b = el('button', 'filtro', g + ' ');
+    b.type = 'button';
+    b.setAttribute('aria-pressed', String(filtroBono === g));
+    b.append(el('span', null, String(grupos[g].length)));
+    b.addEventListener('click', () => { filtroBono = g; pintarBonos(); });
+    filtros.append(b);
+  });
+
+  const visibles = grupos[filtroBono];
+  estado.hidden = visibles.length > 0;
+  estado.textContent = bonos.length ? 'No hay bonos en esta lista.' : 'Todavía no hay bonos. Aparecen cuando un cliente paga un pedido con Wompi.';
+
+  visibles.forEach((b) => {
+    const est = estadoBono(b);
+    const d = diasBono(b);
+    const toca = recordatorioBono(b);
+    const art = el('article', 'pedido bono' + (toca ? ' bono-toca' + (toca === 'r2' ? ' urgente' : '') : ''));
+    const top = el('div', 'pedido-top');
+    const quien = el('div');
+    quien.append(el('strong', null, b.nombre || 'Sin nombre'));
+    const tel = el('a', null, ' · ' + String(b.celular).replace(/^57/, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'));
+    tel.href = 'tel:+' + b.celular;
+    tel.style.color = 'inherit';
+    quien.append(tel);
+    const chip = el('span', 'bono-chip ' + (est === 'Usados' ? 'verde' : est === 'Vencidos' ? 'gris' : d <= 2 ? 'rojo' : d <= 7 ? 'rosa' : 'verde'),
+      est === 'Usados' ? 'Usado' : est === 'Vencidos' ? 'Vencido' : d === 0 ? 'Vence hoy' : d === 1 ? 'Queda 1 día' : 'Quedan ' + d + ' días');
+    top.append(quien, chip);
+    const origen = el('p', 'bono-origen', pesos(b.monto) + ' · ganado con el pedido ' + b.pedido_origen + ' (Wompi)');
+    art.append(top, origen);
+    if (est === 'Activos') {
+      const riel = el('div', 'bono-riel');
+      const lleno = el('i');
+      lleno.style.width = Math.max(3, Math.min(100, Math.round(d / Math.max(1, Number(D.ajustes.bono_dias) || 30) * 100))) + '%';
+      lleno.style.background = d <= 2 ? 'var(--error)' : d <= 7 ? 'var(--rosa)' : 'var(--salvia)';
+      riel.append(lleno);
+      const pie = el('div', 'bono-pie');
+      pie.append(el('span', null, 'Vence el ' + fechaBono(b.vence)),
+        el('span', null, b.recordado_2 ? 'Recordado 2 veces' : b.recordado_7 ? 'Recordado 1 vez' : 'Sin recordar'));
+      art.append(riel, pie);
+      if (toca) {
+        const msg = el('p', 'bono-msg', mensajeBono(b, toca));
+        const a = el('a', 'btn', toca === 'r2' ? 'Mandar último aviso' : 'Recordar por WhatsApp');
+        a.href = 'https://wa.me/' + b.celular + '?text=' + encodeURIComponent(mensajeBono(b, toca));
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.addEventListener('click', () => {
+          guardarBono(b, { [toca === 'r2' ? 'recordado_2' : 'recordado_7']: new Date().toISOString() }, 'Recordatorio marcado como enviado');
+        });
+        art.append(msg, a);
+      }
+    } else if (est === 'Usados') {
+      art.append(el('p', 'bono-origen', 'Lo usó el ' + fechaCorta.format(new Date(b.usado_en)) + ' en el pedido ' + b.usado_pedido + '.'));
+    } else {
+      art.append(el('p', 'bono-origen', 'Venció el ' + fechaBono(b.vence) + ' sin usarse.'));
+    }
+    lista.append(art);
+  });
+}
+
 function productosDeCarrito(c) {
   const nombres = [];
   (c.items || []).forEach((i) => {
@@ -2643,7 +2833,7 @@ function mensajeCarrito(c, k) {
   const nombre = String(c.nombre || '').trim().split(/\s+/)[0] || '';
   const hola = nombre ? '¡Hola ' + nombre + '!' : '¡Hola!';
   const prod = productosDeCarrito(c);
-  const gratis = pesos((D.ajustes && D.ajustes.envio_gratis_desde) || 70000);
+  const gratis = pesos((D.ajustes && D.ajustes.envio_gratis_desde) || 120000);
   if (k === '1h') return hola + ' 🐾 Te saluda el equipo de servicio al cliente de Revoltosos. Vimos que estabas armando tu pedido con ' + prod + ' y no alcanzaste a terminarlo. ¿Sucedió algo o te podemos ayudar con alguna duda? Con gusto te asesoramos para que elijas lo mejor para tu peludito.';
   if (k === '24h') return hola + ' 🐾 Somos Revoltosos. Queríamos saber cómo estás y si te quedó alguna pregunta sobre ' + prod + ', el envío o la forma de pago. Estamos aquí para ayudarte en lo que necesites, y si quieres, terminamos tu pedido juntos por este chat.';
   return hola + ' 🐾 Te escribimos de Revoltosos una última vez para no dejarte sin respuesta. Si hay algo que te frenó (el precio, el envío o no saber qué snack elegir), cuéntanos y con mucho gusto lo resolvemos. Por si te sirve: desde ' + gratis + ' el envío es gratis. ¡Quedamos atentos!';
