@@ -56,12 +56,12 @@ const RESPALDO = {
   ajustes: { envio_gratis_desde: 120000, envio_base: 20000, envio_departamentos: {}, prioritario: 5000, pedido_minimo: 50000 },
   productos: [
     { id: 'codornices', nombre: 'Codornices deshidratadas', categoria: 'Codorniz', descripcion: 'Codorniz entera, deshidratada lentamente. Un solo ingrediente.', imagen: '/assets/img/productos/codornices-frasco-100g-600.jpg', ruta: '/codornices/', orden: 1 },
-    { id: 'cajita-perros', nombre: 'Cajita para perros', categoria: 'Cajitas', descripcion: 'Patas de pollo, oreja de cerdo, codornicitas, codorniz entera y fémur de cerdo.', imagen: '/assets/img/productos/cajita-producto-fondo-blanco-600.jpg', ruta: '/cajita/', orden: 2 }
+    { id: 'cajita-perros', nombre: 'Cajita para perros', categoria: 'Combos', descripcion: 'Patas de pollo, oreja de cerdo, codornicitas, codorniz entera y fémur de cerdo.', imagen: '/assets/img/productos/cajita-producto-fondo-blanco-600.jpg', ruta: '/cajita/', orden: 2 }
   ],
   variantes: [
-    { id: 'codornices-bolsa-50g', producto_id: 'codornices', nombre: 'Bolsa 50 g', detalle: 'Para probar', precio: 18900, precio_antes: null, orden: 1, imagen: '/assets/img/productos/codornices-bolsa-50g-600.jpg' },
-    { id: 'codornices-frasco-100g', producto_id: 'codornices', nombre: 'Frasco 100 g', detalle: 'Aprox. 30 codornices', precio: 34900, precio_antes: null, orden: 2, imagen: '/assets/img/productos/codornices-frasco-100g-600.jpg' },
-    { id: 'cajita-perros', producto_id: 'cajita-perros', nombre: 'Cajita · 5 snacks', detalle: '5 snacks distintos', precio: 72900, precio_antes: null, orden: 1 }
+    { id: 'codornices-bolsa-50g', producto_id: 'codornices', nombre: 'Bolsa 50 g', detalle: 'Para probar', precio: 22900, precio_antes: null, orden: 1, imagen: '/assets/img/productos/codornices-bolsa-50g-600.jpg' },
+    { id: 'codornices-frasco-100g', producto_id: 'codornices', nombre: 'Frasco 100 g', detalle: 'Aprox. 30 codornices', precio: 38900, precio_antes: null, orden: 2, imagen: '/assets/img/productos/codornices-frasco-100g-600.jpg' },
+    { id: 'cajita-perros', producto_id: 'cajita-perros', nombre: 'Cajita · 5 snacks', detalle: '5 snacks distintos', precio: 95900, precio_antes: null, orden: 1 }
   ]
 };
 
@@ -76,7 +76,34 @@ function indexar(datos) {
     .filter((v) => v.precio > 0 && T.prodPorId[v.producto_id])
     .sort((a, b) => (T.prodPorId[a.producto_id].orden - T.prodPorId[b.producto_id].orden) || (a.orden - b.orden));
   T.porId = {};
-  T.variantes.forEach((v) => { T.porId[v.id] = v; });
+  T.variantes.forEach((v) => {
+    // El precio tachado (25 %) es solo de los combos; los snacks sueltos se muestran sin tachado.
+    if (T.prodPorId[v.producto_id].categoria !== 'Combos') v.precio_antes = null;
+    T.porId[v.id] = v;
+  });
+  T.componentes = {};
+  (datos.componentes || []).forEach((c) => { (T.componentes[c.combo_id] = T.componentes[c.combo_id] || []).push(c); });
+}
+
+// «Trae» de un combo: [{ texto, foto }] en el orden de sus snacks. «30 unidades» × 2 → «60 patas de pollo».
+// Plural de la primera palabra: paleta → paletas, fémur → fémures, codorniz → codornices, patas → patas.
+const plural = (s) => s.replace(/^(\S+)/, (w) => (/s$/i.test(w) ? w : /z$/i.test(w) ? w.slice(0, -1) + 'ces' : /[aeiouáéíóú]$/i.test(w) ? w + 's' : w + 'es'));
+function queTrae(comboId) {
+  return (T.componentes[comboId] || []).map((c) => {
+    const v = T.porId[c.componente_id];
+    if (!v) return null;
+    const p = prodDe(v);
+    const nombre = p.nombre.replace(/ deshidratadas?$/i, '').replace(/ × ?\d+$/, '');
+    const unidades = /^(\d+)\s+unidad(es)?$/i.exec(v.nombre);
+    let texto;
+    if (unidades) {
+      const n = Number(unidades[1]) * c.cantidad;
+      texto = n + ' ' + (n === 1 ? nombre.toLowerCase() : plural(nombre.toLowerCase()));
+    } else {
+      texto = (c.cantidad > 1 ? c.cantidad + ' × ' : '') + nombre + ' ' + v.nombre.replace(/^(Bolsa|Frasco)\s+/i, '');
+    }
+    return { texto, foto: fotoDe(v) };
+  }).filter(Boolean);
 }
 
 async function rest(ruta, opciones) {
@@ -91,7 +118,7 @@ async function descargarCatalogo() {
   // Si aún no están las migraciones 011/015 (foto por tamaño, envío por ciudad, envío gratis por tamaño),
   // se pide sin esas columnas.
   const pedir = (ruta, extra) => rest(ruta.replace('{extra}', extra)).catch(() => rest(ruta.replace('{extra}', '')));
-  const [productos, variantes, ajustes] = await Promise.all([
+  const [productos, variantes, ajustes, componentes] = await Promise.all([
     rest('productos?select=id,nombre,categoria,descripcion,imagen,ruta,orden,etiqueta,fotos&order=orden')
       .catch(() => pedir('productos?select=id,nombre,categoria,descripcion,imagen,ruta,orden{extra}&order=orden', ',etiqueta')),
     rest('variantes?select=id,producto_id,nombre,detalle,precio,precio_antes,orden,imagen,envio_gratis&order=orden')
@@ -99,10 +126,12 @@ async function descargarCatalogo() {
     rest('ajustes?select=envio_gratis_desde,envio_base,envio_departamentos,prioritario,envio_ciudades,wompi_activo,regalo_desde,regalo_variante,pedido_minimo,bono_wompi,bono_dias&id=eq.1')
       .catch(() => rest('ajustes?select=envio_gratis_desde,envio_base,envio_departamentos,prioritario,envio_ciudades,wompi_activo,regalo_desde,regalo_variante&id=eq.1'))
       .catch(() => rest('ajustes?select=envio_gratis_desde,envio_base,envio_departamentos,prioritario,envio_ciudades,wompi_activo&id=eq.1'))
-      .catch(() => pedir('ajustes?select=envio_gratis_desde,envio_base,envio_departamentos,prioritario{extra}&id=eq.1', ',envio_ciudades'))
+      .catch(() => pedir('ajustes?select=envio_gratis_desde,envio_base,envio_departamentos,prioritario{extra}&id=eq.1', ',envio_ciudades')),
+    // Qué trae cada combo (migración 030). Sin la migración, los combos muestran su descripción.
+    rest('variante_componentes?select=combo_id,componente_id,cantidad').catch(() => [])
   ]);
   if (!productos.length || !variantes.length) throw new Error('catálogo vacío');
-  return { productos, variantes, ajustes: ajustes[0] };
+  return { productos, variantes, ajustes: ajustes[0], componentes };
 }
 
 // Se muestra al instante lo guardado en esta visita y siempre se actualiza por detrás,
@@ -374,7 +403,44 @@ function pintarMetas(el, k, conEtiquetas) {
   camino.setAttribute('aria-label', 'Metas cumplidas: ' + hechas + ' de ' + lista.length);
 }
 
-function pintarBarraEnvio(el, k) { pintarMetas(el, k, false); }
+// Barra de arriba: una meta a la vez. Primero completar el pedido; cuando se llena, la barra
+// empieza de nuevo hacia el envío gratis, y después hacia el regalo.
+function pintarBarraEnvio(el, k) {
+  if (!el.dataset.listo) {
+    el.innerHTML = '<div class="envio-barra-in"><p>' + ICONO.camion + '<span data-msg aria-live="polite"></span></p>' +
+      '<div class="riel" role="progressbar" aria-valuemin="0" aria-valuemax="100"><span></span></div></div>';
+    el.dataset.listo = '1';
+  }
+  const A = T.ajustes;
+  const envioDesde = Number(A.envio_gratis_desde) || 0;
+  const clamp = (x) => Math.max(0, Math.min(1, x));
+  let msg, f, etiqueta;
+  if (!k.unidades) {
+    msg = (k.minimo ? 'Pides desde <strong>' + pesos(k.minimo) + '</strong> · ' : '') + 'Envío <strong>GRATIS</strong> desde ' + pesos(envioDesde);
+    f = 0; etiqueta = 'Avance de tu pedido';
+  } else if (!k.puede) {
+    msg = 'Te faltan <strong>' + pesos(k.faltaMinimo) + '</strong> para completar tu pedido';
+    f = k.subtotal / k.minimo; etiqueta = 'Avance hacia el pedido mínimo';
+  } else if (!k.gratis) {
+    msg = (k.minimo ? 'Pedido listo. ' : '') + 'Te faltan <strong>' + pesos(k.falta) + '</strong> para el envío GRATIS';
+    const desde = Math.min(k.minimo, envioDesde);
+    f = (k.neto - desde) / Math.max(1, envioDesde - desde); etiqueta = 'Avance hacia el envío gratis';
+  } else if (k.regaloDesde && !k.regalo) {
+    msg = '<strong>¡Envío GRATIS!</strong> Te faltan <strong>' + pesos(k.faltaRegalo) + '</strong> para tu regalo';
+    f = (k.neto - envioDesde) / Math.max(1, k.regaloDesde - envioDesde); etiqueta = 'Avance hacia el regalo';
+  } else {
+    msg = '<strong>' + (k.regalo ? '¡Envío GRATIS y regalo desbloqueados!' : '¡Desbloqueaste el envío GRATIS!') + '</strong>';
+    f = 1; etiqueta = 'Metas cumplidas';
+  }
+  $('[data-msg]', el).innerHTML = msg;
+  el.classList.toggle('gratis', k.puede && k.gratis);
+  el.classList.remove('casi');
+  const pct = Math.round(clamp(f) * 100);
+  const riel = $('.riel', el);
+  riel.setAttribute('aria-valuenow', String(pct));
+  riel.setAttribute('aria-label', etiqueta);
+  $('span', riel).style.width = (k.unidades ? Math.max(3, pct) : 0) + '%';
+}
 
 /* Celebración al cumplir una meta: insignia, confeti y vibración. Al llegar al regalo, la ruleta. */
 const TEXTO_INSIGNIA = ['', 'Pedido desbloqueado', 'Envío gratis desbloqueado', 'Regalo desbloqueado'];
@@ -415,6 +481,7 @@ function actualizar() {
   programarCarritoGuardado();
   $$('[data-contador]').forEach((c) => { c.textContent = k.unidades; c.dataset.n = String(k.unidades); });
   $$('[data-envio-barra]').forEach((el) => pintarBarraEnvio(el, k));
+  medirCabecera(); // el texto de la barra puede ocupar una o dos líneas
   $$('[data-agregar]').forEach((b) => {
     const q = carrito[b.dataset.agregar] || 0;
     b.classList.toggle('en-carrito', q > 0);
@@ -486,7 +553,8 @@ function iniciarBarraFija() {
 
 /* ---------- Catálogo en la página de inicio ---------- */
 
-let categoria = '';
+let categoria = null; // null: todavía no se ha elegido ventana (se usa la inicial de la página)
+const ORDEN_VENTANAS = ['Combos', 'Huesos de res', 'Huesos de cerdo', 'Codorniz', 'Patas de pollo'];
 let catPedida = new URLSearchParams(location.search).get('cat'); // /productos/?cat=Combos
 
 const fuego = (texto) => '<span class="etq-fuego">' + ICONO.fuego + esc(texto) + '</span>';
@@ -506,13 +574,22 @@ function tarjetaProducto(vs) {
     '<a class="prod-foto" href="' + esc(urlProducto(p)) + '"><img src="' + esc(fotoDe(v)) + '" alt="' + esc(p.nombre) + '" width="600" height="600" loading="lazy">' + (etiqueta ? '<span class="prod-etiquetas">' + etiqueta + '</span>' : '') + '</a>' +
     '<div class="prod-info"><h3><a href="' + esc(urlProducto(p)) + '">' + esc(p.nombre) + '</a></h3>' +
     (varios
-      ? '<span class="tam">' + vs.length + ' tamaños: ' + esc(vs.map((x) => x.nombre).join(' · ')) + '</span>' +
-        '<div class="precio"><span class="desde">Desde</span><strong>' + pesos(desde.precio) + '</strong></div>' +
+      ? '<div class="precio"><span class="desde">Desde</span><strong>' + pesos(desde.precio) + '</strong></div>' +
+        '<span class="prod-tams">' + vs.map((x) => '<span>' + esc(x.nombre) + ' · ' + pesos(x.precio) + '</span>').join('') + '</span>' +
         '<button type="button" class="btn-agregar" data-elegir="' + esc(p.id) + '" aria-haspopup="dialog" aria-label="Elegir tamaño de ' + esc(p.nombre) + '"></button>'
       : '<span class="tam">' + esc(v.nombre) + (v.detalle ? ' · ' + esc(v.detalle) : '') + '</span>' +
         '<div class="precio"><strong>' + pesos(v.precio) + '</strong>' + (v.precio_antes > v.precio ? '<s>' + pesos(v.precio_antes) + '</s>' : '') + '</div>' +
+        (p.categoria === 'Combos' ? traeHtml(v, p) : '') +
         '<button type="button" class="btn-agregar" data-agregar="' + esc(v.id) + '" aria-label="Agregar ' + esc(nombreLargo(v)) + ' al carrito"></button>') +
     '</div></article>';
+}
+
+// Combos: debajo del precio, qué trae, con una foto de cada snack (así se entiende qué se vende).
+function traeHtml(v, p) {
+  const lista = queTrae(v.id);
+  if (!lista.length) return p.descripcion ? '<p class="prod-trae-txt">' + esc(p.descripcion) + '</p>' : '';
+  return '<div class="prod-trae"><span class="prod-trae-t">Trae</span>' +
+    lista.map((x) => '<span class="prod-trae-i"><img src="' + esc(x.foto) + '" alt="" width="26" height="26" loading="lazy">' + esc(x.texto) + '</span>').join('') + '</div>';
 }
 
 // Agrupa los tamaños por producto. Los primeros productos del gestor (orden 1 a DESTACADOS)
@@ -537,18 +614,28 @@ function pintarCatalogo() {
   const caja = $('#catalogo-lista');
   if (!caja) return;
   const filtros = $('#filtro-cat');
+  // Ventanas (migración 030): en este orden; una categoría nueva del gestor va al final, y «Todos» de último.
   const cats = [];
   T.variantes.forEach((v) => { const c = prodDe(v).categoria; if (cats.indexOf(c) < 0) cats.push(c); });
-  // Página de una sola categoría (p. ej. /combos/): sin filtros. Si no, ?cat=Combos preselecciona.
+  const pos = (c) => { const i = ORDEN_VENTANAS.indexOf(c); return i < 0 ? 99 : i; };
+  cats.sort((a, b) => pos(a) - pos(b));
+  // Página de una sola categoría (p. ej. /combos/): sin filtros. Si no, ?cat=Combos preselecciona;
+  // sin nada, la ventana inicial de la página (en el inicio, Combos).
   if (P.categoriaFija) categoria = P.categoriaFija;
   else if (catPedida && cats.indexOf(catPedida) >= 0) { categoria = catPedida; catPedida = null; } // se aplica cuando llega el catálogo real
-  if (!P.categoriaFija && categoria && cats.indexOf(categoria) < 0) categoria = '';
+  else if (categoria === null) categoria = 'categoriaInicial' in P ? P.categoriaInicial : 'Combos';
+  // Mientras llega el catálogo puede no existir la ventana pedida: se muestra todo sin olvidar cuál era.
+  if (!P.categoriaFija && categoria && cats.indexOf(categoria) < 0 && catalogoListo) categoria = '';
+  const activa = cats.indexOf(categoria) >= 0 ? categoria : '';
+  const palabras = normal(busqueda).split(/\s+/).filter(Boolean);
+  const porCat = (c) => ordenCatalogo(T.variantes.filter((v) => !c || prodDe(v).categoria === c)).length;
   if (filtros) {
-    filtros.innerHTML = ['', ...cats].map((c) => '<button type="button" data-cat="' + esc(c) + '" aria-pressed="' + (c === categoria) + '">' + esc(c || 'Todo') + '</button>').join('');
+    filtros.innerHTML = cats.concat(['']).map((c) => '<button type="button" data-cat="' + esc(c) + '" aria-pressed="' + (!palabras.length && c === activa) + '">' +
+      esc(c || 'Todos') + '<span>' + porCat(c) + '</span></button>').join('');
     filtros.hidden = cats.length < 2 || !!P.categoriaFija;
   }
-  const palabras = normal(busqueda).split(/\s+/).filter(Boolean);
-  let lista = ordenCatalogo(T.variantes.filter((v) => (!categoria || prodDe(v).categoria === categoria) && (!palabras.length || coincide(v, palabras))));
+  // Al buscar se busca en toda la tienda, no solo en la ventana abierta.
+  let lista = ordenCatalogo(T.variantes.filter((v) => (palabras.length || !activa || prodDe(v).categoria === activa) && (!palabras.length || coincide(v, palabras))));
   // Al buscar, primero los productos cuyo nombre tiene lo buscado («fémur» → Fémur de res antes que los combos).
   if (palabras.length) {
     const enNombre = (g) => palabras.every((w) => normal(prodDe(g[0]).nombre).indexOf(w.replace(/e?s$/, '')) >= 0);
@@ -558,7 +645,7 @@ function pintarCatalogo() {
   if (total) total.textContent = lista.length + (lista.length === 1 ? ' producto' : ' productos');
   caja.innerHTML = lista.length ? lista.map(tarjetaProducto).join('')
     : palabras.length
-      ? '<p class="catalogo-vacio">No encontramos «' + esc(busqueda.trim()) + '»' + (categoria ? ' en ' + esc(categoria) : '') + '. Prueba con otra palabra, como «hueso», «codorniz» o «combo». <a href="/productos/">Ver todos los productos</a></p>'
+      ? '<p class="catalogo-vacio">No encontramos «' + esc(busqueda.trim()) + '». Prueba con otra palabra, como «hueso», «codorniz» o «combo». <a href="/productos/">Ver todos los productos</a></p>'
       : '<p class="catalogo-vacio">' + (P.categoriaFija ? 'Pronto tendremos combos aquí.' : 'Pronto tendremos más snacks aquí.') + ' <a href="/productos/">Ver todos los productos</a></p>';
 }
 
@@ -665,12 +752,22 @@ function pintarEscalones() {
   const seccion = caja.closest('section');
   if (vs.length < 2) { if (seccion) seccion.hidden = true; return; }
   if (seccion) seccion.hidden = false;
-  const mejor = vs.reduce((m, v) => ((v.precio_antes || 0) - v.precio > ((m && m.precio_antes) || 0) - (m ? m.precio : 0) ? v : m), null);
+  // «Entre más pides, más ahorras» sin precio tachado: se compara con comprar paquetes del tamaño más pequeño
+  // (p. ej. 30 patas = 6 paquetes de 5). Los tamaños que no son «N unidades» (1 kilo) no se comparan.
+  const unidadesDe = (v) => { const m = /^(\d+)\s+unidad(es)?$/i.exec(v.nombre); return m ? Number(m[1]) : 0; };
+  const base = vs.filter(unidadesDe).sort((a, b) => unidadesDe(a) - unidadesDe(b))[0];
+  const ahorroDe = (v) => {
+    const n = unidadesDe(v);
+    if (!base || !n || v.id === base.id || n % unidadesDe(base)) return 0;
+    return Math.max(0, (n / unidadesDe(base)) * base.precio - v.precio);
+  };
+  const mejor = vs.reduce((m, v) => (ahorroDe(v) > (m ? ahorroDe(m) : 0) ? v : m), null);
   caja.innerHTML = vs.map((v) => {
-    const ahorra = v.precio_antes > v.precio ? v.precio_antes - v.precio : 0;
-    return '<button type="button" class="escalon' + (mejor && mejor.id === v.id && ahorra ? ' destacado' : '') + '" data-agregar-escalon="' + esc(v.id) + '">' +
-      '<span class="nombre"><strong>' + esc(v.nombre) + '</strong><span>' + esc(v.detalle || 'Toca para agregar') + '</span></span>' +
-      '<span class="valor">' + (ahorra ? '<s>' + pesos(v.precio_antes) + '</s>' : '') + '<strong>' + pesos(v.precio) + '</strong></span>' +
+    const ahorra = ahorroDe(v);
+    const n = unidadesDe(v);
+    return '<button type="button" class="escalon' + (mejor && mejor.id === v.id ? ' destacado' : '') + '" data-agregar-escalon="' + esc(v.id) + '">' +
+      '<span class="nombre"><strong>' + esc(v.nombre) + '</strong><span>' + esc(v.detalle || (n > 1 ? pesos(Math.round(v.precio / n / 10) * 10) + ' cada una' : 'Toca para agregar')) + '</span></span>' +
+      '<span class="valor"><strong>' + pesos(v.precio) + '</strong></span>' +
       (ahorra ? '<span class="ahorro">Ahorras ' + pesos(ahorra) + '</span>' : '') + '</button>';
   }).join('');
 }
@@ -1221,7 +1318,13 @@ function iniciarCarrito() {
     if (t.closest('[data-aplicar-cupon]')) { aplicarCupon(); return; }
     if (t.closest('[data-quitar-cupon]')) { cupon = null; guardar('rv-cupon', ''); actualizar(); pintarCarrito(); return; }
     const cat = t.closest('[data-cat]');
-    if (cat && cat.closest('#filtro-cat')) { categoria = cat.dataset.cat; pintarCatalogo(); actualizar(); }
+    if (cat && cat.closest('#filtro-cat')) {
+      // Al tocar una ventana se deja de buscar: se ve todo lo de esa ventana.
+      categoria = cat.dataset.cat;
+      if (busqueda) { busqueda = ''; $$('[data-buscador][data-en-vivo] input').forEach((i) => { i.value = ''; }); const url = new URL(location.href); url.searchParams.delete('q'); history.replaceState(null, '', url); }
+      pintarCatalogo();
+      actualizar();
+    }
   });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && e.target.id === 'cupon-input') { e.preventDefault(); aplicarCupon(); }
@@ -2399,6 +2502,9 @@ function pintarTodo() {
   actualizar();
 }
 
+// Las ventanas del catálogo se pegan justo debajo del encabezado (que también va pegado arriba).
+function medirCabecera() { const c = $('.cab'); if (c) document.documentElement.style.setProperty('--cab-alto', c.offsetHeight + 'px'); }
+window.addEventListener('resize', medirCabecera);
 iniciarClicsWhatsapp();
 iniciarMenu();
 iniciarBuscador();
@@ -2416,6 +2522,8 @@ cargarCatalogo(pintarTodo).then(() => {
   iniciarPruebaSocial();
 });
 pintarTodo();
+medirCabecera();
+setTimeout(medirCabecera, 600);
 if (location.hash === '#carrito') abrirCarrito();
 else if (location.hash === '#pedido') abrirPedido();
 volverDeWompi();

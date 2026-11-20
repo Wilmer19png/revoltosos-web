@@ -1389,7 +1389,7 @@ COMBINA
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght\@400;500;600;700;800&display=swap">
 $precarga<link rel="stylesheet" href="/assets/css/landing.css?v=8">
-<link rel="stylesheet" href="/assets/css/tienda.css?v=23">
+<link rel="stylesheet" href="/assets/css/tienda.css?v=24">
 
 <!-- Generada con herramientas/landings/generar.pl: los cambios van allá, no aquí. -->
 <script>
@@ -1608,6 +1608,7 @@ $iconos
       <span>© <span data-anio>2026</span> Revoltosos</span>
       <a href="/privacidad.html">Política de tratamiento de datos (Ley 1581 de 2012)</a>
       <a href="/privacidad.html#terminos">Términos y condiciones</a>
+      <span class="pie-credito">Diseño y desarrollo web: <strong>Rakun Visual Designs</strong></span>
     </div>
   </div>
 </footer>
@@ -1627,7 +1628,7 @@ $iconos
   <button type="button" id="cookies-ok">Entendido</button>
 </div>
 
-<script src="/assets/js/tienda.js?v=26"></script>
+<script src="/assets/js/tienda.js?v=27"></script>
 </body>
 </html>
 HTML
