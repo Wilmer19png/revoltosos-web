@@ -33,8 +33,8 @@ la etiqueta real del tarro dice «x5».
 
 ## Cómo reemplazar una portada
 
-1. Guarda la imagen cuadrada (1000 × 1000, fondo blanco) como `assets/img/productos/<combo>-portada.jpg`
-   y una de 600 × 600 como `<combo>-portada-600.jpg` (mismo nombre que la actual).
+1. Guarda la imagen cuadrada (1000 × 1000, fondo blanco) como `assets/img/productos/<combo>-bodegon.jpg`
+   y una de 600 × 600 como `<combo>-bodegon-600.jpg` (mismo nombre que la actual).
 2. Las imágenes no llevan `?v=` y el celular las guarda una semana. Si quieres que la nueva se vea
-   ya, ponle otro nombre (p. ej. `-portada2`) y cámbialo en `herramientas/landings/generar.pl` y en
+   ya, ponle otro nombre (p. ej. `-bodegon2`) y cámbialo en `herramientas/landings/generar.pl` y en
    `productos.imagen` del gestor.

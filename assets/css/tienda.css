@@ -763,7 +763,7 @@ dialog.panel:focus, dialog.panel:focus-visible { outline: none; }
 .ruleta-rueda { position: absolute; left: 12px; top: 28px; width: 280px; height: 280px; border-radius: 50%; overflow: hidden; background: conic-gradient(#C2185B 0deg 45deg, #FFFFFF 45deg 90deg, #4F5D3A 90deg 135deg, #F5F1E8 135deg 180deg, #C2185B 180deg 225deg, #FFFFFF 225deg 270deg, #4F5D3A 270deg 315deg, #F5F1E8 315deg 360deg); transform: rotate(0deg); transition: transform 5s cubic-bezier(.1,.72,.08,1); }
 .ruleta-div { position: absolute; left: 139px; top: 0; width: 2px; height: 140px; transform-origin: 1px 140px; transform: rotate(var(--a)); background: rgba(18,17,15,.22); }
 .ruleta-porcion { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform: rotate(var(--a)); }
-.ruleta-porcion img { position: absolute; left: -23px; top: -103px; width: 46px; height: 46px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 3px #FFFFFF, 0 4px 8px -2px rgba(18,17,15,.5); }
+.ruleta-porcion img { max-width: none; position: absolute; left: -23px; top: -103px; width: 46px; height: 46px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 3px #FFFFFF, 0 4px 8px -2px rgba(18,17,15,.5); }
 .ruleta-porcion span { position: absolute; left: -34px; top: -134px; width: 68px; text-align: center; font-size: 9.5px; font-weight: 800; line-height: 1.05; color: var(--c); }
 .ruleta.listo .ruleta-porcion.gana img { animation: rvGanador .9s ease-in-out infinite; }
 @keyframes rvGanador { 0%, 100% { box-shadow: 0 0 0 3px #FFFFFF, 0 0 0 6px var(--mostaza); } 50% { box-shadow: 0 0 0 3px #FFFFFF, 0 0 0 10px rgba(217,164,65,.4); } }
