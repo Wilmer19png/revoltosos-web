@@ -2100,6 +2100,17 @@ if (CONFIG.PIXEL_ID) {
   todos.forEach((v) => obs.observe(v));
 })();
 
+// «Qué trae el combo»: los snacks aparecen uno a uno al llegar a la sección. Sin JS (o sin
+// IntersectionObserver) se ven quietos: la clase .revela, que los esconde, solo la pone este código.
+(function iniciarRevela() {
+  const grupos = $$('[data-revela]');
+  if (!grupos.length || !('IntersectionObserver' in window)) return;
+  const obs = new IntersectionObserver((entradas) => entradas.forEach((en) => {
+    if (en.isIntersecting) { en.target.classList.add('visible'); obs.unobserve(en.target); }
+  }), { threshold: 0.25 });
+  grupos.forEach((g) => { g.classList.add('revela'); obs.observe(g); });
+})();
+
 function iniciarCarrusel(nav) {
   const pista = document.getElementById(nav.dataset.para);
   if (!pista || !pista.children.length) return;

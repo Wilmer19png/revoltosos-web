@@ -63,6 +63,14 @@ my %BONDADES = (
   humero_res   => ['Húmero de res', 'humero-res-empaque-fondo-blanco', ['Grande y firme, para morder con ganas.', 'Va muy bien con perros medianos y grandes.', 'Masticar ayuda a reducir placa y sarro.']],
   patas        => ['Patas de pollo', 'patas-pollo-producto', ['Crocantes y fáciles de masticar.', 'Ideales también para perros pequeños.', 'Pata de pollo y nada más.']],
 );
+# Recortes sin fondo (assets/img/piezas/*.webp, sacados de las fotos reales con Higgsfield):
+# foto del snack → recorte. Los usa "Qué trae el combo"; herramientas/portadas arma las portadas con ellos.
+my %RECORTE = (
+  'paleta-cerdo-producto' => 'paleta-cerdo', 'femur-cerdo-producto' => 'femur-cerdo',
+  'oreja-cerdo-producto' => 'oreja-cerdo-una', 'patas-pollo-producto' => 'patas-pollo',
+  'femur-res-producto' => 'femur-res', 'humero-res-empaque-fondo-blanco' => 'humero-res',
+  'codornices-frasco-100g' => 'codornices-frasco', 'codornices-bolsa-50g' => 'codornices-bolsa',
+);
 # pieza('patas10', '×10', 1) → fila de "Qué trae el combo"
 sub pieza { my ($k, $cantidad, $n) = @_; my $x = $PIEZA{$k} or die "No existe la pieza $k"; return [$x->[0], $cantidad, $x->[1], $x->[2], $x->[3], $x->[4], $n, $x->[5]]; }
 sub empaques { return map { $EMPAQUE{$_} or die "No existe el empaque $_" } @_; }
@@ -893,8 +901,8 @@ my @productos = (
     antetitulo => 'Combo · cerdo y pollo',
     descripcion => '1 paleta de cerdo, 1 fémur de cerdo, 1 oreja de cerdo y 5 patas de pollo. Para morder, masticar y crujir en un solo pedido.',
     meta => 'Combo Cerdito Crujiente: paleta, fémur y oreja de cerdo, y 5 patas de pollo deshidratados, sin conservantes. Pagas al recibir.',
-    foto => 'combo-cerdo-foto', ancho => 1000, alt_foto => 'Snacks de cerdo deshidratados Revoltosos',
-    miniaturas => galeria('combo-cerdo-foto', 'Snacks de cerdo deshidratados Revoltosos', 'paleta', 'femur_cerdo', 'oreja', 'patas'),
+    foto => 'combo-cerdito-crujiente-portada', ancho => 1000, alt_foto => 'Combo Cerdito Crujiente: 1 paleta de cerdo, 1 fémur de cerdo, 1 oreja de cerdo y 5 patas de pollo',
+    miniaturas => galeria('combo-cerdito-crujiente-portada', 'Combo Cerdito Crujiente: 1 paleta de cerdo, 1 fémur de cerdo, 1 oreja de cerdo y 5 patas de pollo', 'paleta', 'femur_cerdo', 'oreja', 'patas'),
     trae => [pieza('paleta', '×1', 1), pieza('femur_cerdo', '×1', 1), pieza('oreja', '×1', 1), pieza('patas5', '×5', 1)],
     trae_bajada => 'Un hueso firme, una paleta para sostener, una oreja para masticar y patas crocantes.',
     llega => [empaques('paleta', 'femur_cerdo', 'oreja', 'patas')],
@@ -921,8 +929,8 @@ my @productos = (
     antetitulo => 'Combo · huesos de res y patas',
     descripcion => '1 húmero de res, 1 fémur de res y 30 patas de pollo. Los huesos más grandes que tenemos y patas para todo el mes.',
     meta => 'Combo Masticador Grande: húmero y fémur de res, y 30 patas de pollo deshidratados, sin conservantes. Pagas al recibir.',
-    foto => 'combo-res-codornicitas-foto', ancho => 1000, alt_foto => 'Fémur y húmero de res deshidratados Revoltosos',
-    miniaturas => galeria('combo-res-codornicitas-foto', 'Fémur y húmero de res deshidratados Revoltosos', 'femur_res', 'humero_res', 'patas'),
+    foto => 'combo-masticador-grande-portada', ancho => 1000, alt_foto => 'Combo Masticador Grande: 1 húmero de res, 1 fémur de res y 30 patas de pollo',
+    miniaturas => galeria('combo-masticador-grande-portada', 'Combo Masticador Grande: 1 húmero de res, 1 fémur de res y 30 patas de pollo', 'femur_res', 'humero_res', 'patas'),
     trae => [pieza('humero_res', '×1', 1), pieza('femur_res', '×1', 1), pieza('patas30', '×30', 1)],
     trae_bajada => 'Dos huesos grandes de res para los ratos largos y 30 patas crocantes para premiar.',
     llega => [empaques('femur_res', 'humero_res', 'patas')],
@@ -949,8 +957,8 @@ my @productos = (
     antetitulo => 'Combo · para tener en casa',
     descripcion => '30 patas de pollo, 2 paletas de cerdo y 2 orejas de cerdo. Una despensa de snacks para premiar y masticar varias semanas.',
     meta => 'Combo Despensa Crujiente: 30 patas de pollo, 2 paletas y 2 orejas de cerdo deshidratadas, sin conservantes. Pagas al recibir.',
-    foto => 'combo-granja-revoltosa-foto', ancho => 1000, alt_foto => 'Patas de pollo, paletas y orejas de cerdo deshidratadas Revoltosos',
-    miniaturas => galeria('combo-granja-revoltosa-foto', 'Patas de pollo, paletas y orejas de cerdo deshidratadas Revoltosos', 'patas', 'paleta', 'oreja'),
+    foto => 'combo-despensa-crujiente-portada', ancho => 1000, alt_foto => 'Combo Despensa Crujiente: 30 patas de pollo, 2 paletas de cerdo y 2 orejas de cerdo',
+    miniaturas => galeria('combo-despensa-crujiente-portada', 'Combo Despensa Crujiente: 30 patas de pollo, 2 paletas de cerdo y 2 orejas de cerdo', 'patas', 'paleta', 'oreja'),
     trae => [pieza('patas30', '×30', 1), pieza('paleta', '×2', 2), pieza('oreja', '×2', 2)],
     trae_bajada => 'Patas crocantes para todos los días, paletas para sostener y orejas para masticar un buen rato.',
     llega => [empaques('patas', 'paleta', 'oreja')],
@@ -976,8 +984,8 @@ my @productos = (
     antetitulo => 'Combo · codorniz, pollo y cerdo',
     descripcion => '1 frasco de codornicitas de 100 g, 30 patas de pollo y 1 paleta de cerdo. Los snacks que más nos piden, juntos.',
     meta => 'Combo Favoritos Revoltosos: codornicitas de 100 g, 30 patas de pollo y paleta de cerdo deshidratados, sin conservantes. Pagas al recibir.',
-    foto => 'codornices-frasco-100g', ancho => 1000, alt_foto => 'Frasco de codornicitas Revoltosos de 100 g',
-    miniaturas => galeria('codornices-frasco-100g', 'Frasco de codornicitas Revoltosos de 100 g', 'patas', 'paleta'),
+    foto => 'combo-favoritos-revoltosos-portada', ancho => 1000, alt_foto => 'Combo Favoritos Revoltosos: 1 frasco de codornicitas de 100 g, 30 patas de pollo y 1 paleta de cerdo',
+    miniaturas => galeria('combo-favoritos-revoltosos-portada', 'Combo Favoritos Revoltosos: 1 frasco de codornicitas de 100 g, 30 patas de pollo y 1 paleta de cerdo', 'patas', 'paleta'),
     trae => [pieza('frasco', '100 g', 1), pieza('patas30', '×30', 1), pieza('paleta', '×1', 1)],
     trae_bajada => 'Codornicitas para premiar, patas crocantes y una paleta para morder.',
     llega => [empaques('frasco', 'patas', 'paleta')],
@@ -1003,8 +1011,8 @@ my @productos = (
     antetitulo => 'Combo · cerdo y pollo',
     descripcion => '1 paleta de cerdo, 1 fémur de cerdo y 30 patas de pollo. Dos huesos para morder y patas para todo el mes.',
     meta => 'Combo Cerdo y Patitas: paleta y fémur de cerdo, y 30 patas de pollo deshidratados, sin conservantes. Pagas al recibir.',
-    foto => 'femur-cerdo-producto', ancho => 1000, alt_foto => 'Fémur de cerdo deshidratado Revoltosos',
-    miniaturas => galeria('femur-cerdo-producto', 'Fémur de cerdo deshidratado Revoltosos', 'femur_cerdo', 'paleta', 'patas'),
+    foto => 'combo-cerdo-patitas-portada', ancho => 1000, alt_foto => 'Combo Cerdo y Patitas: 1 paleta de cerdo, 1 fémur de cerdo y 30 patas de pollo',
+    miniaturas => galeria('combo-cerdo-patitas-portada', 'Combo Cerdo y Patitas: 1 paleta de cerdo, 1 fémur de cerdo y 30 patas de pollo', 'femur_cerdo', 'paleta', 'patas'),
     trae => [pieza('paleta', '×1', 1), pieza('femur_cerdo', '×1', 1), pieza('patas30', '×30', 1)],
     trae_bajada => 'Un fémur con carne pegada al hueso, una paleta para sostener y 30 patas crocantes.',
     llega => [empaques('femur_cerdo', 'paleta', 'patas')],
@@ -1031,8 +1039,8 @@ my @productos = (
     antetitulo => 'Combo · paletas y patas',
     descripcion => '2 paletas de cerdo y 30 patas de pollo. Planas y fáciles de sostener, con patas para premiar todos los días.',
     meta => 'Combo Doble Paleta: 2 paletas de cerdo y 30 patas de pollo deshidratadas, sin conservantes. Pagas al recibir.',
-    foto => 'paleta-cerdo-producto', ancho => 1000, alt_foto => 'Paleta de cerdo deshidratada Revoltosos',
-    miniaturas => galeria('paleta-cerdo-producto', 'Paleta de cerdo deshidratada Revoltosos', 'paleta', 'patas'),
+    foto => 'combo-doble-paleta-portada', ancho => 1000, alt_foto => 'Combo Doble Paleta: 2 paletas de cerdo y 30 patas de pollo',
+    miniaturas => galeria('combo-doble-paleta-portada', 'Combo Doble Paleta: 2 paletas de cerdo y 30 patas de pollo', 'paleta', 'patas'),
     trae => [pieza('paleta', '×2', 2), pieza('patas30', '×30', 1)],
     trae_bajada => 'Dos paletas para sostener entre las patas y 30 patas crocantes.',
     llega => [empaques('paleta', 'patas')],
@@ -1058,8 +1066,8 @@ my @productos = (
     antetitulo => 'Combo · huesos de res',
     descripcion => '1 húmero de res, 1 fémur de res y 1 paleta de cerdo. Tres huesos para los perros que muerden en serio.',
     meta => 'Combo Res Crujiente: húmero y fémur de res, y paleta de cerdo deshidratados, sin conservantes. Pagas al recibir.',
-    foto => 'humero-res-empaque-fondo-blanco', ancho => 1000, alt_foto => 'Húmero de res deshidratado Revoltosos',
-    miniaturas => galeria('humero-res-empaque-fondo-blanco', 'Húmero de res deshidratado Revoltosos', 'humero_res', 'femur_res', 'paleta'),
+    foto => 'combo-res-crujiente-portada', ancho => 1000, alt_foto => 'Combo Res Crujiente: 1 húmero de res, 1 fémur de res y 1 paleta de cerdo',
+    miniaturas => galeria('combo-res-crujiente-portada', 'Combo Res Crujiente: 1 húmero de res, 1 fémur de res y 1 paleta de cerdo', 'humero_res', 'femur_res', 'paleta'),
     trae => [pieza('humero_res', '×1', 1), pieza('femur_res', '×1', 1), pieza('paleta', '×1', 1)],
     trae_bajada => 'Los dos huesos más grandes que tenemos y una paleta de cerdo para variar.',
     llega => [empaques('humero_res', 'femur_res', 'paleta')],
@@ -1086,8 +1094,8 @@ my @productos = (
     antetitulo => 'Combo · 60 patas y codornicitas',
     descripcion => '60 patas de pollo (2 paquetes de 30) y 1 bolsa de codornicitas de 50 g. Para casas con varios perros o para no quedarte sin premios.',
     meta => 'Combo Patitas para Compartir: 60 patas de pollo y codornicitas de 50 g deshidratadas, sin conservantes. Pagas al recibir.',
-    foto => 'combo-codornicitas-patas-foto', ancho => 1000, alt_foto => 'Patas de pollo y codornicitas deshidratadas Revoltosos',
-    miniaturas => galeria('combo-codornicitas-patas-foto', 'Patas de pollo y codornicitas deshidratadas Revoltosos', 'patas', 'codornicitas'),
+    foto => 'combo-patitas-compartir-portada', ancho => 1000, alt_foto => 'Combo Patitas para Compartir: 60 patas de pollo (2 paquetes de 30) y 1 bolsa de codornicitas de 50 g',
+    miniaturas => galeria('combo-patitas-compartir-portada', 'Combo Patitas para Compartir: 60 patas de pollo (2 paquetes de 30) y 1 bolsa de codornicitas de 50 g', 'patas', 'codornicitas'),
     trae => [pieza('patas30', '×60', 2), pieza('codornicitas', '50 g', 1)],
     trae_bajada => 'Dos paquetes de 30 patas crocantes y una bolsa de codornicitas para premiar.',
     llega => [empaques('patas', 'codornicitas')],
@@ -1117,8 +1125,8 @@ my @productos = (
     antetitulo => 'Combo · el más grande · envío gratis',
     descripcion => '1 frasco de codornicitas de 100 g, 60 patas de pollo (2 paquetes de 30) y 2 paletas de cerdo. Nuestro combo más grande, y con él tu pedido ya pasa del envío gratis.',
     meta => 'Combo Despensa Familiar: codornicitas de 100 g, 60 patas de pollo y 2 paletas de cerdo deshidratados. Con este combo el envío es gratis. Pagas al recibir.',
-    foto => 'cajita-producto-fondo-blanco', ancho => 1000, alt_foto => 'Snacks deshidratados Revoltosos',
-    miniaturas => galeria('cajita-producto-fondo-blanco', 'Snacks deshidratados Revoltosos', 'frasco', 'patas', 'paleta'),
+    foto => 'combo-despensa-familiar-portada', ancho => 1000, alt_foto => 'Combo Despensa Familiar: 1 frasco de codornicitas de 100 g, 60 patas de pollo (2 paquetes de 30) y 2 paletas de cerdo',
+    miniaturas => galeria('combo-despensa-familiar-portada', 'Combo Despensa Familiar: 1 frasco de codornicitas de 100 g, 60 patas de pollo (2 paquetes de 30) y 2 paletas de cerdo', 'frasco', 'patas', 'paleta'),
     trae => [pieza('frasco', '100 g', 1), pieza('patas30', '×60', 2), pieza('paleta', '×2', 2)],
     trae_bajada => 'Codornicitas para premiar, 60 patas crocantes y dos paletas para morder.',
     llega => [empaques('frasco', 'patas', 'paleta')],
@@ -1144,8 +1152,8 @@ my @productos = (
     antetitulo => 'Combo · para dos perros',
     descripcion => '2 húmeros de res, 2 paletas de cerdo y 30 patas de pollo. Doble ración de huesos para dos perros o para que te dure el doble.',
     meta => 'Combo Dúo Masticador: 2 húmeros de res, 2 paletas de cerdo y 30 patas de pollo deshidratados, sin conservantes. Pagas al recibir.',
-    foto => 'humero-res-empaque', ancho => 1000, alt_foto => 'Húmero de res Revoltosos empacado con su etiqueta',
-    miniaturas => galeria('humero-res-empaque', 'Húmero de res Revoltosos empacado con su etiqueta', 'humero_res', 'paleta', 'patas'),
+    foto => 'combo-duo-masticador-portada', ancho => 1000, alt_foto => 'Combo Dúo Masticador: 2 húmeros de res, 2 paletas de cerdo y 30 patas de pollo',
+    miniaturas => galeria('combo-duo-masticador-portada', 'Combo Dúo Masticador: 2 húmeros de res, 2 paletas de cerdo y 30 patas de pollo', 'humero_res', 'paleta', 'patas'),
     trae => [pieza('humero_res', '×2', 2), pieza('paleta', '×2', 2), pieza('patas30', '×30', 1)],
     trae_bajada => 'Dos húmeros de res, dos paletas de cerdo y 30 patas para premiar.',
     llega => [empaques('humero_res', 'paleta', 'patas')],
@@ -1241,8 +1249,13 @@ for my $p (@productos) {
   # (opcional) id del tamaño, unidades] — con id y unidades se calcula "por separado pagarías…".
   my $trae = '';
   if ($p->{trae}) {
+    my $pos = 0;
     my $items = join "\n        ", map {
-      my $foto = defined $_->[0]
+      # Si el snack tiene recorte sin fondo (assets/img/piezas), se muestra ese: así se ve la pieza sola.
+      my $recorte = defined $_->[0] ? $RECORTE{$_->[0]} : undef;
+      my $foto = $recorte
+        ? '<img class="recorte" src="/assets/img/piezas/' . $recorte . '.webp" width="560" height="560" loading="lazy" alt="' . esc($_->[2]) . '" style="--i: ' . $pos++ . '">'
+        : defined $_->[0]
         ? '<img src="' . "$IMG/$_->[0]-600.jpg" . '" width="600" height="600" loading="lazy" alt="' . esc($_->[2]) . '">'
         : '<span class="pendiente">Foto muy pronto</span>';
       '<article class="caja-item"><a href="/' . $_->[4] . '/" style="display: block">' . $foto . '</a>'
@@ -1257,7 +1270,7 @@ for my $p (@productos) {
     <div class="contenedor">
       <h2 class="titulo" id="t-trae">Qué trae el combo</h2>
       <p class="bajada" style="margin-top: 8px">@{[esc($p->{trae_bajada} // 'Todo llega junto, en el mismo envío.')]}</p>
-      <div class="caja-grid">
+      <div class="caja-grid" data-revela>
         $items
       </div>$separado
       <a href="#comprar" class="btn btn--ancho" style="margin-top: 24px">Pedir el combo · Pagas al recibir</a>
@@ -1388,7 +1401,7 @@ COMBINA
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght\@400;500;600;700;800&display=swap">
-$precarga<link rel="stylesheet" href="/assets/css/landing.css?v=8">
+$precarga<link rel="stylesheet" href="/assets/css/landing.css?v=9">
 <link rel="stylesheet" href="/assets/css/tienda.css?v=26">
 
 <!-- Generada con herramientas/landings/generar.pl: los cambios van allá, no aquí. -->
@@ -1628,7 +1641,7 @@ $iconos
   <button type="button" id="cookies-ok">Entendido</button>
 </div>
 
-<script src="/assets/js/tienda.js?v=29"></script>
+<script src="/assets/js/tienda.js?v=30"></script>
 </body>
 </html>
 HTML

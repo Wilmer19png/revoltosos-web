@@ -323,6 +323,12 @@ html[data-oferta="codornices-unidad"] .solo-promo { display: none !important; }
 .caja-cantidad { display: inline-block; margin-bottom: 4px; padding: 2px 10px; border-radius: 999px; background: var(--rosa-claro); color: var(--rosa-hover); font-size: 13px; font-weight: 800; }
 @media (min-width: 860px) { .caja-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
 .caja-item .pendiente { border: 0; }
+/* Snack recortado (sin fondo) sobre fondo hueso, con sombra suave. */
+.caja-item img.recorte { object-fit: contain; padding: 12%; background: radial-gradient(circle at 50% 45%, #FBF8F2, var(--hueso-2)); filter: drop-shadow(0 10px 12px rgba(90, 70, 50, .28)); }
+/* «Qué trae el combo»: los snacks van apareciendo uno a uno al llegar a la sección (tienda.js pone .revela). */
+.caja-grid.revela .caja-item img.recorte { opacity: 0; transform: translateY(26px) rotate(-6deg) scale(.9); transition: opacity .5s ease, transform .7s cubic-bezier(.2, .9, .3, 1.3); transition-delay: calc(var(--i, 0) * 160ms); }
+.caja-grid.revela.visible .caja-item img.recorte { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .caja-grid.revela .caja-item img.recorte { opacity: 1; transform: none; transition: none; } }
 
 /* Combos: lo bueno de cada snack */
 .cada-grid { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); margin-top: 24px; }
