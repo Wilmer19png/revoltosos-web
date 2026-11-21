@@ -1200,10 +1200,12 @@ function pintarCarrito() {
 
   k.ls.forEach((l) => {
     html += '<div class="item-c"><img src="' + esc(fotoDe(l.v)) + '" alt="" width="72" height="72">' +
-      '<div class="det"><div><strong>' + esc(prodDe(l.v).nombre) + '</strong><span>' + esc(l.v.nombre) + (l.v.precio_antes > l.v.precio ? ' · antes ' + pesos(l.v.precio_antes) : '') + '</span></div>' +
+      '<div class="det"><div><strong>' + esc(prodDe(l.v).nombre) + '</strong><span>' + esc(l.v.nombre) + '</span></div>' +
       '<div class="fila"><div class="cantidad"><button type="button" data-q="' + esc(l.v.id) + '" data-d="-1" aria-label="' + (l.q === 1 ? 'Quitar ' : 'Quitar uno de ') + esc(nombreLargo(l.v)) + '">' + (l.q === 1 ? ICONO.basura : '−') + '</button>' +
       '<output>' + l.q + '</output><button type="button" data-q="' + esc(l.v.id) + '" data-d="1" aria-label="Agregar otro ' + esc(nombreLargo(l.v)) + '">+</button></div>' +
-      '<strong>' + pesos(l.v.precio * l.q) + '</strong></div></div></div>';
+      // Precio de antes tachado, encima del precio real (sin la palabra «antes», que confundía).
+      '<div class="precio-l">' + (l.v.precio_antes > l.v.precio ? '<s>' + pesos(l.v.precio_antes * l.q) + '</s>' : '') +
+      '<strong>' + pesos(l.v.precio * l.q) + '</strong></div></div></div></div>';
   });
 
   if (!k.puede) {

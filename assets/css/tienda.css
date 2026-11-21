@@ -290,6 +290,8 @@ dialog.panel:focus, dialog.panel:focus-visible { outline: none; }
 .item-c .det { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
 .item-c .det strong { display: block; font-size: 15px; line-height: 1.25; }
 .item-c .det span { font-size: 13px; color: var(--tinta-2); }
+.item-c .precio-l { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.15; }
+.item-c .precio-l s { font-size: 12px; font-weight: 600; color: var(--tinta-2); }
 .item-c .fila { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .item-c .cantidad { border-width: 1.5px; border-radius: 12px; }
 .item-c .cantidad button { width: 40px; height: 40px; font-size: 20px; }
