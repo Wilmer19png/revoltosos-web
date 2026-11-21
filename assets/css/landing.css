@@ -331,6 +331,33 @@ html[data-oferta="codornices-unidad"] .solo-promo { display: none !important; }
 @media (prefers-reduced-motion: reduce) { .caja-grid.revela .caja-item img.recorte { opacity: 1; transform: none; transition: none; } }
 
 /* Combos: lo bueno de cada snack */
+/* «Conoce cada snack de cerca» (combos): recorte grande con lupa, ficha y lo bueno de cada snack. */
+.cerca-lista { display: grid; gap: 18px; margin-top: 24px; }
+.cerca { display: grid; gap: 0; background: #FFFFFF; border-radius: 22px; overflow: hidden; }
+.cerca-lupa { position: relative; margin: 0; aspect-ratio: 1 / 1; background: radial-gradient(circle at 50% 45%, #FFFFFF 0, #FFFFFF 40%, var(--hueso) 100%); overflow: hidden; touch-action: pan-y; }
+.cerca-lupa img { width: 100%; height: 100%; object-fit: contain; padding: 10%; box-sizing: border-box; filter: drop-shadow(0 14px 16px rgba(90, 70, 50, .25)); transition: transform .35s ease; transform-origin: var(--x, 50%) var(--y, 50%); user-select: none; -webkit-user-select: none; }
+.cerca-lupa[data-lupa] { cursor: zoom-in; }
+.cerca-lupa.de-cerca { cursor: zoom-out; touch-action: none; }
+.cerca-lupa.de-cerca img { transform: scale(2.3); transition: transform .25s ease; }
+.cerca-lupa figcaption { position: absolute; left: 12px; bottom: 12px; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: rgba(255, 255, 255, .92); color: var(--tinta); font-size: 13px; font-weight: 700; box-shadow: 0 2px 10px rgba(0, 0, 0, .08); pointer-events: none; transition: opacity .2s ease; }
+.cerca-lupa.de-cerca figcaption { opacity: 0; }
+.cerca-info { padding: 18px 18px 20px; }
+.cerca-info h3 { margin: 6px 0 12px; font-family: var(--serif); font-size: 26px; font-weight: 400; line-height: 1.15; }
+.cerca-ficha { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0 0 14px; }
+.cerca-ficha div { padding: 9px 11px; border-radius: 12px; background: var(--hueso); }
+.cerca-ficha dt { color: var(--tinta-2); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+.cerca-ficha dd { margin: 2px 0 0; font-size: 15px; font-weight: 700; line-height: 1.25; }
+.cerca-info ul { margin: 0; padding: 0; list-style: none; }
+.cerca-info li { position: relative; margin-top: 7px; padding-left: 22px; color: var(--tinta-2); font-size: 15px; line-height: 1.45; }
+.cerca-info li::before { content: ''; position: absolute; left: 2px; top: 6px; width: 10px; height: 5px; border-left: 2px solid var(--salvia); border-bottom: 2px solid var(--salvia); transform: rotate(-45deg); }
+.cerca-link { display: inline-block; margin-top: 14px; color: var(--rosa); font-weight: 800; text-decoration: none; }
+.cerca-link:hover { text-decoration: underline; }
+@media (min-width: 760px) {
+  .cerca { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; }
+  .cerca--otro .cerca-lupa { order: 2; }
+  .cerca-info { padding: 28px 32px; }
+}
+@media (prefers-reduced-motion: reduce) { .cerca-lupa img { transition: none; } }
 .cada-grid { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); margin-top: 24px; }
 .cada-item { display: flex; gap: 14px; align-items: flex-start; padding: 14px; border-radius: 18px; background: #FFFFFF; }
 .cada-item img, .cada-item .pendiente { flex: none; width: 84px; height: 84px; border-radius: 12px; object-fit: cover; }

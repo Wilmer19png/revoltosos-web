@@ -63,6 +63,21 @@ my %BONDADES = (
   humero_res   => ['Húmero de res', 'humero-res-empaque-fondo-blanco', ['Grande y firme, para morder con ganas.', 'Va muy bien con perros medianos y grandes.', 'Masticar ayuda a reducir placa y sarro.']],
   patas        => ['Patas de pollo', 'patas-pollo-producto', ['Crocantes y fáciles de masticar.', 'Ideales también para perros pequeños.', 'Pata de pollo y nada más.']],
 );
+# Ficha de cada snack para «Conoce cada snack de cerca»: [proteína, textura, para qué perros, ingrediente].
+# Solo datos que ya dice la tienda (nada inventado).
+my %FICHA = (
+  codorniz     => ['Codorniz', 'Crocante', 'Todos los tamaños', 'Codorniz'],
+  visceras     => ['Codorniz', 'Suave, mucho sabor', 'Todos los tamaños', 'Vísceras de codorniz'],
+  entera       => ['Codorniz', 'Carne, piel y hueso', 'Todos los tamaños', 'Codorniz entera'],
+  oido         => ['Cerdo', 'Masticable', 'Todos los tamaños', 'Oído de cerdo'],
+  oreja        => ['Cerdo', 'Masticable', 'Todos los tamaños', 'Oreja de cerdo'],
+  femur_cerdo  => ['Cerdo', 'Hueso firme con carne pegada', 'Medianos y grandes', 'Fémur de cerdo'],
+  humero_cerdo => ['Cerdo', 'Hueso para morder', 'Medianos y grandes', 'Húmero de cerdo'],
+  paleta       => ['Cerdo', 'Plana y firme', 'Medianos y grandes', 'Paleta de cerdo'],
+  femur_res    => ['Res', 'El hueso más duro', 'Grandes', 'Fémur de res'],
+  humero_res   => ['Res', 'Grande y firme', 'Medianos y grandes', 'Húmero de res'],
+  patas        => ['Pollo', 'Crocante, fácil de masticar', 'Todos, también pequeños', 'Pata de pollo'],
+);
 # Recortes sin fondo (assets/img/piezas/*.webp, sacados de las fotos reales con Higgsfield):
 # foto del snack → recorte. Los usa "Qué trae el combo"; herramientas/portadas arma las portadas con ellos.
 my %RECORTE = (
@@ -1309,27 +1324,42 @@ TRAE
 ANAT
   }
 
-  # Combos: lo bueno de cada snack que trae (una tarjeta por tipo de snack, sin repetir).
+  # Combos: «Conoce cada snack de cerca». Un panel por tipo de snack (sin repetir): el recorte grande
+  # que se puede ver de cerca (lupa), cuántos trae el combo, su ficha y lo bueno que tiene.
   my $cada = '';
   if ($p->{trae}) {
     my %visto;
-    my @grupos = grep { defined $_ && !$visto{$_}++ } map { $_->[7] } @{ $p->{trae} };
-    my $tarjetas = join "\n        ", map {
-      my ($nombre, $foto, $puntos) = @{ $BONDADES{$_} or die "No existe la bondad $_" };
-      my $img = defined $foto
-        ? '<img src="' . "$IMG/$foto-600.jpg" . '" width="84" height="84" loading="lazy" alt="' . esc($nombre) . '">'
-        : '<span class="pendiente">Foto pronto</span>';
-      '<article class="cada-item">' . $img . '<div><strong>' . esc($nombre) . '</strong><ul>'
-      . join('', map { '<li>' . esc($_) . '</li>' } @$puntos) . '</ul></div></article>'
-    } @grupos;
-    $cada = <<"CADA" if @grupos;
-  <!-- Lo bueno de cada snack -->
+    my @piezas = grep { defined $_->[7] && !$visto{$_->[7]}++ } @{ $p->{trae} };
+    my $n = 0;
+    my $paneles = join "\n        ", map {
+      my $t = $_;
+      my $g = $t->[7];
+      my ($nombre, $foto, $puntos) = @{ $BONDADES{$g} or die "No existe la bondad $g" };
+      my $ficha = $FICHA{$g} or die "No existe la ficha $g";
+      my $recorte = defined $t->[0] ? $RECORTE{$t->[0]} : undef;
+      my $img = $recorte
+        ? '<img src="/assets/img/piezas/' . $recorte . '.webp" data-grande="/assets/img/piezas/' . $recorte . '-1100.webp" width="560" height="560" loading="lazy" alt="' . esc($nombre) . ' de cerca" draggable="false">'
+        : defined $foto ? '<img src="' . "$IMG/$foto-600.jpg" . '" width="600" height="600" loading="lazy" alt="' . esc($nombre) . '">'
+        : '<span class="pendiente">Foto muy pronto</span>';
+      my @datos = (['Proteína', $ficha->[0]], ['Textura', $ficha->[1]], ['Para', $ficha->[2]], ['Ingrediente', $ficha->[3]]);
+      $n++;
+      '<article class="cerca' . ($n % 2 ? '' : ' cerca--otro') . '">'
+      . '<figure class="cerca-lupa"' . ($recorte ? ' data-lupa' : '') . '>' . $img
+      . ($recorte ? '<figcaption><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2M11 8v6M8 11h6"/></svg>Toca para ver de cerca</figcaption>' : '')
+      . '</figure><div class="cerca-info"><span class="caja-cantidad">' . esc($t->[1]) . ' en este combo</span>'
+      . '<h3>' . esc($nombre) . '</h3><dl class="cerca-ficha">'
+      . join('', map { '<div><dt>' . esc($_->[0]) . '</dt><dd>' . esc($_->[1]) . '</dd></div>' } @datos) . '</dl><ul>'
+      . join('', map { '<li>' . esc($_) . '</li>' } @$puntos) . '</ul>'
+      . '<a class="cerca-link" href="/' . $t->[4] . '/">Ver este snack solo →</a></div></article>'
+    } @piezas;
+    $cada = <<"CADA" if @piezas;
+  <!-- Conoce cada snack de cerca -->
   <section class="seccion" aria-labelledby="t-cada" style="background: var(--hueso-2)">
     <div class="contenedor">
-      <h2 class="titulo" id="t-cada">Lo bueno de cada snack</h2>
-      <p class="bajada" style="margin-top: 8px">Cada uno aporta algo distinto. Esto es lo que gana tu peludo con cada snack del combo.</p>
-      <div class="cada-grid">
-        $tarjetas
+      <h2 class="titulo" id="t-cada">Conoce cada snack de cerca</h2>
+      <p class="bajada" style="margin-top: 8px">Así es cada uno de verdad. Toca la foto para verlo de cerca: lo que ves es todo lo que tiene.</p>
+      <div class="cerca-lista">
+        $paneles
       </div>
     </div>
   </section>
@@ -1401,7 +1431,7 @@ COMBINA
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght\@400;500;600;700;800&display=swap">
-$precarga<link rel="stylesheet" href="/assets/css/landing.css?v=9">
+$precarga<link rel="stylesheet" href="/assets/css/landing.css?v=10">
 <link rel="stylesheet" href="/assets/css/tienda.css?v=26">
 
 <!-- Generada con herramientas/landings/generar.pl: los cambios van allá, no aquí. -->
@@ -1641,7 +1671,7 @@ $iconos
   <button type="button" id="cookies-ok">Entendido</button>
 </div>
 
-<script src="/assets/js/tienda.js?v=30"></script>
+<script src="/assets/js/tienda.js?v=31"></script>
 </body>
 </html>
 HTML

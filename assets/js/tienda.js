@@ -2111,6 +2111,35 @@ if (CONFIG.PIXEL_ID) {
   grupos.forEach((g) => { g.classList.add('revela'); obs.observe(g); });
 })();
 
+// «Conoce cada snack de cerca»: tocar la foto la acerca 2,3×; moviendo el dedo o el mouse se recorre.
+// Otra vez para alejar. Con teclado: Enter o espacio.
+(function iniciarLupas() {
+  $$('[data-lupa]').forEach((f) => {
+    f.tabIndex = 0;
+    f.setAttribute('role', 'button');
+    f.setAttribute('aria-pressed', 'false');
+    f.setAttribute('aria-label', 'Ver de cerca: ' + ($('img', f) || {}).alt);
+    const mover = (e) => {
+      const r = f.getBoundingClientRect();
+      f.style.setProperty('--x', Math.max(0, Math.min(100, ((e.clientX - r.left) / r.width) * 100)) + '%');
+      f.style.setProperty('--y', Math.max(0, Math.min(100, ((e.clientY - r.top) / r.height) * 100)) + '%');
+    };
+    const cambiar = (e) => {
+      const cerca = !f.classList.contains('de-cerca');
+      // La foto grande (1100 px) solo se baja la primera vez que alguien acerca, para no hacer lenta la página.
+      const img = $('img[data-grande]', f);
+      if (cerca && img) { img.src = img.dataset.grande; img.removeAttribute('data-grande'); }
+      if (cerca && e && 'clientX' in e && e.clientX) mover(e);
+      else if (cerca) { f.style.setProperty('--x', '50%'); f.style.setProperty('--y', '50%'); }
+      f.classList.toggle('de-cerca', cerca);
+      f.setAttribute('aria-pressed', String(cerca));
+    };
+    f.addEventListener('click', cambiar);
+    f.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); cambiar(); } });
+    f.addEventListener('pointermove', (e) => { if (f.classList.contains('de-cerca')) mover(e); });
+  });
+})();
+
 function iniciarCarrusel(nav) {
   const pista = document.getElementById(nav.dataset.para);
   if (!pista || !pista.children.length) return;

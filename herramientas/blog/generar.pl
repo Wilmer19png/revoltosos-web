@@ -224,7 +224,7 @@ sub pagina {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght\@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="/assets/css/landing.css?v=9">
+<link rel="stylesheet" href="/assets/css/landing.css?v=10">
 <link rel="stylesheet" href="/assets/css/tienda.css?v=26">
 $o{jsonld}
 <!-- Generada con herramientas/blog/generar.pl: los cambios van allá, no aquí. -->
@@ -294,7 +294,7 @@ $o{contenido}
   <button type="button" id="cookies-ok">Entendido</button>
 </div>
 
-<script src="/assets/js/tienda.js?v=30"></script>
+<script src="/assets/js/tienda.js?v=31"></script>
 </body>
 </html>
 HTML

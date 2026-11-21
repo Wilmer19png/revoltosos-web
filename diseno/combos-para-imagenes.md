@@ -25,11 +25,16 @@ la imagen muestre el producto real.
 - **Tarro de 30 patas de pollo**: el recorte `patas-pollo` son 6 patas sueltas; para mostrar «30»
   sirve una foto del tarro.
 
+## Portadas actuales (bodegón en fondo blanco)
+
+Hechas con Higgsfield (GPT Image 2.6, calidad alta, 2k) usando como referencia las fotos reales de
+cada snack. Para los combos de 30 y 60 patas se usó un montón de patas sueltas y no el tarro, porque
+la etiqueta real del tarro dice «x5».
+
 ## Cómo reemplazar una portada
 
-1. Guarda la imagen cuadrada (1000 × 1000) como `assets/img/productos/<combo>-portada.jpg`
-   y una de 600 × 600 como `<combo>-portada-600.jpg` (mismo nombre que la provisional).
+1. Guarda la imagen cuadrada (1000 × 1000, fondo blanco) como `assets/img/productos/<combo>-portada.jpg`
+   y una de 600 × 600 como `<combo>-portada-600.jpg` (mismo nombre que la actual).
 2. Las imágenes no llevan `?v=` y el celular las guarda una semana. Si quieres que la nueva se vea
    ya, ponle otro nombre (p. ej. `-portada2`) y cámbialo en `herramientas/landings/generar.pl` y en
    `productos.imagen` del gestor.
-3. Para volver a armar las portadas automáticas con los recortes: `node herramientas/portadas/componer.js`.
